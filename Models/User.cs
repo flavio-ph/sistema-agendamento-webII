@@ -2,7 +2,7 @@
 using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
 
-namespace SistemaAgendamento.Models;
+namespace SistemaAgendamentoWebII.Models;
 
 public class User
 {

@@ -1,4 +1,4 @@
-﻿using SistemaAgendamento.Models;
+﻿using SistemaAgendamentoWebII.Models;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 

@@ -2,9 +2,8 @@
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using SistemaAgendamento.Models;
-using SistemaAgendamentoWebII.Data;
 using SistemaAgendamentoWebII.Models;
+using SistemaAgendamentoWebII.Data;
 using System.Security.Claims;
 
 namespace SistemaAgendamentoWebII.Controllers;

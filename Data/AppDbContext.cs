@@ -1,5 +1,4 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using SistemaAgendamento.Models;
 using SistemaAgendamentoWebII.Models;
 using System.Reflection.Emit;
 
