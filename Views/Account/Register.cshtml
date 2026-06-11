@@ -1,0 +1,116 @@
+﻿@model SistemaAgendamentoWebII.Models.User
+@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html class="light" lang="pt-br">
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Agendify - Cadastro</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Manrope:wght@600;700;800&display=swap" rel="stylesheet" />
+
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+
+    <script id="tailwind-config">
+        tailwind.config = {
+        darkMode: "class",
+        theme: {
+        extend: {
+        fontFamily: {
+        sans: ['Inter', 'sans-serif'],
+        heading: ['Manrope', 'sans-serif'],
+        },
+        colors: {
+        surface: '#f8f9ff',
+        'surface-container-lowest': '#ffffff',
+        'surface-container-low': '#eff4ff',
+        'on-surface': '#0b1c30',
+        'on-surface-variant': '#444651',
+        outline: '#757682',
+        'outline-variant': '#c5c5d3',
+        primary: '#00236f',
+        'primary-container': '#1e3a8a',
+        'on-primary': '#ffffff',
+        secondary: '#712edd'
+        }
+        }
+        }
+        }
+    </script>
+</head>
+<body class="bg-surface text-on-surface font-sans min-h-screen flex">
+
+    <div class="hidden lg:flex lg:w-1/2 relative items-center justify-center overflow-hidden bg-primary">
+        <img src="https://i.postimg.cc/kX3y1jNm/bba3d743-6833-456b-b4f3-ab3261457fff.png" alt="Agendify Workspace" class="absolute inset-0 w-full h-full object-cover" />
+        <div class="absolute inset-0 bg-gradient-to-br from-primary/90 to-primary-container/85 mix-blend-multiply"></div>
+
+        <div class="relative z-10 text-center text-white p-12">
+            <h1 class="text-6xl font-heading font-bold mb-4 tracking-tight">Agendify.</h1>
+            <p class="text-xl text-[#90a8ff] font-medium">A sua plataforma de conexões locais.</p>
+        </div>
+    </div>
+
+    <div class="w-full lg:w-1/2 flex items-center justify-center p-8 sm:p-12 lg:p-24 bg-surface-container-lowest overflow-y-auto">
+        <div class="w-full max-w-[420px] my-auto">
+
+            <div class="mb-8">
+                <h2 class="text-3xl font-heading font-bold text-on-surface mb-2">Crie sua conta</h2>
+                <p class="text-on-surface-variant">Preencha os dados abaixo para se tornar um parceiro Agendify.</p>
+            </div>
+
+            @if (!ViewData.ModelState.IsValid)
+            {
+                <div class="p-4 mb-6 text-sm text-[#93000a] bg-[#ffdad6] border border-[#ffb4ab] rounded-[8px]">
+                    <div asp-validation-summary="All" class="font-medium"></div>
+                </div>
+            }
+
+            <form asp-action="Register" method="post" class="space-y-4">
+                @Html.AntiForgeryToken()
+
+                <div>
+                    <label class="block text-sm font-semibold text-on-surface-variant mb-1.5">Nome Completo</label>
+                    <input type="text" asp-for="Name" required class="w-full rounded-[8px] border-outline-variant bg-surface-container-lowest px-4 py-3 text-on-surface transition-all focus:border-primary focus:ring-[4px] focus:ring-primary/20 outline-none" placeholder="Digite seu nome" />
+                </div>
+
+                <div>
+                    <label class="block text-sm font-semibold text-on-surface-variant mb-1.5">E-mail</label>
+                    <input type="email" asp-for="Email" required class="w-full rounded-[8px] border-outline-variant bg-surface-container-lowest px-4 py-3 text-on-surface transition-all focus:border-primary focus:ring-[4px] focus:ring-primary/20 outline-none" placeholder="seu@email.com" />
+                </div>
+
+                <div>
+                    <label class="block text-sm font-semibold text-on-surface-variant mb-1.5">Telefone</label>
+                    <input type="tel" asp-for="Phone" class="w-full rounded-[8px] border-outline-variant bg-surface-container-lowest px-4 py-3 text-on-surface transition-all focus:border-primary focus:ring-[4px] focus:ring-primary/20 outline-none" placeholder="(00) 00000-0000" />
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-semibold text-on-surface-variant mb-1.5">Senha</label>
+                        <input type="password" asp-for="PasswordHash" required class="w-full rounded-[8px] border-outline-variant bg-surface-container-lowest px-4 py-3 text-on-surface transition-all focus:border-primary focus:ring-[4px] focus:ring-primary/20 outline-none" placeholder="••••••••" />
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold text-on-surface-variant mb-1.5">Confirmar Senha</label>
+                        <input type="password" name="PasswordConfirmation" required class="w-full rounded-[8px] border-outline-variant bg-surface-container-lowest px-4 py-3 text-on-surface transition-all focus:border-primary focus:ring-[4px] focus:ring-primary/20 outline-none" placeholder="••••••••" />
+                    </div>
+                </div>
+
+                <button type="submit" class="w-full mt-8 py-3.5 px-4 bg-gradient-to-b from-[#1e3a8a] to-[#00236f] hover:scale-[1.02] text-on-primary font-bold rounded-[8px] shadow-sm transition-transform flex items-center justify-center gap-2">
+                    Cadastrar
+                    <span class="material-symbols-outlined text-[20px]">person_add</span>
+                </button>
+            </form>
+
+            <div class="text-center mt-10">
+                <span class="text-on-surface-variant font-medium">Já é um parceiro Agendify? </span>
+                <a asp-action="Login" class="text-secondary font-bold hover:underline">Entre aqui</a>
+            </div>
+
+        </div>
+    </div>
+</body>
+</html>

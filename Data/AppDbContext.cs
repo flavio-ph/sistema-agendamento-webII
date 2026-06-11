@@ -27,5 +27,17 @@ public class AppDbContext : DbContext
         modelBuilder.Entity<User>()
             .HasIndex(u => u.Email)
             .IsUnique();
+
+        modelBuilder.Entity<Favorite>()
+            .HasOne(f => f.Client)
+            .WithMany(u => u.Favorites)
+            .HasForeignKey(f => f.ClientId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<Favorite>()
+            .HasOne(f => f.Professional)
+            .WithMany()
+            .HasForeignKey(f => f.ProfessionalId)
+            .OnDelete(DeleteBehavior.Restrict);
     }
 }
