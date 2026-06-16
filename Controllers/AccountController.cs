@@ -94,7 +94,7 @@ public class AccountController : Controller
         // Persistência assíncrona obrigatória com await
         await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(claimsIdentity));
 
-        return RedirectToAction("Index", "Home");
+        return RedirectToAction("Index", "Dashboard");
     }
 
     // GET: /Account/Logout
