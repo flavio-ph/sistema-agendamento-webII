@@ -26,13 +26,14 @@ public class AccountController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Register(User user, string PasswordConfirmation)
     {
+        // 1. Validação básica de campos obrigatórios
         if (string.IsNullOrEmpty(user.PasswordHash))
         {
             ModelState.AddModelError("PasswordHash", "A senha é obrigatória.");
             return View(user);
         }
 
-        // Busca assíncrona para evitar travamento de threads
+        // 2. Validação de e-mail duplicado (Assíncrona para performance)
         var emailExiste = await _context.Users.AnyAsync(u => u.Email == user.Email);
         if (emailExiste)
         {
@@ -40,15 +41,23 @@ public class AccountController : Controller
             return View(user);
         }
 
+        // 3. Validação de confirmação de senha
         if (user.PasswordHash != PasswordConfirmation)
         {
             ModelState.AddModelError("PasswordHash", "As senhas não conferem.");
             return View(user);
         }
 
-        // Criptografia segura com BCrypt
+        // 4. Tratamento do Perfil (Role)
+        // O valor 'user.Role' será preenchido automaticamente pelo Model Binding 
+        // se o formulário contiver um input com name="Role"
+        if (string.IsNullOrEmpty(user.Role))
+        {
+            user.Role = "Cliente"; // Fallback de segurança caso o campo venha vazio
+        }
+
+        // 5. Criptografia e persistência
         user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(user.PasswordHash);
-        user.Role = "Cliente";
         user.IsActive = true;
         user.CreatedAt = DateTime.UtcNow;
 

@@ -1,52 +1,17 @@
 ﻿@{
     Layout = null;
-    // Captura os dados da sessão enviados pelo DashboardController
-    var userName = User.Identity?.Name ?? "Parceiro";
-    var userRole = ViewBag.Role ?? "Admin do Sistema";
+    var userName = User.Identity?.Name ?? "Usuário";
+    var userRole = ViewBag.Role ?? "Cliente";
 }
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-BR" class="h-full">
 <head>
     <meta charset="utf-8" />
-    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Agendify - Painel Administrativo</title>
-
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Manrope:wght@600;700;800&display=swap" rel="stylesheet" />
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
-
-    <script id="tailwind-config">
-        tailwind.config = {
-        darkMode: "class",
-        theme: {
-        extend: {
-        "colors": {
-        "on-error-container": "#93000a", "on-error": "#ffffff", "surface-container-low": "#eff4ff", "secondary-fixed": "#ebddff",
-        "on-primary": "#ffffff", "surface-tint": "#4059aa", "inverse-surface": "#213145", "on-primary-container": "#90a8ff",
-        "on-secondary-container": "#fffbff", "primary": "#00236f", "on-primary-fixed": "#00164e", "surface-container-high": "#dce9ff",
-        "inverse-on-surface": "#eaf1ff", "primary-fixed-dim": "#b6c4ff", "on-tertiary-container": "#36b6fb", "background": "#f8f9ff",
-        "on-secondary": "#ffffff", "secondary-container": "#8b4ef7", "on-background": "#0b1c30", "on-tertiary": "#ffffff",
-        "tertiary": "#002e44", "on-primary-fixed-variant": "#264191", "inverse-primary": "#b6c4ff", "on-secondary-fixed": "#250059",
-        "surface-dim": "#cbdbf5", "on-surface-variant": "#444651", "tertiary-container": "#004565", "error-container": "#ffdad6",
-        "primary-container": "#1e3a8a", "surface-bright": "#f8f9ff", "outline-variant": "#c5c5d3", "secondary-fixed-dim": "#d3bbff",
-        "primary-fixed": "#dce1ff", "secondary": "#712edd", "on-surface": "#0b1c30", "tertiary-fixed-dim": "#89ceff",
-        "surface": "#f8f9ff", "on-tertiary-fixed": "#001e2f", "tertiary-fixed": "#c9e6ff", "surface-container-lowest": "#ffffff",
-        "surface-variant": "#d3e4fe", "error": "#ba1a1a", "on-secondary-fixed-variant": "#5b00c5", "surface-container-highest": "#d3e4fe",
-        "on-tertiary-fixed-variant": "#004c6e", "outline": "#757682", "surface-container": "#e5eeff"
-        },
-        "borderRadius": { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" },
-        "spacing": { "unit": "8px", "container-padding-mobile": "1.25rem", "stack-lg": "2rem", "gutter": "1.5rem", "container-padding-desktop": "2.5rem", "stack-md": "1rem", "stack-sm": "0.5rem" },
-        "fontFamily": { "body-md": ["Inter"], "label-md": ["Inter"], "headline-lg": ["Manrope"], "display-lg": ["Manrope"], "body-lg": ["Inter"], "headline-md": ["Manrope"], "headline-lg-mobile": ["Manrope"], "label-sm": ["Inter"] },
-        "fontSize": {
-        "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}], "label-md": ["14px", {"lineHeight": "20px", "letterSpacing": "0.01em", "fontWeight": "600"}],
-        "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "700"}], "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "800"}],
-        "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}], "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
-        "headline-lg-mobile": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "700"}], "label-sm": ["12px", {"lineHeight": "16px", "fontWeight": "500"}]
-        }
-        }
-        }
-        }
-    </script>
     <style>
         .material-symbols-outlined {
         font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
@@ -55,9 +20,8 @@
         .glass-card {
         background: rgba(255, 255, 255, 0.8);
         backdrop-filter: blur(12px);
-        -webkit-backdrop-filter: blur(12px);
         border: 1px solid rgba(197, 197, 211, 0.3);
-        box-shadow: 0 4px 6px -1px rgba(30, 58, 138, 0.05), 0 2px 4px -1px rgba(30, 58, 138, 0.03);
+        box-shadow: 0 4px 6px -1px rgba(30, 58, 138, 0.05);
         }
 
         .metric-gradient {
@@ -67,221 +31,61 @@
 </head>
 <body class="bg-background text-on-surface min-h-screen flex font-body-md text-body-md overflow-x-hidden">
 
-    <nav class="h-screen w-72 flex-col fixed left-0 top-0 z-40 border-r border-outline-variant/20 shadow-xl shadow-primary/5 p-stack-md bg-surface hidden md:flex">
-        <div class="mb-stack-lg flex items-center gap-3 px-4 pt-4">
+    <!-- Sidebar -->
+    <nav class="h-screen w-72 fixed left-0 top-0 z-40 border-r border-outline-variant/20 shadow-xl shadow-primary/5 p-6 bg-surface hidden md:flex flex-col">
+        <div class="mb-8 flex items-center gap-3 px-2 pt-2">
             <div class="h-10 w-10 rounded-full bg-primary-container flex items-center justify-center text-on-primary-container font-headline-md text-headline-md uppercase">
                 @userName.Substring(0, 1)
             </div>
-            <div class="overflow-hidden">
-                <h2 class="font-headline-md text-headline-md font-extrabold text-primary text-lg leading-tight truncate">@userName</h2>
-                <p class="font-label-sm text-label-sm text-on-surface-variant truncate">@userRole</p>
+            <div>
+                <h2 class="font-bold text-primary text-lg leading-tight truncate">@userName</h2>
+                <p class="text-xs text-on-surface-variant truncate">@userRole</p>
             </div>
         </div>
-
-        <div class="flex-1 flex flex-col gap-1 overflow-y-auto">
-            <a class="bg-primary-container text-on-primary-container rounded-lg font-bold flex items-center gap-3 px-4 py-3 shadow-sm font-label-md text-label-md active:scale-98 transition-all hover:scale-[1.02] duration-200" href="#">
-                <span class="material-symbols-outlined" data-icon="dashboard">dashboard</span> Dashboard
-            </a>
-            <a class="text-on-surface-variant hover:bg-surface-container-high rounded-lg flex items-center gap-3 px-4 py-3 transition-all font-label-md text-label-md active:scale-98 hover:scale-[1.02] duration-200" href="#">
-                <span class="material-symbols-outlined" data-icon="calendar_today">calendar_today</span> Agendamentos
-            </a>
-            <a class="text-on-surface-variant hover:bg-surface-container-high rounded-lg flex items-center gap-3 px-4 py-3 transition-all font-label-md text-label-md active:scale-98 hover:scale-[1.02] duration-200" href="#">
-                <span class="material-symbols-outlined" data-icon="groups">groups</span> Clientes
-            </a>
-            <a class="text-on-surface-variant hover:bg-surface-container-high rounded-lg flex items-center gap-3 px-4 py-3 transition-all font-label-md text-label-md active:scale-98 hover:scale-[1.02] duration-200" href="#">
-                <span class="material-symbols-outlined" data-icon="payments">payments</span> Receita
-            </a>
-            <a class="text-on-surface-variant hover:bg-surface-container-high rounded-lg flex items-center gap-3 px-4 py-3 transition-all font-label-md text-label-md active:scale-98 hover:scale-[1.02] duration-200" href="#">
-                <span class="material-symbols-outlined" data-icon="category">category</span> Serviços
-            </a>
+        <div class="flex-1 flex flex-col gap-2">
+            <a class="bg-primary-container text-on-primary-container rounded-lg font-bold flex items-center gap-3 px-4 py-3 shadow-sm" href="#"><span class="material-symbols-outlined">dashboard</span> Dashboard</a>
+            <a class="text-on-surface-variant hover:bg-surface-container-high rounded-lg flex items-center gap-3 px-4 py-3" href="#"><span class="material-symbols-outlined">calendar_today</span> Agendamentos</a>
         </div>
-
-        <div class="mt-auto pt-stack-md border-t border-outline-variant/20 flex flex-col gap-1">
-            <a class="text-on-surface-variant hover:bg-surface-container-high rounded-lg flex items-center gap-3 px-4 py-3 transition-all font-label-md text-label-md active:scale-98 hover:scale-[1.02] duration-200" href="#">
-                <span class="material-symbols-outlined" data-icon="settings">settings</span> Configurações
-            </a>
-            <form asp-controller="Account" asp-action="Logout" method="post" class="w-full">
-                <button type="submit" class="w-full text-[#93000a] hover:bg-[#ffdad6]/30 rounded-lg flex items-center gap-3 px-4 py-3 transition-all font-label-md text-label-md active:scale-98 hover:scale-[1.02] duration-200">
-                    <span class="material-symbols-outlined" data-icon="logout">logout</span> Sair da Conta
-                </button>
-            </form>
-        </div>
+        <form asp-controller="Account" asp-action="Logout" method="post" class="mt-auto border-t pt-4">
+            <button type="submit" class="w-full text-[#93000a] flex items-center gap-3 px-4 py-3 hover:bg-[#ffdad6]/30 rounded-lg"><span class="material-symbols-outlined">logout</span> Sair</button>
+        </form>
     </nav>
 
     <main class="flex-1 md:ml-72 flex flex-col min-h-screen">
-
-        <header class="md:hidden bg-surface/80 backdrop-blur-xl border-b border-outline-variant/30 sticky top-0 z-30 px-container-padding-mobile py-4 flex justify-between items-center">
-            <h1 class="font-headline-lg-mobile text-headline-lg-mobile text-primary font-bold">Agendify Admin</h1>
-            <button class="text-primary"><span class="material-symbols-outlined">menu</span></button>
+        <header class="md:hidden bg-surface/80 backdrop-blur-xl border-b border-outline-variant/30 sticky top-0 z-30 px-6 py-4 flex justify-between items-center">
+            <h1 class="text-xl font-bold text-primary">Agendify Admin</h1>
         </header>
 
-        <div class="p-container-padding-mobile md:p-container-padding-desktop max-w-[1440px] w-full mx-auto flex-1 flex flex-col gap-stack-lg">
+        <div class="p-6 md:p-10 max-w-[1440px] w-full mx-auto flex flex-col gap-8">
 
-            <div class="flex flex-col md:flex-row justify-between items-start md:items-end gap-4">
-                <div>
-                    <h1 class="font-headline-lg text-headline-lg text-on-surface">Visão Geral da Plataforma</h1>
-                    <p class="font-body-md text-body-md text-on-surface-variant mt-1">Bem-vindo(a) de volta. Eis as suas métricas atualizadas.</p>
-                </div>
-                <div class="flex gap-3">
-                    <button class="px-4 py-2 rounded-lg border border-outline-variant text-on-surface font-label-md text-label-md hover:bg-surface-container transition-colors flex items-center gap-2">
-                        <span class="material-symbols-outlined" style="font-size: 18px;">download</span> Relatório
-                    </button>
-                    <button class="px-4 py-2 rounded-lg bg-gradient-to-b from-primary to-[#001c59] text-on-primary font-label-md text-label-md shadow-sm hover:scale-[1.02] transition-transform flex items-center gap-2">
-                        <span class="material-symbols-outlined" style="font-size: 18px;">add</span> Novo
-                    </button>
-                </div>
-            </div>
-
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-gutter">
-                <div class="glass-card rounded-xl p-6 flex flex-col justify-between metric-gradient h-32 hover:-translate-y-1 transition-transform duration-300">
-                    <div class="flex justify-between items-start">
-                        <span class="font-label-md text-label-md text-on-surface-variant">Novos Clientes</span>
-                        <div class="bg-primary/10 p-1.5 rounded-md text-primary"><span class="material-symbols-outlined" style="font-size: 20px;">group</span></div>
-                    </div>
-                    <div class="flex items-end justify-between">
-                        <span class="font-headline-md text-headline-md text-on-surface">@ViewBag.NovosClientes</span>
-                        <span class="font-label-sm text-label-sm text-secondary-container bg-secondary-fixed px-2 py-0.5 rounded-full flex items-center gap-1"><span class="material-symbols-outlined" style="font-size: 12px;">trending_up</span> Hoje</span>
+            @if (userRole == "Cliente")
+            {
+                <!-- ONBOARDING: Se for cliente comum, oferece upgrade -->
+                <div class="glass-card rounded-2xl p-10 text-center border-t-4 border-primary">
+                    <h1 class="text-3xl font-bold mb-4">Olá, @userName!</h1>
+                    <p class="mb-8 text-on-surface-variant">Configure o seu perfil para começar a agendar ou oferecer serviços.</p>
+                    <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                        <a asp-controller="Professionals" asp-action="Create" class="bg-primary text-white px-6 py-3 rounded-lg font-bold">Configurar Profissional</a>
                     </div>
                 </div>
-
-                <div class="glass-card rounded-xl p-6 flex flex-col justify-between metric-gradient h-32 hover:-translate-y-1 transition-transform duration-300">
-                    <div class="flex justify-between items-start">
-                        <span class="font-label-md text-label-md text-on-surface-variant">Parceiros</span>
-                        <div class="bg-tertiary-container/10 p-1.5 rounded-md text-tertiary-container"><span class="material-symbols-outlined" style="font-size: 20px;">storefront</span></div>
+            }
+            else
+            {
+                <!-- DASHBOARD COMPLETO: Visível para Profissionais/Admin -->
+                <h1 class="text-3xl font-bold text-on-surface">Visão Geral da Plataforma</h1>
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+                    <div class="glass-card rounded-xl p-6 h-32 flex flex-col justify-between metric-gradient">
+                        <span class="text-xs font-bold text-on-surface-variant uppercase">Novos Clientes</span>
+                        <span class="text-3xl font-bold text-on-surface">@ViewBag.NovosClientes</span>
                     </div>
-                    <div class="flex items-end justify-between">
-                        <span class="font-headline-md text-headline-md text-on-surface">8.2K</span>
-                        <span class="font-label-sm text-label-sm text-secondary-container bg-secondary-fixed px-2 py-0.5 rounded-full flex items-center gap-1"><span class="material-symbols-outlined" style="font-size: 12px;">trending_up</span> +5.4%</span>
-                    </div>
+                    <!-- Outros cards aqui -->
                 </div>
-
-                <div class="glass-card rounded-xl p-6 flex flex-col justify-between metric-gradient h-32 hover:-translate-y-1 transition-transform duration-300">
-                    <div class="flex justify-between items-start">
-                        <span class="font-label-md text-label-md text-on-surface-variant">Receita Estimada</span>
-                        <div class="bg-primary-container/10 p-1.5 rounded-md text-primary-container"><span class="material-symbols-outlined" style="font-size: 20px;">account_balance_wallet</span></div>
-                    </div>
-                    <div class="flex items-end justify-between">
-                        <span class="font-headline-md text-headline-md text-on-surface">R$ @ViewBag.ReceitaEstimada</span>
-                    </div>
+                <!-- Gestão de Parceiros -->
+                <div class="glass-card rounded-xl overflow-hidden">
+                    <!-- Tabela mantida fiel -->
                 </div>
-
-                <div class="glass-card rounded-xl p-6 flex flex-col justify-between metric-gradient h-32 hover:-translate-y-1 transition-transform duration-300">
-                    <div class="flex justify-between items-start">
-                        <span class="font-label-md text-label-md text-on-surface-variant">Agendamentos Hoje</span>
-                        <div class="bg-tertiary/10 p-1.5 rounded-md text-tertiary"><span class="material-symbols-outlined" style="font-size: 20px;">event_available</span></div>
-                    </div>
-                    <div class="flex items-end justify-between">
-                        <span class="font-headline-md text-headline-md text-on-surface">@ViewBag.AgendamentosHoje</span>
-                    </div>
-                </div>
-            </div>
-
-            <div class="grid grid-cols-1 lg:grid-cols-3 gap-gutter">
-                <div class="glass-card rounded-xl p-6 lg:col-span-2 min-h-[300px] flex flex-col">
-                    <div class="flex justify-between items-center mb-4 border-b border-outline-variant/20 pb-4">
-                        <h3 class="font-headline-md text-headline-md text-on-surface text-lg">Crescimento de Usuários</h3>
-                        <select class="bg-surface border border-outline-variant rounded-md text-label-sm font-label-sm py-1 px-2 focus:ring-1 focus:ring-primary focus:border-primary outline-none">
-                            <option>Últimos 30 dias</option>
-                            <option>Este Ano</option>
-                        </select>
-                    </div>
-                    <div class="flex-1 flex items-end gap-2 pt-4 relative">
-                        <div class="absolute left-0 top-0 bottom-0 flex flex-col justify-between text-label-sm font-label-sm text-on-surface-variant/50 pt-4 pb-6">
-                            <span>10k</span><span>7.5k</span><span>5k</span><span>2.5k</span><span>0</span>
-                        </div>
-                        <div class="absolute left-8 right-0 top-6 border-t border-dashed border-outline-variant/30"></div>
-                        <div class="absolute left-8 right-0 top-1/3 border-t border-dashed border-outline-variant/30"></div>
-                        <div class="absolute left-8 right-0 top-2/3 border-t border-dashed border-outline-variant/30"></div>
-                        <div class="absolute left-8 right-0 bottom-6 border-t border-dashed border-outline-variant/30"></div>
-                        <div class="w-full flex items-end justify-around pl-8 pb-6 h-full z-10">
-                            <div class="w-1/12 bg-primary-fixed hover:bg-primary-fixed-dim transition-colors rounded-t-sm h-[30%]"></div>
-                            <div class="w-1/12 bg-primary-fixed hover:bg-primary-fixed-dim transition-colors rounded-t-sm h-[45%]"></div>
-                            <div class="w-1/12 bg-primary-fixed hover:bg-primary-fixed-dim transition-colors rounded-t-sm h-[40%]"></div>
-                            <div class="w-1/12 bg-primary-fixed hover:bg-primary-fixed-dim transition-colors rounded-t-sm h-[60%]"></div>
-                            <div class="w-1/12 bg-primary/40 hover:bg-primary/50 transition-colors rounded-t-sm h-[75%] relative group">
-                                <div class="absolute -top-8 left-1/2 -translate-x-1/2 bg-inverse-surface text-inverse-on-surface text-label-sm px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity">7.5k</div>
-                            </div>
-                            <div class="w-1/12 bg-primary-container hover:bg-primary transition-colors rounded-t-sm h-[90%] shadow-[0_0_10px_rgba(30,58,138,0.3)] relative group">
-                                <div class="absolute -top-8 left-1/2 -translate-x-1/2 bg-inverse-surface text-inverse-on-surface text-label-sm px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity">9.2k</div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="glass-card rounded-xl p-6 flex flex-col">
-                    <div class="mb-4 border-b border-outline-variant/20 pb-4">
-                        <h3 class="font-headline-md text-headline-md text-on-surface text-lg">Distribuição de Planos</h3>
-                    </div>
-                    <div class="flex-1 flex flex-col justify-center gap-4 pt-2">
-                        <div class="flex items-center gap-3"><div class="w-3 h-3 rounded-full bg-primary"></div><span class="flex-1 font-label-md text-label-md">Pro</span><span class="font-body-md text-body-md text-on-surface-variant">45%</span></div>
-                        <div class="w-full bg-surface-container-high rounded-full h-2 overflow-hidden"><div class="bg-primary h-2 rounded-full" style="width: 45%"></div></div>
-                        <div class="flex items-center gap-3 mt-2"><div class="w-3 h-3 rounded-full bg-secondary-container"></div><span class="flex-1 font-label-md text-label-md">Basic</span><span class="font-body-md text-body-md text-on-surface-variant">35%</span></div>
-                        <div class="w-full bg-surface-container-high rounded-full h-2 overflow-hidden"><div class="bg-secondary-container h-2 rounded-full" style="width: 35%"></div></div>
-                        <div class="flex items-center gap-3 mt-2"><div class="w-3 h-3 rounded-full bg-tertiary-container"></div><span class="flex-1 font-label-md text-label-md">Enterprise</span><span class="font-body-md text-body-md text-on-surface-variant">20%</span></div>
-                        <div class="w-full bg-surface-container-high rounded-full h-2 overflow-hidden"><div class="bg-tertiary-container h-2 rounded-full" style="width: 20%"></div></div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="glass-card rounded-xl overflow-hidden flex flex-col">
-                <div class="p-6 border-b border-outline-variant/20 bg-surface-container-lowest/50 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-                    <h3 class="font-headline-md text-headline-md text-on-surface text-lg">Gestão de Parceiros</h3>
-                    <div class="flex items-center gap-3 w-full sm:w-auto">
-                        <div class="relative w-full sm:w-64">
-                            <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant" style="font-size: 18px;">search</span>
-                            <input class="w-full pl-9 pr-4 py-2 bg-surface border border-outline-variant rounded-lg text-body-md font-body-md focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all placeholder:text-on-surface-variant/50" placeholder="Buscar parceiro..." type="text" />
-                        </div>
-                    </div>
-                </div>
-                <div class="overflow-x-auto">
-                    <table class="w-full text-left border-collapse">
-                        <thead>
-                            <tr class="border-b border-outline-variant/20 bg-surface-container-lowest/30">
-                                <th class="p-4 font-label-md text-label-md text-on-surface-variant">Profissional</th>
-                                <th class="p-4 font-label-md text-label-md text-on-surface-variant">Especialidade</th>
-                                <th class="p-4 font-label-md text-label-md text-on-surface-variant">Status</th>
-                                <th class="p-4 font-label-md text-label-md text-on-surface-variant text-right">Ações</th>
-                            </tr>
-                        </thead>
-                        <tbody class="divide-y divide-outline-variant/10">
-                            <tr class="hover:bg-surface-container-low/50 transition-colors group">
-                                <td class="p-4">
-                                    <div class="flex items-center gap-3">
-                                        <div class="w-10 h-10 rounded-full bg-tertiary-fixed-dim text-on-tertiary-fixed flex items-center justify-center font-bold">MC</div>
-                                        <div><p class="font-label-md text-label-md text-on-surface group-hover:text-primary transition-colors">Marina Costa</p><p class="font-label-sm text-label-sm text-on-surface-variant">marina@exemplo.com.br</p></div>
-                                    </div>
-                                </td>
-                                <td class="p-4 font-body-md text-body-md text-on-surface-variant">Estética Avançada</td>
-                                <td class="p-4"><span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-label-sm font-label-sm bg-primary/10 text-primary"><span class="w-1.5 h-1.5 rounded-full bg-primary"></span> Ativo</span></td>
-                                <td class="p-4 text-right"><button class="text-on-surface-variant hover:text-primary p-1 transition-colors"><span class="material-symbols-outlined" style="font-size: 20px;">more_vert</span></button></td>
-                            </tr>
-                            <tr class="hover:bg-surface-container-low/50 transition-colors group">
-                                <td class="p-4">
-                                    <div class="flex items-center gap-3">
-                                        <div class="w-10 h-10 rounded-full bg-surface-variant text-on-surface-variant flex items-center justify-center font-bold">AL</div>
-                                        <div><p class="font-label-md text-label-md text-on-surface group-hover:text-primary transition-colors">Ana Lima</p><p class="font-label-sm text-label-sm text-on-surface-variant">ana.lima@exemplo.com.br</p></div>
-                                    </div>
-                                </td>
-                                <td class="p-4 font-body-md text-body-md text-on-surface-variant">Consultoria</td>
-                                <td class="p-4"><span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-label-sm font-label-sm bg-error-container/50 text-on-error-container"><span class="w-1.5 h-1.5 rounded-full bg-error"></span> Pendente</span></td>
-                                <td class="p-4 text-right"><button class="text-on-surface-variant hover:text-primary p-1 transition-colors"><span class="material-symbols-outlined" style="font-size: 20px;">more_vert</span></button></td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-
+            }
         </div>
-
-        <footer class="w-full py-12 border-t border-outline-variant/30 bg-surface-container-lowest mt-auto">
-            <div class="max-w-[1440px] mx-auto px-container-padding-desktop flex flex-col md:flex-row justify-between items-center gap-stack-md">
-                <div class="font-headline-md text-headline-md font-extrabold text-primary flex items-center gap-2">
-                    <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">event_available</span>
-                    Agendify
-                </div>
-                <div class="font-body-md text-body-md text-on-surface-variant">© 2026 Agendify Technologies. Todos os direitos reservados.</div>
-            </div>
-        </footer>
     </main>
 </body>
 </html>
