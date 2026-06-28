@@ -17,61 +17,55 @@ public class AccountController : Controller
         _context = context;
     }
 
-    // GET: /Account/Register
     [HttpGet]
     public IActionResult Register() => View();
 
-    // POST: /Account/Register
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Register(User user, string PasswordConfirmation)
+    public async Task<IActionResult> Register(User user, string PasswordConfirmation, string? Specialty, string? EstablishmentName)
     {
-        // 1. Validação básica de campos obrigatórios
-        if (string.IsNullOrEmpty(user.PasswordHash))
-        {
-            ModelState.AddModelError("PasswordHash", "A senha é obrigatória.");
-            return View(user);
-        }
+        if (!ModelState.IsValid) return View(user);
 
-        // 2. Validação de e-mail duplicado (Assíncrona para performance)
-        var emailExiste = await _context.Users.AnyAsync(u => u.Email == user.Email);
-        if (emailExiste)
+        // 1. Validações de Negócio
+        if (await _context.Users.AnyAsync(u => u.Email == user.Email))
         {
             ModelState.AddModelError("Email", "Este e-mail já está cadastrado.");
             return View(user);
         }
 
-        // 3. Validação de confirmação de senha
         if (user.PasswordHash != PasswordConfirmation)
         {
             ModelState.AddModelError("PasswordHash", "As senhas não conferem.");
             return View(user);
         }
 
-        // 4. Tratamento do Perfil (Role)
-        // O valor 'user.Role' será preenchido automaticamente pelo Model Binding 
-        // se o formulário contiver um input com name="Role"
-        if (string.IsNullOrEmpty(user.Role))
-        {
-            user.Role = "Cliente"; // Fallback de segurança caso o campo venha vazio
-        }
-
-        // 5. Criptografia e persistência
+        // 2. Persistência do Usuário
         user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(user.PasswordHash);
         user.IsActive = true;
         user.CreatedAt = DateTime.UtcNow;
+        user.Role ??= "Cliente";
 
         _context.Users.Add(user);
         await _context.SaveChangesAsync();
 
+        // 3. Persistência de Dados Adicionais (Caso seja Profissional ou Empresa)
+        if (user.Role == "Profissional" && !string.IsNullOrEmpty(Specialty))
+        {
+            _context.Professionals.Add(new Professional { UserId = user.Id, Specialty = Specialty });
+            await _context.SaveChangesAsync();
+        }
+        else if (user.Role == "Empresa" && !string.IsNullOrEmpty(EstablishmentName))
+        {
+            _context.Establishments.Add(new Establishment { UserId = user.Id, Name = EstablishmentName });
+            await _context.SaveChangesAsync();
+        }
+
         return RedirectToAction(nameof(Login));
     }
 
-    // GET: /Account/Login
     [HttpGet]
     public IActionResult Login() => View();
 
-    // POST: /Account/Login
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Login(string email, string password)
@@ -90,6 +84,7 @@ public class AccountController : Controller
             return View();
         }
 
+        // Criar Claims
         var claims = new List<Claim>
         {
             new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
@@ -99,14 +94,19 @@ public class AccountController : Controller
         };
 
         var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
-
-        // Persistência assíncrona obrigatória com await
         await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(claimsIdentity));
 
-        return RedirectToAction("Index", "Dashboard");
+        // Direcionamento Inteligente conforme o Perfil
+        return user.Role switch
+        {
+            "Profissional" => RedirectToAction("Index", "DashboardProfissional"),
+            "Empresa" => RedirectToAction("Index", "DashboardEmpresa"),
+            _ => RedirectToAction("Index", "Dashboard") // Padrão para Cliente
+        };
     }
 
-    // GET: /Account/Logout
+    [HttpPost]
+    [ValidateAntiForgeryToken]
     public async Task<IActionResult> Logout()
     {
         await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);

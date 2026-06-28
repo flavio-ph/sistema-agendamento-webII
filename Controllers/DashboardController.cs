@@ -1,12 +1,12 @@
-﻿using System.Security.Claims;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using SistemaAgendamentoWebII.Data;
+using System.Security.Claims;
 
 namespace SistemaAgendamentoWebII.Controllers;
 
-[Authorize]
+[Authorize(Roles = "Cliente")]
 public class DashboardController : Controller
 {
     private readonly AppDbContext _context;
@@ -16,27 +16,20 @@ public class DashboardController : Controller
         _context = context;
     }
 
-    [HttpGet]
     public async Task<IActionResult> Index()
     {
-        // Extração do ID do utilizador a partir do Cookie assinado
         var userIdString = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (string.IsNullOrEmpty(userIdString)) return RedirectToAction("Login", "Account");
 
-        if (!Guid.TryParse(userIdString, out var userId))
-        {
-            return RedirectToAction("Logout", "Account");
-        }
+        var userId = Guid.Parse(userIdString);
 
-        // Identificação do perfil para futura bifurcação das regras de negócio
-        var userRole = User.FindFirstValue(ClaimTypes.Role);
+        // Busca agendamentos do cliente
+        var agendamentos = await _context.Agendamentos
+            .Where(a => a.ClienteId == userId)
+            .Include("Servico") // Garante que carrega os dados do serviço
+            .OrderBy(a => a.DataHoraInicio)
+            .ToListAsync();
 
-        // Preparamos as variáveis dinâmicas para substituir os valores fixos no HTML
-        // Numa próxima iteração, faremos as consultas reais (ex: _context.Appointments.CountAsync(...))
-        ViewBag.Role = userRole;
-        ViewBag.AgendamentosHoje = 0;
-        ViewBag.NovosClientes = 0;
-        ViewBag.ReceitaEstimada = 0.00m;
-
-        return View();
+        return View(agendamentos);
     }
 }
