@@ -3,33 +3,66 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using SistemaAgendamentoWebII.Data;
 using System.Security.Claims;
+using System.Linq; // Necessário para .Where() e .Include()
 
-namespace SistemaAgendamentoWebII.Controllers;
-
-[Authorize(Roles = "Cliente")]
-public class DashboardController : Controller
+namespace SistemaAgendamentoWebII.Controllers
 {
-    private readonly AppDbContext _context;
-
-    public DashboardController(AppDbContext context)
+    [Authorize]
+    public class DashboardController : Controller
     {
-        _context = context;
-    }
+        private readonly AppDbContext _context;
 
-    public async Task<IActionResult> Index()
-    {
-        var userIdString = User.FindFirstValue(ClaimTypes.NameIdentifier);
-        if (string.IsNullOrEmpty(userIdString)) return RedirectToAction("Login", "Account");
+        public DashboardController(AppDbContext context)
+        {
+            _context = context;
+        }
 
-        var userId = Guid.Parse(userIdString);
+        // Action para Clientes (Padrão)
+        public async Task<IActionResult> Index()
+        {
+            if (!User.IsInRole("Cliente")) return Forbid();
 
-        // Busca agendamentos do cliente
-        var agendamentos = await _context.Agendamentos
-            .Where(a => a.ClienteId == userId)
-            .Include("Servico") // Garante que carrega os dados do serviço
-            .OrderBy(a => a.DataHoraInicio)
-            .ToListAsync();
+            var userIdString = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (string.IsNullOrEmpty(userIdString)) return RedirectToAction("Login", "Account");
 
-        return View(agendamentos);
+            var userId = Guid.Parse(userIdString);
+
+            var agendamentos = await _context.Agendamentos
+                .Where(a => a.ClienteId == userId)
+                .Include(a => a.Service)
+                .OrderBy(a => a.AppointmentDate)
+                .ToListAsync();
+
+            return View(agendamentos);
+        }
+
+        [AllowAnonymous] // Público: qualquer um pode ver o perfil
+        public async Task<IActionResult> Perfil(Guid id)
+        {
+            // Ajustado: Busca o profissional pelo UserId ou ProfessionalId
+            // Como passamos o NameIdentifier, estamos buscando o perfil do profissional pelo UserId
+            var profissional = await _context.Professionals
+                .Include(p => p.User)
+                .FirstOrDefaultAsync(p => p.UserId == id);
+
+            if (profissional == null)
+            {
+                // Tenta buscar por ProfessionalId caso o ID passado não seja o UserId
+                profissional = await _context.Professionals
+                    .Include(p => p.User)
+                    .FirstOrDefaultAsync(p => p.Id == id);
+            }
+
+            if (profissional == null) return NotFound();
+
+            return View(profissional);
+        }
+
+        public IActionResult DashboardProfissional()
+        {
+            if (!User.IsInRole("Profissional")) return Forbid();
+
+            return View();
+        }
     }
 }

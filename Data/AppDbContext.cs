@@ -12,7 +12,12 @@ public class AppDbContext : DbContext
     public DbSet<Establishment> Establishments { get; set; }
     public DbSet<Professional> Professionals { get; set; }
     public DbSet<Favorite> Favorites { get; set; }
-    // Adicionar os restantes DbSets aqui...
+    public DbSet<Service> Services { get; set; }
+    public DbSet<Notification> Notifications { get; set; }
+    public DbSet<Address> Addresses { get; set; }
+
+    // Renomeado para "Agendamentos" para resolver o erro de compilação no DashboardController
+    public DbSet<Appointment> Agendamentos { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

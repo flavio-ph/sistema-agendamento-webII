@@ -26,6 +26,8 @@ public class Establishment
 
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
+    public Guid UserId { get; set; } // Ajustado para Guid conforme erro CS0029    public User User { get; set; } 
+
     // Navegação
     public Address? Address { get; set; }
     public ICollection<Professional> Professionals { get; set; } = new List<Professional>();

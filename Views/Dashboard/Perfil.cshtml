@@ -1,0 +1,47 @@
+﻿@model SistemaAgendamentoWebII.Models.Professional
+
+@{
+    ViewData["Title"] = $"{Model.User.Name} - Agendify";
+}
+
+<main class="flex-grow">
+    <section class="relative w-full max-w-[1440px] mx-auto">
+        <!-- Cover Photo -->
+        <div class="h-[250px] md:h-[350px] w-full relative">
+            <img alt="Capa" class="w-full h-full object-cover" src="https://images.unsplash.com/photo-1629904853716-f0bc54eea481?auto=format&fit=crop&q=80&w=2400">
+            <div class="absolute inset-0 bg-gradient-to-t from-surface/80 to-transparent md:hidden"></div>
+        </div>
+
+        <!-- Profile Info -->
+        <div class="px-container-padding-mobile md:px-container-padding-desktop relative -mt-20 md:-mt-16 flex flex-col md:flex-row items-center md:items-end gap-6 z-10">
+            <div class="relative">
+                <img alt="@Model.User.Name" class="w-32 h-32 md:w-40 md:h-40 rounded-full border-4 border-surface shadow-lg shadow-primary/10 object-cover bg-surface-container-low" src="https://ui-avatars.com/api/?name=@Model.User.Name">
+            </div>
+            <div class="text-center md:text-left pb-2 flex-grow">
+                <h1 class="font-display-lg text-display-lg text-on-surface mb-1">@Model.User.Name</h1>
+                <p class="font-body-lg text-body-lg text-on-surface-variant mb-2">@Model.Specialty</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Content Grid -->
+    <div class="max-w-[1440px] mx-auto px-container-padding-mobile md:px-container-padding-desktop py-stack-lg grid grid-cols-1 lg:grid-cols-12 gap-gutter">
+        <div class="lg:col-span-8 flex flex-col gap-stack-lg">
+            <section class="bg-surface-container-lowest rounded-lg p-6 md:p-8 border border-outline-variant/30 shadow-sm shadow-primary/5">
+                <h2 class="font-headline-md text-headline-md text-on-surface mb-4">Sobre Mim</h2>
+                <p class="font-body-md text-body-md text-on-surface-variant leading-relaxed">
+                    @Model.Description
+                </p>
+            </section>
+        </div>
+
+        <div class="lg:col-span-4 mt-8 lg:mt-0 relative">
+            <div class="sticky top-28 flex flex-col gap-6">
+                <div class="bg-surface-container-lowest rounded-lg p-6 border border-outline-variant/30 shadow-md shadow-primary/5">
+                    <h4 class="font-label-md text-label-md text-on-surface">Profissional Verificado</h4>
+                    <p class="font-label-sm text-label-sm text-on-surface-variant">@Model.RegistrationNumber</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>

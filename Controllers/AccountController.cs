@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using SistemaAgendamentoWebII.Models;
@@ -18,10 +19,12 @@ public class AccountController : Controller
     }
 
     [HttpGet]
+    [AllowAnonymous]
     public IActionResult Register() => View();
 
     [HttpPost]
     [ValidateAntiForgeryToken]
+    [AllowAnonymous]
     public async Task<IActionResult> Register(User user, string PasswordConfirmation, string? Specialty, string? EstablishmentName)
     {
         if (!ModelState.IsValid) return View(user);
@@ -48,7 +51,7 @@ public class AccountController : Controller
         _context.Users.Add(user);
         await _context.SaveChangesAsync();
 
-        // 3. Persistência de Dados Adicionais (Caso seja Profissional ou Empresa)
+        // 3. Persistência de Dados Adicionais
         if (user.Role == "Profissional" && !string.IsNullOrEmpty(Specialty))
         {
             _context.Professionals.Add(new Professional { UserId = user.Id, Specialty = Specialty });
@@ -64,10 +67,12 @@ public class AccountController : Controller
     }
 
     [HttpGet]
+    [AllowAnonymous]
     public IActionResult Login() => View();
 
     [HttpPost]
     [ValidateAntiForgeryToken]
+    [AllowAnonymous]
     public async Task<IActionResult> Login(string email, string password)
     {
         var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == email);
@@ -90,23 +95,25 @@ public class AccountController : Controller
             new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
             new Claim(ClaimTypes.Name, user.Name),
             new Claim(ClaimTypes.Email, user.Email),
-            new Claim(ClaimTypes.Role, user.Role)
+            new Claim(ClaimTypes.Role, user.Role ?? "Cliente")
         };
 
         var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
         await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(claimsIdentity));
 
-        // Direcionamento Inteligente conforme o Perfil
+        // Direcionamento Inteligente Corrigido
+        // Agora aponta para a Action "DashboardProfissional" dentro do Controller "Dashboard"
         return user.Role switch
         {
-            "Profissional" => RedirectToAction("Index", "DashboardProfissional"),
+            "Profissional" => RedirectToAction("DashboardProfissional", "Dashboard"),
             "Empresa" => RedirectToAction("Index", "DashboardEmpresa"),
-            _ => RedirectToAction("Index", "Dashboard") // Padrão para Cliente
+            _ => RedirectToAction("Index", "Dashboard")
         };
     }
 
     [HttpPost]
     [ValidateAntiForgeryToken]
+    [Authorize]
     public async Task<IActionResult> Logout()
     {
         await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);

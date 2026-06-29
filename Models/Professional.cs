@@ -20,6 +20,9 @@ public class Professional
 
     public string? Biography { get; set; }
 
+    public string Description { get; set; }
+    public string RegistrationNumber { get; set; }
+
     [MaxLength(100)]
     public string? Specialty { get; set; }
 
