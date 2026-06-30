@@ -25,11 +25,21 @@ public class AccountController : Controller
     [HttpPost]
     [ValidateAntiForgeryToken]
     [AllowAnonymous]
-    public async Task<IActionResult> Register(User user, string PasswordConfirmation, string? Specialty, string? EstablishmentName)
+    public async Task<IActionResult> Register(
+        User user,
+        string PasswordConfirmation,
+        string? Specialty,
+        string? EstablishmentName,
+        string? Biography,
+        string? Description,
+        int? ExperienceYears,
+        string? RegistrationNumber)
     {
+        string roleSelecionada = Request.Form["Role"].ToString();
+        user.Role = !string.IsNullOrEmpty(roleSelecionada) ? roleSelecionada : "Cliente";
+
         if (!ModelState.IsValid) return View(user);
 
-        // 1. Validações de Negócio
         if (await _context.Users.AnyAsync(u => u.Email == user.Email))
         {
             ModelState.AddModelError("Email", "Este e-mail já está cadastrado.");
@@ -42,24 +52,39 @@ public class AccountController : Controller
             return View(user);
         }
 
-        // 2. Persistência do Usuário
+        user.Id = Guid.NewGuid();
         user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(user.PasswordHash);
         user.IsActive = true;
         user.CreatedAt = DateTime.UtcNow;
-        user.Role ??= "Cliente";
 
         _context.Users.Add(user);
         await _context.SaveChangesAsync();
 
-        // 3. Persistência de Dados Adicionais
-        if (user.Role == "Profissional" && !string.IsNullOrEmpty(Specialty))
+        if (user.Role == "Profissional")
         {
-            _context.Professionals.Add(new Professional { UserId = user.Id, Specialty = Specialty });
+            var novoProfissional = new Professional
+            {
+                Id = Guid.NewGuid(),
+                UserId = user.Id,
+                Specialty = Specialty ?? "Não informada",
+                Biography = Biography ?? "Biografia não informada.",
+                Description = Description ?? "Descrição não informada.",
+                ExperienceYears = ExperienceYears ?? 0,
+                RegistrationNumber = RegistrationNumber ?? "SEM-REGISTRO",
+                IsActive = true
+            };
+            _context.Professionals.Add(novoProfissional);
             await _context.SaveChangesAsync();
         }
         else if (user.Role == "Empresa" && !string.IsNullOrEmpty(EstablishmentName))
         {
-            _context.Establishments.Add(new Establishment { UserId = user.Id, Name = EstablishmentName });
+            _context.Establishments.Add(new Establishment
+            {
+                Id = Guid.NewGuid(),
+                UserId = user.Id,
+                Name = EstablishmentName,
+                CreatedAt = DateTime.UtcNow
+            });
             await _context.SaveChangesAsync();
         }
 
@@ -89,23 +114,23 @@ public class AccountController : Controller
             return View();
         }
 
-        // Criar Claims
+        string userRole = user.Role ?? "Cliente";
+
         var claims = new List<Claim>
         {
             new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
             new Claim(ClaimTypes.Name, user.Name),
             new Claim(ClaimTypes.Email, user.Email),
-            new Claim(ClaimTypes.Role, user.Role ?? "Cliente")
+            new Claim(ClaimTypes.Role, userRole)
         };
 
         var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
         await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(claimsIdentity));
 
-        // Direcionamento Inteligente Corrigido
-        // Agora aponta para a Action "DashboardProfissional" dentro do Controller "Dashboard"
-        return user.Role switch
+        // CORREÇÃO: Redireciona corretamente para o Controller DashboardProfissional, Action Index
+        return userRole switch
         {
-            "Profissional" => RedirectToAction("DashboardProfissional", "Dashboard"),
+            "Profissional" => RedirectToAction("Index", "DashboardProfissional"),
             "Empresa" => RedirectToAction("Index", "DashboardEmpresa"),
             _ => RedirectToAction("Index", "Dashboard")
         };
@@ -119,4 +144,4 @@ public class AccountController : Controller
         await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
         return RedirectToAction(nameof(Login));
     }
-}
+} // Fim da classe AccountController

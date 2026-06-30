@@ -1,6 +1,12 @@
-﻿@using System.Security.Claims
+﻿@model SistemaAgendamentoWebII.Models.Professional
+@using System.Security.Claims
 @{
     Layout = null;
+    if (Model == null)
+    {
+        <h1>Erro: Perfil de profissional não encontrado.</h1>
+        return; // Interrompe a renderização da página
+    }
 }
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -11,8 +17,15 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Manrope:wght@600;700;800&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
     <style>
-        .glass-panel { background: rgba(255, 255, 255, 0.7); backdrop-filter: blur(16px); border: 1px solid rgba(197, 197, 211, 0.3); }
-        .soft-shadow { box-shadow: 0 10px 40px -10px rgba(30, 58, 138, 0.05); }
+        .glass-panel {
+        background: rgba(255, 255, 255, 0.7);
+        backdrop-filter: blur(16px);
+        border: 1px solid rgba(197, 197, 211, 0.3);
+        }
+
+        .soft-shadow {
+        box-shadow: 0 10px 40px -10px rgba(30, 58, 138, 0.05);
+        }
     </style>
 </head>
 <body class="bg-[#f8f9ff] text-[#0b1c30] font-['Inter'] flex">
@@ -20,12 +33,13 @@
     <!-- Sidebar -->
     <nav class="w-72 h-screen fixed bg-white border-r border-gray-200 p-6 flex flex-col">
         <h1 class="text-2xl font-extrabold text-[#00236f] mb-8">Agendify</h1>
-        
+
         <div class="flex items-center gap-3 mb-8">
             <div class="w-10 h-10 rounded-full bg-gray-200"></div>
             <div>
-                <p class="font-semibold text-sm">Alex Rivera</p>
-                <p class="text-xs text-gray-500">Premium Stylist</p>
+                <!-- DADOS DINÂMICOS AQUI -->
+                <p class="font-semibold text-sm">@Model.User.Name</p>
+                <p class="text-xs text-gray-500">@Model.Specialty</p>
             </div>
         </div>
 
@@ -49,7 +63,6 @@
                     <span class="material-symbols-outlined">person_search</span> Clients
                 </a>
             </li>
-            <!-- NOVO LINK DO PERFIL -->
             <li>
                 <a asp-controller="Dashboard" asp-action="Perfil" asp-route-id="@User.FindFirstValue(ClaimTypes.NameIdentifier)"
                    class="text-gray-600 p-3 rounded-lg flex items-center gap-3 hover:bg-gray-50">
@@ -66,6 +79,7 @@
             <p class="text-gray-500">Bem-vindo de volta, veja como está o seu dia.</p>
         </header>
 
+        <!-- Métricas (Ainda estáticas, precisarão ser calculadas no Controller futuramente) -->
         <div class="grid grid-cols-3 gap-6 mb-8">
             <div class="glass-panel rounded-xl p-6 soft-shadow">
                 <p class="text-sm text-gray-500">Receita do Mês</p>
@@ -85,6 +99,7 @@
             <div class="col-span-2">
                 <h3 class="text-lg font-bold mb-4">Agenda de Hoje</h3>
                 <div class="space-y-4">
+                    <!-- Agenda estática -->
                     <div class="glass-panel p-4 rounded-xl flex items-center justify-between">
                         <div>
                             <p class="font-bold">10:00 - Corte e Barba Premium</p>
@@ -97,7 +112,7 @@
                     </div>
                 </div>
             </div>
-            
+
             <div class="glass-panel rounded-xl p-6">
                 <h3 class="text-lg font-bold mb-4">Desempenho Semanal</h3>
                 <div class="h-40 bg-gray-100 rounded-lg flex items-center justify-center text-gray-400">
