@@ -129,7 +129,7 @@ public class AccountController : Controller
 
         return userRole switch
         {
-            "Profissional" => RedirectToAction("Index", "DashboardProfissional"),
+            "Profissional" => RedirectToAction("DashboardProfissional", "Dashboard"), // Rota corrigida
             "Empresa" => RedirectToAction("Index", "DashboardEmpresa"),
             _ => RedirectToAction("Index", "Dashboard")
         };
@@ -141,6 +141,6 @@ public class AccountController : Controller
     public async Task<IActionResult> Logout()
     {
         await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
-        return RedirectToAction(nameof(Login));
+        return RedirectToAction("DashboardProfissional", "Dashboard");
     }
 }

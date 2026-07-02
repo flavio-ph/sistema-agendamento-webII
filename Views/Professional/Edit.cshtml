@@ -1,0 +1,56 @@
+﻿@model SistemaAgendamentoWebII.Models.Professional
+
+@{
+    ViewData["Title"] = "Editar Perfil Profissional";
+}
+
+<div class="container py-5" style="max-width: 800px;">
+    <div class="card shadow-sm border-0" style="border-radius: 1.25rem;">
+        <div class="card-body p-4 p-md-5">
+            <div class="d-flex align-items-center gap-3 mb-4">
+                <span class="material-symbols-outlined fs-2" style="color: var(--ds-primary, #00236f);">edit_document</span>
+                <h1 class="h3 fw-bold mb-0" style="font-family: 'Manrope', sans-serif;">Editar Perfil Profissional</h1>
+            </div>
+
+            <form asp-action="Edit" method="post">
+                <input type="hidden" asp-for="Id" />
+                <input type="hidden" asp-for="UserId" />
+
+                <div class="row g-4">
+                    <div class="col-md-6">
+                        <label asp-for="Specialty" class="form-label fw-bold text-muted small">Especialidade Principal</label>
+                        <input asp-for="Specialty" class="form-control form-control-lg bg-light" placeholder="Ex: Fisioterapeuta, Barbeiro..." />
+                        <span asp-validation-for="Specialty" class="text-danger small"></span>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label asp-for="ExperienceYears" class="form-label fw-bold text-muted small">Anos de Experiência</label>
+                        <input asp-for="ExperienceYears" type="number" min="0" class="form-control form-control-lg bg-light" />
+                        <span asp-validation-for="ExperienceYears" class="text-danger small"></span>
+                    </div>
+
+                    <div class="col-12">
+                        <label asp-for="RegistrationNumber" class="form-label fw-bold text-muted small">Número de Registro (Opcional)</label>
+                        <input asp-for="RegistrationNumber" class="form-control form-control-lg bg-light" placeholder="Se aplicável (ex: Cédula Profissional)" />
+                        <span asp-validation-for="RegistrationNumber" class="text-danger small"></span>
+                    </div>
+
+                    <div class="col-12">
+                        <label asp-for="Biography" class="form-label fw-bold text-muted small">Sobre Mim (Biografia)</label>
+                        <textarea asp-for="Biography" class="form-control form-control-lg bg-light" rows="5" placeholder="Apresente-se aos seus clientes..."></textarea>
+                        <span asp-validation-for="Biography" class="text-danger small"></span>
+                    </div>
+                </div>
+
+                <hr class="my-5 text-muted" />
+
+                <div class="d-flex justify-content-end gap-3">
+                    <a asp-controller="Dashboard" asp-action="DashboardProfissional" class="btn btn-light fw-bold px-4 py-2 border">Cancelar</a>
+                    <button type="submit" class="btn text-white fw-bold px-4 py-2" style="background: var(--ds-primary, #00236f); border-radius: 0.5rem;">
+                        Guardar Alterações
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

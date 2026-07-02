@@ -1,32 +1,37 @@
-﻿@model dynamic
-@using SistemaAgendamentoWebII.Models
+﻿@model SistemaAgendamentoWebII.Models.Professional
 
 @{
-    var user = Model as User;
-    var profissional = ViewBag.Profissional as Professional;
-}
+    var profissional = Model;
+    var user = profissional?.User;
 
+    // Fallback de segurança caso a role venha nula, mas a entidade central é o Profissional
+    var userRole = user?.Role ?? "Profissional";
+
+    var roleTheme = userRole switch
+    {
+        "Profissional" => new { Color = "var(--ds-primary)", Bg = "rgba(0, 35, 111, 0.1)", Icon = "badge" },
+        "Empresa" => new { Color = "#059669", Bg = "rgba(5, 150, 105, 0.1)", Icon = "storefront" },
+        _ => new { Color = "var(--ds-text-muted)", Bg = "rgba(68, 70, 81, 0.1)", Icon = "person" }
+    };
+}
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Manrope:wght@600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
 
 <style>
-    /* Design System Tokens */
+    /* Design System Tokens Aprimorados */
     :root {
-        --ds-bg: #f8f9ff;
+        --ds-bg: #f4f7fb;
         --ds-surface: #ffffff;
         --ds-primary: #00236f;
         --ds-secondary: #712edd;
         --ds-text-main: #0b1c30;
-        --ds-text-muted: #444651;
-        --ds-border: #c5c5d3;
-        --ds-border-light: #e5eeff; /* surface-container */
-
-        --ds-radius-btn: 0.5rem; /* 8px */
-        --ds-radius-card: 1rem; /* 16px */
-        /* Ambient Shadow com Deep Blue tint */
-        --ds-shadow: 0 12px 24px -8px rgba(30, 58, 138, 0.08);
-        --ds-shadow-hover: 0 20px 32px -8px rgba(30, 58, 138, 0.12);
+        --ds-text-muted: #64748b;
+        --ds-border-light: #e2e8f0;
+        --ds-radius-card: 1.25rem; /* 20px */
+        --ds-shadow-sm: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+        --ds-shadow-md: 0 10px 15px -3px rgba(0, 0, 0, 0.05);
     }
 
     body {
@@ -35,181 +40,200 @@
         color: var(--ds-text-muted);
     }
 
-    h1, h2, h3, h4, h5, h6 {
+    h1, h2, h3, h4, h5 {
         font-family: 'Manrope', sans-serif;
         color: var(--ds-text-main);
         letter-spacing: -0.01em;
     }
 
-    /* Componentes */
-    .ds-card {
-        background-color: var(--ds-surface);
+    /* Cards e Containers */
+    .ds-profile-card {
+        background: var(--ds-surface);
         border: 1px solid var(--ds-border-light);
         border-radius: var(--ds-radius-card);
-        box-shadow: var(--ds-shadow);
-        transition: box-shadow 0.3s ease;
+        box-shadow: var(--ds-shadow-sm);
+        padding: 2rem;
+        transition: all 0.3s ease;
     }
 
-        .ds-card:hover {
-            box-shadow: var(--ds-shadow-hover);
+        .ds-profile-card:hover {
+            box-shadow: var(--ds-shadow-md);
         }
 
-    .ds-banner {
-        background: linear-gradient(135deg, var(--ds-primary) 0%, var(--ds-secondary) 100%);
-        border-radius: var(--ds-radius-card) var(--ds-radius-card) 0 0;
+    /* Avatares Dinâmicos */
+    .ds-avatar-wrapper {
+        width: 120px;
+        height: 120px;
+        border-radius: 50%;
+        padding: 6px;
+        background: white;
+        box-shadow: 0 0 0 1px var(--ds-border-light);
+        margin: 0 auto;
     }
 
-    /* Glassmorphism */
-    .ds-glass {
-        background: rgba(255, 255, 255, 0.75);
-        backdrop-filter: blur(12px);
-        -webkit-backdrop-filter: blur(12px);
-        border: 1px solid rgba(255, 255, 255, 0.5);
+    .ds-avatar-inner {
+        width: 100%;
+        height: 100%;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2.5rem;
+        font-family: 'Manrope', sans-serif;
+        font-weight: 700;
+        color: white;
     }
 
-    /* Botão Primário */
+    /* Botões */
     .ds-btn-primary {
-        background: linear-gradient(180deg, #1e3a8a 0%, var(--ds-primary) 100%);
-        color: #ffffff;
-        border: none;
-        border-radius: var(--ds-radius-btn);
-        padding: 10px 24px;
-        font-family: 'Inter', sans-serif;
+        background: var(--ds-primary);
+        color: white;
+        border-radius: 0.75rem;
+        padding: 0.6rem 1.5rem;
         font-weight: 600;
-        box-shadow: 0 4px 12px rgba(0, 35, 111, 0.15);
-        transition: transform 0.2s ease, box-shadow 0.2s ease;
+        transition: all 0.2s ease;
+        border: none;
         text-decoration: none;
     }
 
         .ds-btn-primary:hover {
-            transform: scale(1.02);
-            color: #ffffff;
-            box-shadow: 0 6px 16px rgba(0, 35, 111, 0.25);
+            background: #001a52;
+            color: white;
+            transform: translateY(-2px);
         }
 
-    /* Chips/Badges ("soft" style) */
-    .ds-badge {
-        background: rgba(113, 46, 221, 0.1);
-        color: var(--ds-secondary);
+    /* Badges */
+    .ds-role-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.5rem 1rem;
+        border-radius: 2rem;
         font-weight: 600;
-        font-family: 'Inter', sans-serif;
-        border-radius: var(--ds-radius-btn);
-        padding: 4px 12px;
         font-size: 0.875rem;
     }
 
-    .ds-badge-success {
-        background: rgba(0, 163, 108, 0.1);
-        color: #007a51;
+    .ds-info-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1.5rem;
     }
 </style>
 
-<div class="row justify-content-center py-5">
-    <div class="col-lg-10" style="max-width: 1440px;">
+<div class="container py-5" style="max-width: 1200px;">
 
-        <div class="ds-card overflow-hidden border-0">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h3 mb-0 fw-bold">Perfil da Conta</h1>
+        <a href="#" class="ds-btn-primary d-inline-flex align-items-center gap-2">
+            <span class="material-symbols-outlined fs-5">edit</span> Editar Perfil
+        </a>
+    </div>
 
-            <div class="ds-banner position-relative" style="height: 220px;">
-                <span class="ds-glass position-absolute bottom-0 end-0 m-4 px-4 py-2 rounded-pill font-weight-bold" style="color: var(--ds-primary); font-size: 14px; font-weight: 600;">
-                    @user?.Role
-                </span>
-            </div>
+    <div class="row g-4">
+        <div class="col-lg-4">
+            <div class="ds-profile-card text-center position-relative overflow-hidden h-100">
+                <div class="position-absolute top-0 start-0 w-100" style="height: 60px; background: @(roleTheme.Bg); z-index: 0;"></div>
 
-            <div class="px-4 px-md-5 pb-5">
-
-                <div class="d-flex flex-column flex-md-row align-items-md-end justify-content-between" style="margin-top: -70px;">
-                    <div class="d-flex align-items-end gap-4">
-
-                        <div class="bg-white p-2 shadow-sm" style="width: 140px; height: 140px; border-radius: 50%;">
-                            <div class="w-100 h-100 d-flex align-items-center justify-content-center text-white fw-bold"
-                                 style="background: var(--ds-primary); border-radius: 50%; font-family: 'Manrope', sans-serif; font-size: 3rem;">
-                                @(user?.Name?.Substring(0, 1).ToUpper() ?? "U")
-                            </div>
-                        </div>
-
-                        <div class="pb-2">
-                            <h1 style="font-size: 32px; font-weight: 700; margin-bottom: 4px;">@user?.Name</h1>
-                            <p style="font-size: 16px; margin-bottom: 0;">@user?.Email</p>
+                <div class="position-relative z-1 mt-3">
+                    <div class="ds-avatar-wrapper mb-3">
+                        <div class="ds-avatar-inner" style="background: @(roleTheme.Color);">
+                            @(user?.Name?.Substring(0, 1).ToUpper() ?? "U")
                         </div>
                     </div>
 
-                    <div class="mt-4 mt-md-0 pb-2">
-                        <a href="#" class="ds-btn-primary d-inline-flex align-items-center gap-2">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5h2m-1-1v2m6.364 2.636l-1.414 1.414M20 11h-2M6.343 6.343L4.93 7.757M4 11H2m4.343 6.657L4.93 16.243M18.364 17.657l-1.414-1.414M12 18v2" />
-                            </svg>
-                            Editar Perfil
-                        </a>
+                    <h2 class="h4 fw-bold mb-1">@user?.Name</h2>
+                    <p class="mb-3 text-muted">@user?.Email</p>
+
+                    <div class="ds-role-badge mx-auto mb-4" style="background: @(roleTheme.Bg); color: @(roleTheme.Color);">
+                        <span class="material-symbols-outlined fs-6">@(roleTheme.Icon)</span>
+                        @userRole
                     </div>
                 </div>
 
-                <div class="row g-4 mt-4">
+                <hr class="my-4" style="border-color: var(--ds-border-light);" />
 
-                    <div class="col-md-6">
-                        <div class="ds-card h-100 p-4">
-                            <div class="d-flex align-items-center gap-3 mb-4 pb-3" style="border-bottom: 1px solid var(--ds-border-light);">
-                                <div class="p-2 rounded" style="background: rgba(113, 46, 221, 0.1);">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" style="color: var(--ds-secondary);" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2a4 4 0 014-4h4" />
-                                    </svg>
-                                </div>
-                                <h2 style="font-size: 20px; font-weight: 600; margin-bottom: 0;">Informações da Conta</h2>
-                            </div>
-
-                            <div class="d-flex justify-content-between align-items-center mb-3">
-                                <span>Membro desde</span>
-                                <span style="color: var(--ds-text-main); font-weight: 500;">@user?.CreatedAt.ToString("dd/MM/yyyy")</span>
-                            </div>
-                            <div class="d-flex justify-content-between align-items-center">
-                                <span>Status</span>
-                                <span class="ds-badge ds-badge-success">Ativo</span>
-                            </div>
+                <div class="text-start">
+                    <div class="d-flex align-items-center gap-3 mb-3">
+                        <span class="material-symbols-outlined text-muted fs-5">calendar_month</span>
+                        <div>
+                            <small class="d-block text-muted" style="font-size: 0.75rem;">Membro desde</small>
+                            <span class="fw-medium text-dark">@(user?.CreatedAt.ToString("dd 'de' MMMM, yyyy") ?? "-")</span>
                         </div>
                     </div>
+                    <div class="d-flex align-items-center gap-3">
+                        <span class="material-symbols-outlined text-success fs-5">check_circle</span>
+                        <div>
+                            <small class="d-block text-muted" style="font-size: 0.75rem;">Status da Conta</small>
+                            <span class="fw-medium text-success">Ativa e Verificada</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-                    @if (profissional != null)
+        <div class="col-lg-8">
+            <div class="d-flex flex-column gap-4 h-100">
+
+                <div class="ds-profile-card">
+                    <h3 class="h5 fw-bold mb-4 d-flex align-items-center gap-2">
+                        <span class="material-symbols-outlined text-primary">info</span>
+                        Visão Geral
+                    </h3>
+
+                    @if (userRole == "Profissional" && profissional != null)
                     {
-                        <div class="col-md-6">
-                            <div class="ds-card h-100 p-4">
-                                <div class="d-flex align-items-center gap-3 mb-4 pb-3" style="border-bottom: 1px solid var(--ds-border-light);">
-                                    <div class="p-2 rounded" style="background: rgba(0, 35, 111, 0.1);">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" style="color: var(--ds-primary);" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l9-5-9-5-9 5 9 5zm0 0v6" />
-                                        </svg>
-                                    </div>
-                                    <h2 style="font-size: 20px; font-weight: 600; margin-bottom: 0;">Dados Profissionais</h2>
-                                </div>
+                        <div class="ds-info-grid mb-4">
+                            <div class="p-3 rounded bg-light border">
+                                <small class="text-muted d-block mb-1">Especialidade Principal</small>
+                                <span class="fw-bold text-dark">@profissional.Specialty</span>
+                            </div>
+                            <div class="p-3 rounded bg-light border">
+                                <small class="text-muted d-block mb-1">Tempo de Experiência</small>
+                                <span class="fw-bold text-dark">@profissional.ExperienceYears anos</span>
+                            </div>
+                            <div class="p-3 rounded bg-light border">
+                                <small class="text-muted d-block mb-1">Registro Profissional</small>
+                                <span class="fw-bold text-dark">@(profissional.RegistrationNumber ?? "Não exigido")</span>
+                            </div>
+                        </div>
 
-                                <div class="d-flex justify-content-between align-items-center mb-3">
-                                    <span>Especialidade</span>
-                                    <span style="color: var(--ds-text-main); font-weight: 500;">@profissional.Specialty</span>
-                                </div>
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <span>Experiência</span>
-                                    <span style="color: var(--ds-text-main); font-weight: 500;">@profissional.ExperienceYears anos</span>
-                                </div>
+                        <h4 class="h6 fw-bold mb-2">Sobre Mim</h4>
+                        <p class="mb-0" style="line-height: 1.6;">
+                            @(string.IsNullOrWhiteSpace(profissional.Biography) ? "Nenhuma biografia fornecida." : profissional.Biography)
+                        </p>
+                    }
+                    else if (userRole == "Empresa")
+                    {
+                        <div class="alert alert-success bg-opacity-10 border-0 d-flex align-items-start gap-3">
+                            <span class="material-symbols-outlined text-success">business</span>
+                            <div>
+                                <h4 class="h6 fw-bold mb-1">Conta Empresarial</h4>
+                                <p class="mb-0 text-muted" style="font-size: 0.875rem;">Sua conta tem permissões para gerenciar múltiplos profissionais e filiais. Acesse o painel de empresa para configurações avançadas.</p>
+                            </div>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="alert alert-secondary bg-light border-0 d-flex align-items-start gap-3">
+                            <span class="material-symbols-outlined text-secondary">explore</span>
+                            <div>
+                                <h4 class="h6 fw-bold mb-1">Encontre Profissionais</h4>
+                                <p class="mb-0 text-muted" style="font-size: 0.875rem;">Navegue pela plataforma e agende serviços com os melhores profissionais disponíveis na sua região.</p>
                             </div>
                         </div>
                     }
                 </div>
 
-                @if (profissional != null)
+                @if (userRole == "Profissional")
                 {
-                    <div class="ds-card mt-4 p-4">
-                        <h2 style="font-size: 20px; font-weight: 600; margin-bottom: 1.25rem;">Sobre o Profissional</h2>
-                        <div style="line-height: 1.75;">
-                            @if (!string.IsNullOrWhiteSpace(profissional.Biography))
-                            {
-                                <p class="mb-0">@profissional.Biography</p>
-                            }
-                            else
-                            {
-                                <p class="fst-italic mb-0" style="color: var(--ds-border);">Nenhuma biografia cadastrada.</p>
-                            }
-                        </div>
+                    <div class="ds-profile-card flex-grow-1">
+                        <h3 class="h5 fw-bold mb-4 d-flex align-items-center gap-2">
+                            <span class="material-symbols-outlined text-warning">star</span>
+                            Desempenho e Serviços
+                        </h3>
+                        <p class="text-muted">Espaço reservado para listar os serviços ativos, avaliações recentes ou integrações futuras do portfólio deste profissional.</p>
                     </div>
                 }
-
             </div>
         </div>
     </div>

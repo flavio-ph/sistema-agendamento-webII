@@ -4,8 +4,8 @@
 
 @{
     ViewData["Title"] = "Painel do Profissional";
-    // Tenta converter o modelo vindo do Controller para Professional
-    var professional = Model.Professional;
+    var professional = Model?.Professional;
+    var user = Model?.User;
 }
 
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
@@ -107,20 +107,20 @@
             <div class="d-flex align-items-center gap-3">
                 <div class="bg-primary-container text-white rounded-circle d-flex align-items-center justify-content-center fw-bold"
                      style="width: 56px; height: 56px; background-color: var(--ds-primary, #00236f);">
-                    @((Model?.Name?.Substring(0, 1) ?? "P").ToUpper())
+                    @((user?.Name?.Substring(0, 1) ?? "P").ToUpper())
                 </div>
                 <div>
                     <h1 class="h3 fw-bold mb-0" style="font-family: 'Manrope', sans-serif; color: var(--ds-primary, #00236f);">
-                        Olá, @(Model?.Name ?? "Profissional")
+                        Olá, @(user?.Name ?? "Profissional")
                     </h1>
-                    <p class="text-muted mb-0">@(ViewBag.Profissional?.Specialty ?? "Especialidade não definida") • Painel de Controlo</p>
+                    <p class="text-muted mb-0">@(professional?.Specialty ?? "Especialidade não definida") • Painel de Controlo</p>
                 </div>
             </div>
         </div>
         <div class="col-md-4 text-md-end">
             <button class="ds-btn-primary d-inline-flex align-items-center gap-2">
                 <span class="material-symbols-outlined fs-5">event</span>
-                Ver Minha Agenda completo
+                Ver Minha Agenda completa
             </button>
         </div>
     </div>

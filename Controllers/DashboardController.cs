@@ -2,8 +2,11 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using SistemaAgendamentoWebII.Data;
+using SistemaAgendamentoWebII.Models.ViewModels;
+using System;
+using System.Linq;
 using System.Security.Claims;
-using System.Linq; // Necessário para .Where() e .Include()
+using System.Threading.Tasks;
 
 namespace SistemaAgendamentoWebII.Controllers
 {
@@ -39,15 +42,12 @@ namespace SistemaAgendamentoWebII.Controllers
         [AllowAnonymous] // Público: qualquer um pode ver o perfil
         public async Task<IActionResult> Perfil(Guid id)
         {
-            // Ajustado: Busca o profissional pelo UserId ou ProfessionalId
-            // Como passamos o NameIdentifier, estamos buscando o perfil do profissional pelo UserId
             var profissional = await _context.Professionals
                 .Include(p => p.User)
                 .FirstOrDefaultAsync(p => p.UserId == id);
 
             if (profissional == null)
             {
-                // Tenta buscar por ProfessionalId caso o ID passado não seja o UserId
                 profissional = await _context.Professionals
                     .Include(p => p.User)
                     .FirstOrDefaultAsync(p => p.Id == id);
@@ -58,11 +58,31 @@ namespace SistemaAgendamentoWebII.Controllers
             return View(profissional);
         }
 
-        public IActionResult DashboardProfissional()
+        public async Task<IActionResult> DashboardProfissional()
         {
             if (!User.IsInRole("Profissional")) return Forbid();
 
-            return View();
+            var userIdString = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (string.IsNullOrEmpty(userIdString)) return RedirectToAction("Login", "Account");
+
+            var userId = Guid.Parse(userIdString);
+
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == userId);
+            var prof = await _context.Professionals
+                .Include(p => p.User)
+                .FirstOrDefaultAsync(p => p.UserId == userId);
+
+            var viewModel = new ProfessionalDashboardViewModel
+            {
+                User = user,
+                Professional = prof,
+                AppointmentsTodayCount = 5,
+                PendingAppointmentsCount = 2,
+                MonthlyEarnings = 12450.00m,
+                AverageRating = 4.9
+            };
+
+            return View(viewModel);
         }
     }
 }

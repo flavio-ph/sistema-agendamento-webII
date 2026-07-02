@@ -79,4 +79,45 @@ public class ProfessionalsController : Controller
 
         return RedirectToAction("Login", "Account");
     }
+
+    // GET: /Professionals/Edit/{id}
+    [HttpGet]
+    public async Task<IActionResult> Edit(Guid id)
+    {
+        var professional = await _context.Professionals.FindAsync(id);
+        if (professional == null) return NotFound();
+
+        // Segurança: Impede que um profissional edite o perfil de outro
+        var userIdString = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (professional.UserId.ToString() != userIdString) return Forbid();
+
+        return View(professional);
+    }
+
+    // POST: /Professionals/Edit/{id}
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Edit(Guid id, Professional model)
+    {
+        if (id != model.Id) return BadRequest();
+
+        var userIdString = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        var professional = await _context.Professionals.FindAsync(id);
+
+        if (professional == null) return NotFound();
+        if (professional.UserId.ToString() != userIdString) return Forbid();
+
+        // Atualização seletiva: alteramos apenas os campos permitidos
+        professional.Specialty = model.Specialty;
+        professional.ExperienceYears = model.ExperienceYears;
+        professional.RegistrationNumber = model.RegistrationNumber;
+        professional.Biography = model.Biography;
+
+        _context.Professionals.Update(professional);
+        await _context.SaveChangesAsync();
+
+        // Redireciona de volta para o Dashboard após guardar
+        return RedirectToAction("DashboardProfissional", "Dashboard");
+    }
+
 }
