@@ -1,12 +1,13 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using SistemaAgendamentoWebII.Data; // Necessário para acessar o AppDbContext
+using SistemaAgendamentoWebII.Data;
+using SistemaAgendamentoWebII.Models.ViewModels;
 using System.Security.Claims;
 
 namespace SistemaAgendamentoWebII.Controllers;
 
-[Authorize(Roles = "Profissional")] // Restrição de acesso a nível de classe
+[Authorize(Roles = "Profissional")]
 public class DashboardProfissionalController : Controller
 {
     private readonly AppDbContext _context;
@@ -16,25 +17,22 @@ public class DashboardProfissionalController : Controller
         _context = context;
     }
 
-    // Renomeado para Index para facilitar a rota: /DashboardProfissional/Index
     public async Task<IActionResult> Index()
     {
-        var userIdString = User.FindFirstValue(ClaimTypes.NameIdentifier);
-        if (string.IsNullOrEmpty(userIdString)) return RedirectToAction("Login", "Account");
+        var userId = Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
+        var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == userId);
+        var prof = await _context.Professionals.Include(p => p.User).FirstOrDefaultAsync(p => p.UserId == userId);
 
-        var userId = Guid.Parse(userIdString);
-
-        var profissional = await _context.Professionals
-            .Include(p => p.User)
-            .Include(p => p.Establishment)
-            .FirstOrDefaultAsync(p => p.UserId == userId);
-
-        if (profissional == null)
+        var viewModel = new ProfessionalDashboardViewModel
         {
-            // Retorna uma view específica para profissionais cujo perfil ainda não carregou
-            return View("PerfilIncompleto");
-        }
+            User = user,
+            Professional = prof,
+            AppointmentsTodayCount = 5, // Exemplo: substitua pelo seu cálculo real
+            PendingAppointmentsCount = 2,
+            MonthlyEarnings = 12450.00m,
+            AverageRating = 4.9
+        };
 
-        return View("~/Views/Dashboard/DashboardProfissional.cshtml", profissional);
+        return View(viewModel); // Retorna a ViewModel fortemente tipada
     }
 }

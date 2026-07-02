@@ -1,125 +1,299 @@
-﻿@model SistemaAgendamentoWebII.Models.Professional
+﻿@model SistemaAgendamentoWebII.Models.ViewModels.ProfessionalDashboardViewModel
+@using SistemaAgendamentoWebII.Models
 @using System.Security.Claims
+
 @{
-    Layout = null;
-    if (Model == null)
-    {
-        <h1>Erro: Perfil de profissional não encontrado.</h1>
-        return; // Interrompe a renderização da página
-    }
+    ViewData["Title"] = "Painel do Profissional";
+    // Tenta converter o modelo vindo do Controller para Professional
+    var professional = Model.Professional;
 }
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-    <meta charset="utf-8" />
-    <title>Painel do Profissional - Agendify</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Manrope:wght@600;700;800&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
-    <style>
-        .glass-panel {
-        background: rgba(255, 255, 255, 0.7);
-        backdrop-filter: blur(16px);
-        border: 1px solid rgba(197, 197, 211, 0.3);
+
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
+
+<style>
+    /* Componentes Customizados do Painel conforme o Design System */
+    .prof-card {
+        background: var(--ds-surface, #ffffff);
+        border: 1px solid var(--ds-border, #e5eeff);
+        border-radius: 1rem; /* 16px */
+        padding: 1.5rem;
+        box-shadow: 0 12px 24px -8px rgba(30, 58, 138, 0.05);
+    }
+
+    .prof-stat-val {
+        font-family: 'Manrope', sans-serif;
+        font-weight: 700;
+        color: var(--ds-text-main, #0b1c30);
+    }
+
+    /* Estilização das Soft Badges com 10% opacidade */
+    .ds-badge-soft {
+        padding: 6px 12px;
+        border-radius: 2rem;
+        font-size: 0.75rem;
+        font-weight: 600;
+        display: inline-block;
+    }
+
+    .badge-confirmado {
+        background: rgba(0, 163, 108, 0.1);
+        color: #007a51;
+    }
+
+    .badge-pendente {
+        background: rgba(245, 158, 11, 0.1);
+        color: #b45309;
+    }
+
+    .badge-cancelado {
+        background: rgba(220, 38, 38, 0.1);
+        color: #dc2626;
+    }
+
+    /* Gráfico de Barras SaaS Puro CSS (Fidelidade ao code.html) */
+    .ds-chart-container {
+        height: 200px;
+        display: flex;
+        align-items: flex-end;
+        justify-content: space-between;
+        position: relative;
+        padding-bottom: 1.5rem;
+    }
+
+    .ds-chart-grid-line {
+        position: absolute;
+        left: 0;
+        right: 0;
+        border-top: 1px dashed #e5eeff;
+    }
+
+    .ds-chart-bar-wrapper {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        flex-grow: 1;
+        z-index: 2;
+    }
+
+    .ds-chart-bar {
+        width: 32px;
+        background-color: #d3e4fe; /* surface-container-highest */
+        border-radius: 4px 4px 0 0;
+        transition: all 0.3s ease;
+        position: relative;
+    }
+
+        .ds-chart-bar.active {
+            background: linear-gradient(180deg, #1e3a8a 0%, var(--ds-primary, #00236f) 100%);
+            box-shadow: 0 0 12px rgba(0, 35, 111, 0.3);
         }
 
-        .soft-shadow {
-        box-shadow: 0 10px 40px -10px rgba(30, 58, 138, 0.05);
+    .ds-chart-label {
+        font-size: 0.75rem;
+        color: var(--ds-text-muted, #444651);
+        margin-top: 0.5rem;
+        font-weight: 500;
+    }
+
+        .ds-chart-label.active {
+            color: var(--ds-primary, #00236f);
+            font-weight: 700;
         }
-    </style>
-</head>
-<body class="bg-[#f8f9ff] text-[#0b1c30] font-['Inter'] flex">
+</style>
 
-    <!-- Sidebar -->
-    <nav class="w-72 h-screen fixed bg-white border-r border-gray-200 p-6 flex flex-col">
-        <h1 class="text-2xl font-extrabold text-[#00236f] mb-8">Agendify</h1>
-
-        <div class="flex items-center gap-3 mb-8">
-            <div class="w-10 h-10 rounded-full bg-gray-200"></div>
-            <div>
-                <!-- DADOS DINÂMICOS AQUI -->
-                <p class="font-semibold text-sm">@Model.User.Name</p>
-                <p class="text-xs text-gray-500">@Model.Specialty</p>
-            </div>
-        </div>
-
-        <button class="w-full bg-[#00236f] text-white py-3 rounded-lg font-bold mb-8 flex items-center justify-center gap-2">
-            <span class="material-symbols-outlined">add_circle</span> New Appointment
-        </button>
-
-        <ul class="space-y-2 flex-1">
-            <li>
-                <a href="#" class="bg-[#1e3a8a] text-white p-3 rounded-lg flex items-center gap-3">
-                    <span class="material-symbols-outlined">grid_view</span> Dashboard
-                </a>
-            </li>
-            <li>
-                <a href="#" class="text-gray-600 p-3 rounded-lg flex items-center gap-3">
-                    <span class="material-symbols-outlined">event</span> Schedule
-                </a>
-            </li>
-            <li>
-                <a href="#" class="text-gray-600 p-3 rounded-lg flex items-center gap-3">
-                    <span class="material-symbols-outlined">person_search</span> Clients
-                </a>
-            </li>
-            <li>
-                <a asp-controller="Dashboard" asp-action="Perfil" asp-route-id="@User.FindFirstValue(ClaimTypes.NameIdentifier)"
-                   class="text-gray-600 p-3 rounded-lg flex items-center gap-3 hover:bg-gray-50">
-                    <span class="material-symbols-outlined">person</span> Meu Perfil
-                </a>
-            </li>
-        </ul>
-    </nav>
-
-    <!-- Content -->
-    <main class="ml-72 flex-1 p-10">
-        <header class="mb-8">
-            <h1 class="text-3xl font-bold">Visão Geral</h1>
-            <p class="text-gray-500">Bem-vindo de volta, veja como está o seu dia.</p>
-        </header>
-
-        <!-- Métricas (Ainda estáticas, precisarão ser calculadas no Controller futuramente) -->
-        <div class="grid grid-cols-3 gap-6 mb-8">
-            <div class="glass-panel rounded-xl p-6 soft-shadow">
-                <p class="text-sm text-gray-500">Receita do Mês</p>
-                <h2 class="text-2xl font-bold">R$ 12.450</h2>
-            </div>
-            <div class="glass-panel rounded-xl p-6 soft-shadow">
-                <p class="text-sm text-gray-500">Agendamentos</p>
-                <h2 class="text-2xl font-bold">142</h2>
-            </div>
-            <div class="glass-panel rounded-xl p-6 soft-shadow">
-                <p class="text-sm text-gray-500">Avaliação Média</p>
-                <h2 class="text-2xl font-bold">4.9/5.0</h2>
-            </div>
-        </div>
-
-        <div class="grid grid-cols-3 gap-6">
-            <div class="col-span-2">
-                <h3 class="text-lg font-bold mb-4">Agenda de Hoje</h3>
-                <div class="space-y-4">
-                    <!-- Agenda estática -->
-                    <div class="glass-panel p-4 rounded-xl flex items-center justify-between">
-                        <div>
-                            <p class="font-bold">10:00 - Corte e Barba Premium</p>
-                            <p class="text-sm text-gray-500">com Marcos Silva</p>
-                        </div>
-                        <div class="flex gap-2">
-                            <button class="px-3 py-1 border rounded text-sm">Recusar</button>
-                            <button class="px-3 py-1 bg-[#00236f] text-white rounded text-sm">Aceitar</button>
-                        </div>
-                    </div>
+<div class="py-4">
+    <div class="row align-items-center g-4 mb-5">
+        <div class="col-md-8">
+            <div class="d-flex align-items-center gap-3">
+                <div class="bg-primary-container text-white rounded-circle d-flex align-items-center justify-content-center fw-bold"
+                     style="width: 56px; height: 56px; background-color: var(--ds-primary, #00236f);">
+                    @((Model?.Name?.Substring(0, 1) ?? "P").ToUpper())
                 </div>
-            </div>
-
-            <div class="glass-panel rounded-xl p-6">
-                <h3 class="text-lg font-bold mb-4">Desempenho Semanal</h3>
-                <div class="h-40 bg-gray-100 rounded-lg flex items-center justify-center text-gray-400">
-                    [Gráfico Placeholder]
+                <div>
+                    <h1 class="h3 fw-bold mb-0" style="font-family: 'Manrope', sans-serif; color: var(--ds-primary, #00236f);">
+                        Olá, @(Model?.Name ?? "Profissional")
+                    </h1>
+                    <p class="text-muted mb-0">@(ViewBag.Profissional?.Specialty ?? "Especialidade não definida") • Painel de Controlo</p>
                 </div>
             </div>
         </div>
-    </main>
-</body>
-</html>
+        <div class="col-md-4 text-md-end">
+            <button class="ds-btn-primary d-inline-flex align-items-center gap-2">
+                <span class="material-symbols-outlined fs-5">event</span>
+                Ver Minha Agenda completo
+            </button>
+        </div>
+    </div>
+
+    <div class="row g-4 mb-5">
+        <div class="col-md-6 col-xl-3">
+            <div class="prof-card h-100 d-flex flex-column justify-content-between">
+                <div class="d-flex justify-content-between align-items-start mb-3">
+                    <span class="text-muted fw-semibold" style="font-size: 0.875rem;">Agendamentos Hoje</span>
+                    <span class="material-symbols-outlined text-primary">today</span>
+                </div>
+                <div>
+                    <h2 class="prof-stat-val h2 mb-0">@(Model?.AppointmentsTodayCount ?? 0)</h2>
+                    <span class="text-success fw-medium" style="font-size: 0.75rem;">Pronto para o dia</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 col-xl-3">
+            <div class="prof-card h-100 d-flex flex-column justify-content-between">
+                <div class="d-flex justify-content-between align-items-start mb-3">
+                    <span class="text-muted fw-semibold" style="font-size: 0.875rem;">Aguardando Confirmação</span>
+                    <span class="material-symbols-outlined text-warning">pending_actions</span>
+                </div>
+                <div>
+                    <h2 class="prof-stat-val h2 mb-0">@(Model?.PendingAppointmentsCount ?? 0)</h2>
+                    <span class="text-muted style="font-size: 0.75rem;">Requerem atenção</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 col-xl-3">
+            <div class="prof-card h-100 d-flex flex-column justify-content-between">
+                <div class="d-flex justify-content-between align-items-start mb-3">
+                    <span class="text-muted fw-semibold" style="font-size: 0.875rem;">Ganhos Estimados (Mês)</span>
+                    <span class="material-symbols-outlined text-secondary" style="color: var(--ds-secondary)!important;">payments</span>
+                </div>
+                <div>
+                    <h2 class="prof-stat-val h2 mb-0">@((Model?.MonthlyEarnings ?? 0).ToString("C"))</h2>
+                    <span class="text-success fw-medium" style="font-size: 0.75rem;">Faturação em progresso</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 col-xl-3">
+            <div class="prof-card h-100 d-flex flex-column justify-content-between">
+                <div class="d-flex justify-content-between align-items-start mb-3">
+                    <span class="text-muted fw-semibold" style="font-size: 0.875rem;">Sua Avaliação</span>
+                    <span class="material-symbols-outlined text-warning" style="font-variation-settings: 'FILL' 1;">star</span>
+                </div>
+                <div>
+                    <h2 class="prof-stat-val h2 mb-0">@((Model?.AverageRating ?? 0).ToString("F1")) <span class="fs-6 text-muted">/ 5.0</span></h2>
+                    <span class="text-muted" style="font-size: 0.75rem;">Média com base nos clientes</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <div class="col-lg-4">
+            <h3 class="h5 fw-bold mb-3" style="font-family: 'Manrope', sans-serif;">Frequência Semanal</h3>
+            <div class="prof-card">
+                <p class="text-muted mb-4" style="font-size: 0.875rem;">Distribuição de volume de agendamentos por dia da semana.</p>
+
+                <div class="ds-chart-container">
+                    <div class="ds-chart-grid-line" style="top: 25%;"></div>
+                    <div class="ds-chart-grid-line" style="top: 50%;"></div>
+                    <div class="ds-chart-grid-line" style="top: 75%;"></div>
+
+                    @if (Model?.WeeklyOverview != null && Model.WeeklyOverview.Any())
+                    {
+                        foreach (var day in Model.WeeklyOverview)
+                        {
+                            <div class="ds-chart-bar-wrapper">
+                                <div class="ds-chart-bar @(day.IsToday ? "active" : "")"
+                                     style="height: @(day.PercentageValue)%;"
+                                     title="@day.Count agendamentos">
+                                </div>
+                                <span class="ds-chart-label @(day.IsToday ? "active" : "")">@day.DayName</span>
+                            </div>
+                        }
+                    }
+                    else
+                    {
+                        var mockDays = new[] {
+                            new { Name = "Seg", Val = 40, Act = false },
+                            new { Name = "Ter", Val = 65, Act = false },
+                            new { Name = "Qua", Val = 85, Act = true },
+                            new { Name = "Qui", Val = 50, Act = false },
+                            new { Name = "Sex", Val = 95, Act = false }
+                        };
+                        foreach (var m in mockDays)
+                        {
+                            <div class="ds-chart-bar-wrapper">
+                                <div class="ds-chart-bar @(m.Act ? "active" : "")" style="height: @(m.Val)%;"></div>
+                                <span class="ds-chart-label @(m.Act ? "active" : "")">@m.Name</span>
+                            </div>
+                        }
+                    }
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-8">
+            <h3 class="h5 fw-bold mb-3" style="font-family: 'Manrope', sans-serif;">Próximos Atendimentos</h3>
+            <div class="ds-table-container">
+                <table class="table ds-table mb-0">
+                    <thead>
+                        <tr>
+                            <th>Cliente</th>
+                            <th>Serviço Solicitado</th>
+                            <th>Horário de Início</th>
+                            <th>Estado</th>
+                            <th class="text-end">Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model?.UpcomingAppointments != null && Model.UpcomingAppointments.Any())
+                        {
+                            foreach (var app in Model.UpcomingAppointments)
+                            {
+                                <tr>
+                                    <td>
+                                        <div class="fw-semibold">@app.ClientName</div>
+                                        <div class="text-muted" style="font-size: 0.75rem;">@app.ClientEmail</div>
+                                    </td>
+                                    <td><span class="fw-medium">@app.ServiceName</span></td>
+                                    <td>
+                                        <div class="fw-bold text-primary">@app.StartTime.ToString(@"hh\:mm")</div>
+                                    </td>
+                                    <td>
+                                        <span class="ds-badge-soft badge-@app.Status.ToLower()">
+                                            @app.Status
+                                        </span>
+                                    </td>
+                                    <td class="text-end">
+                                        <a asp-action="DetalhesAgendamento" asp-route-id="@app.AppointmentId" class="btn ds-btn-ghost py-1 px-2 border-0">
+                                            <span class="material-symbols-outlined align-middle">visibility</span>
+                                        </a>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td>
+                                    <div class="fw-semibold">Guilherme Fonseca</div>
+                                    <div class="text-muted" style="font-size: 0.75rem;">guilherme@exemplo.pt</div>
+                                </td>
+                                <td><span class="fw-medium">Corte Degradê + Barba</span></td>
+                                <td><div class="fw-bold text-primary">09:00</div></td>
+                                <td><span class="ds-badge-soft badge-confirmado">Confirmado</span></td>
+                                <td class="text-end">
+                                    <button class="btn ds-btn-ghost py-1 px-2 border-0"><span class="material-symbols-outlined align-middle">visibility</span></button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div class="fw-semibold">Beatriz Costa</div>
+                                    <div class="text-muted" style="font-size: 0.75rem;">beatriz.c@exemplo.pt</div>
+                                </td>
+                                <td><span class="fw-medium">Design de Sobrancelhas</span></td>
+                                <td><div class="fw-bold text-primary">10:30</div></td>
+                                <td><span class="ds-badge-soft badge-pendente">Pendente</span></td>
+                                <td class="text-end">
+                                    <button class="btn ds-btn-ghost py-1 px-2 border-0"><span class="material-symbols-outlined align-middle">visibility</span></button>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

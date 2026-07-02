@@ -127,7 +127,6 @@ public class AccountController : Controller
         var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
         await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(claimsIdentity));
 
-        // CORREÇÃO: Redireciona corretamente para o Controller DashboardProfissional, Action Index
         return userRole switch
         {
             "Profissional" => RedirectToAction("Index", "DashboardProfissional"),
@@ -144,4 +143,4 @@ public class AccountController : Controller
         await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
         return RedirectToAction(nameof(Login));
     }
-} // Fim da classe AccountController
+}
