@@ -1,0 +1,62 @@
+﻿@model SistemaAgendamentoWebII.Models.Appointment
+@using SistemaAgendamentoWebII.Models
+
+@{
+    ViewData["Title"] = "Agendar Serviço";
+    var servico = ViewBag.Servico as Service;
+}
+
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
+
+<div class="container py-5" style="max-width: 800px;">
+
+    <a href="javascript:history.back()" class="text-decoration-none text-muted d-inline-flex align-items-center gap-2 mb-4">
+        <span class="material-symbols-outlined fs-5">arrow_back</span>
+        Voltar para o perfil
+    </a>
+
+    <div class="card shadow-sm border-0" style="border-radius: 1.25rem;">
+        <div class="card-body p-4 p-md-5">
+            <div class="d-flex align-items-center gap-3 mb-4">
+                <span class="material-symbols-outlined fs-2" style="color: var(--ds-primary, #00236f);">calendar_month</span>
+                <h1 class="h3 fw-bold mb-0" style="font-family: 'Manrope', sans-serif;">Confirmar Agendamento</h1>
+            </div>
+
+            <div class="alert alert-secondary bg-light border-0 mb-4" style="border-radius: 1rem;">
+                <h4 class="h5 fw-bold text-dark mb-1">@(servico?.Name ?? "Serviço não identificado")</h4>
+                <p class="text-muted mb-2">Profissional: @(servico?.Professional?.User?.Name ?? "-")</p>
+                <div class="d-flex gap-3 mt-3">
+                    <span class="badge bg-white text-dark border py-2 px-3 fs-6">R$ @(servico?.Price.ToString("F2") ?? "0,00")</span>
+                    <span class="badge bg-white text-dark border py-2 px-3 fs-6">⏱ @(servico?.DurationMinutes ?? 0) min</span>
+                </div>
+            </div>
+
+            <form asp-action="Create" method="post">
+                <input type="hidden" asp-for="ServiceId" />
+
+                <div class="row g-4 mb-4">
+                    <div class="col-md-6">
+                        <label asp-for="AppointmentDate" class="form-label fw-bold text-muted small">Data</label>
+                        <input asp-for="AppointmentDate" type="date" class="form-control form-control-lg bg-light" required />
+                        <span asp-validation-for="AppointmentDate" class="text-danger small"></span>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label asp-for="StartTime" class="form-label fw-bold text-muted small">Hora de Início</label>
+                        <input asp-for="StartTime" type="time" class="form-control form-control-lg bg-light" required />
+                        <span asp-validation-for="StartTime" class="text-danger small"></span>
+                    </div>
+                </div>
+
+                <hr class="my-5 text-muted" />
+
+                <div class="d-flex justify-content-end gap-3">
+                    <a href="javascript:history.back()" class="btn btn-light fw-bold px-4 py-2 border">Cancelar</a>
+                    <button type="submit" class="btn text-white fw-bold px-4 py-2" style="background: var(--ds-primary, #00236f); border-radius: 0.5rem;">
+                        Confirmar Agendamento
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

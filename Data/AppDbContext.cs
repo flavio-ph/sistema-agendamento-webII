@@ -1,6 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using SistemaAgendamentoWebII.Models;
-using System.Reflection.Emit;
 
 namespace SistemaAgendamentoWebII.Data;
 
@@ -15,6 +14,9 @@ public class AppDbContext : DbContext
     public DbSet<Service> Services { get; set; }
     public DbSet<Notification> Notifications { get; set; }
     public DbSet<Address> Addresses { get; set; }
+
+    // Tabela de categorias mapeada para o ServiceController
+    public DbSet<Category> Categories { get; set; }
 
     // Renomeado para "Agendamentos" para resolver o erro de compilação no DashboardController
     public DbSet<Appointment> Agendamentos { get; set; }

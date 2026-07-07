@@ -15,49 +15,51 @@
             </div>
 
             <form asp-action="Create" method="post">
-                <div class="row g-4">
-                    <div class="col-md-6">
-                        <label asp-for="Name" class="form-label fw-bold text-muted small">Nome do Serviço</label>
-                        <input asp-for="Name" class="form-control form-control-lg bg-light" placeholder="Ex: Corte de Cabelo" required />
-                        <span asp-validation-for="Name" class="text-danger small"></span>
+                <div asp-validation-summary="All" class="text-danger small mb-3 fw-bold p-2 bg-danger bg-opacity-10 rounded"></div>
+                <div class="row g-4 mb-4">
+                    <div class="row g-4">
+                        <div class="col-md-6">
+                            <label asp-for="Name" class="form-label fw-bold text-muted small">Nome do Serviço</label>
+                            <input asp-for="Name" class="form-control form-control-lg bg-light" placeholder="Ex: Corte de Cabelo" required />
+                            <span asp-validation-for="Name" class="text-danger small"></span>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label asp-for="CategoryId" class="form-label fw-bold text-muted small">Categoria</label>
+                            <select asp-for="CategoryId" asp-items="ViewBag.Categories" class="form-select form-select-lg bg-light" required>
+                                <option value="">Selecione uma categoria...</option>
+                            </select>
+                            <span asp-validation-for="CategoryId" class="text-danger small"></span>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label asp-for="Price" class="form-label fw-bold text-muted small">Preço (R$)</label>
+                            <input asp-for="Price" type="number" step="0.01" min="0" class="form-control form-control-lg bg-light" placeholder="0,00" required />
+                            <span asp-validation-for="Price" class="text-danger small"></span>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label asp-for="DurationMinutes" class="form-label fw-bold text-muted small">Duração (Minutos)</label>
+                            <input asp-for="DurationMinutes" type="number" step="5" min="5" class="form-control form-control-lg bg-light" placeholder="Ex: 30" required />
+                            <span asp-validation-for="DurationMinutes" class="text-danger small"></span>
+                        </div>
+
+                        <div class="col-12">
+                            <label asp-for="Description" class="form-label fw-bold text-muted small">Descrição do Serviço</label>
+                            <textarea asp-for="Description" class="form-control form-control-lg bg-light" rows="3" placeholder="Detalhe o que está incluído no serviço..."></textarea>
+                            <span asp-validation-for="Description" class="text-danger small"></span>
+                        </div>
                     </div>
 
-                    <div class="col-md-6">
-                        <label asp-for="CategoryId" class="form-label fw-bold text-muted small">Categoria</label>
-                        <select asp-for="CategoryId" asp-items="ViewBag.Categories" class="form-select form-select-lg bg-light" required>
-                            <option value="">Selecione uma categoria...</option>
-                        </select>
-                        <span asp-validation-for="CategoryId" class="text-danger small"></span>
+                    <hr class="my-5 text-muted" />
+
+                    <div class="d-flex justify-content-end gap-3">
+                        <a asp-controller="Dashboard" asp-action="DashboardProfissional" class="btn btn-light fw-bold px-4 py-2 border">Cancelar</a>
+                        <button type="submit" class="btn text-white fw-bold px-4 py-2" style="background: var(--ds-primary, #00236f); border-radius: 0.5rem;">
+                            Salvar Serviço
+                        </button>
                     </div>
-
-                    <div class="col-md-6">
-                        <label asp-for="Price" class="form-label fw-bold text-muted small">Preço (R$)</label>
-                        <input asp-for="Price" type="number" step="0.01" min="0" class="form-control form-control-lg bg-light" placeholder="0,00" required />
-                        <span asp-validation-for="Price" class="text-danger small"></span>
-                    </div>
-
-                    <div class="col-md-6">
-                        <label asp-for="DurationMinutes" class="form-label fw-bold text-muted small">Duração (Minutos)</label>
-                        <input asp-for="DurationMinutes" type="number" step="5" min="5" class="form-control form-control-lg bg-light" placeholder="Ex: 30" required />
-                        <span asp-validation-for="DurationMinutes" class="text-danger small"></span>
-                    </div>
-
-                    <div class="col-12">
-                        <label asp-for="Description" class="form-label fw-bold text-muted small">Descrição do Serviço</label>
-                        <textarea asp-for="Description" class="form-control form-control-lg bg-light" rows="3" placeholder="Detalhe o que está incluído no serviço..."></textarea>
-                        <span asp-validation-for="Description" class="text-danger small"></span>
-                    </div>
-                </div>
-
-                <hr class="my-5 text-muted" />
-
-                <div class="d-flex justify-content-end gap-3">
-                    <a asp-controller="Dashboard" asp-action="DashboardProfissional" class="btn btn-light fw-bold px-4 py-2 border">Cancelar</a>
-                    <button type="submit" class="btn text-white fw-bold px-4 py-2" style="background: var(--ds-primary, #00236f); border-radius: 0.5rem;">
-                        Salvar Serviço
-                    </button>
-                </div>
-            </form>
+                </form>
+            </div>
         </div>
     </div>
-</div>

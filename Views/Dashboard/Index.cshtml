@@ -3,13 +3,26 @@
 
 @{
     ViewData["Title"] = "Meu Painel - Cliente";
-    // Extraímos o nome do utilizador diretamente do token de login
     var userName = User.FindFirstValue(ClaimTypes.Name) ?? "Cliente";
 }
 
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
 
 <div class="container py-5" style="max-width: 1200px;">
+
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert d-flex align-items-center gap-3 mb-5 border-0 shadow-sm alert-dismissible fade show" role="alert"
+             style="background-color: rgba(0, 163, 108, 0.1); color: #007a51; border-radius: 1rem;">
+            <span class="material-symbols-outlined fs-3">task_alt</span>
+            <div>
+                <h4 class="h6 fw-bold mb-0">Tudo certo!</h4>
+                <p class="mb-0 small">@TempData["SuccessMessage"]</p>
+            </div>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Fechar"></button>
+        </div>
+    }
+
     <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-5 gap-3">
         <div>
             <h1 class="h3 fw-bold mb-1" style="color: var(--ds-text-main, #0b1c30);">Olá, @userName!</h1>
@@ -31,16 +44,18 @@
                         <div class="card-body p-4">
                             <div class="d-flex justify-content-between align-items-start mb-3">
                                 <span class="badge" style="background: rgba(0, 163, 108, 0.1); color: #007a51; padding: 6px 12px; border-radius: 2rem;">
-                                    Confirmado
+                                    @appt.Status
                                 </span>
-                                <h3 class="h4 fw-bold mb-0 text-primary">@appt.AppointmentDate.ToString("dd/MM")</h3>
+                                <h3 class="h4 fw-bold mb-0 text-primary">
+                                    @appt.AppointmentDate.ToString("dd/MM")
+                                </h3>
                             </div>
 
                             <h4 class="h6 fw-bold mb-1">@(appt.Service?.Name ?? "Serviço não especificado")</h4>
 
                             <div class="d-flex align-items-center gap-2 text-muted small mt-3">
                                 <span class="material-symbols-outlined" style="font-size: 16px;">schedule</span>
-                                @appt.AppointmentDate.ToString("HH:mm")
+                                @appt.StartTime.ToString(@"hh\:mm")
                             </div>
                         </div>
                     </div>
@@ -54,7 +69,7 @@
                     <span class="material-symbols-outlined text-muted" style="font-size: 2.5rem;">event_busy</span>
                 </div>
                 <h4 class="fw-bold text-dark">Nenhum agendamento encontrado</h4>
-                <p class="text-muted max-w-md mx-auto">Você ainda não possui horários marcados. Explore os profissionais disponíveis e agende o seu primeiro serviço.</p>
+                <p class="text-muted max-w-md mx-auto">Você ainda não possui horários marcados.</p>
             </div>
         }
     </div>
