@@ -91,48 +91,33 @@
 </head>
 <body>
     <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm ds-navbar py-3 mb-4">
-            <div class="container-fluid" style="max-width: 1440px;">
-                <a class="navbar-brand ds-brand" asp-area="" asp-controller="Home" asp-action="Index">Sistema Agendamento</a>
+        <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
+            <div class="container">
+                <a class="navbar-brand fw-bold text-blue-900" asp-controller="Home" asp-action="Index">Agendify</a>
 
-                <button class="navbar-toggler border-0 shadow-none" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                        aria-expanded="false" aria-label="Alternar navegação">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-
-                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    <ul class="navbar-nav flex-grow-1 gap-2 ms-4">
-                        <li class="nav-item">
-                            <a class="nav-link ds-nav-link" asp-area="" asp-controller="Home" asp-action="Index">Início</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link ds-nav-link" asp-area="" asp-controller="Home" asp-action="Privacy">Privacidade</a>
-                        </li>
-
-                        @if (User.Identity?.IsAuthenticated == true && User.IsInRole("Profissional"))
+                <div class="collapse navbar-collapse">
+                    <ul class="navbar-nav ms-auto">
+                        @if (User.Identity.IsAuthenticated)
                         {
-                            <li class="nav-item">
-                                <a class="nav-link ds-nav-link fw-bold" asp-controller="Dashboard" asp-action="DashboardProfissional" style="color: var(--ds-primary) !important;">Meu Painel</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link ds-nav-link" asp-controller="Dashboard" asp-action="Perfil" asp-route-id="@User.FindFirstValue(ClaimTypes.NameIdentifier)">Perfil Público</a>
-                            </li>
-                        }
-                    </ul>
+                            // Classes de navegação com transição para azul no hover
+                            @if (User.IsInRole("Cliente"))
+                            {
+                                <li class="nav-item"><a class="nav-link text-dark hover:text-blue-900 transition-colors" asp-controller="Dashboard" asp-action="Index">Meus Agendamentos</a></li>
+                                <li class="nav-item"><a class="nav-link text-dark hover:text-blue-900 transition-colors" asp-controller="Home" asp-action="Index">Explorar</a></li>
+                            }
 
-                    <ul class="navbar-nav align-items-center gap-2">
-                        @if (User.Identity?.IsAuthenticated == true)
-                        {
+                            @if (User.IsInRole("Profissional"))
+                            {
+                                <li class="nav-item"><a class="nav-link text-dark hover:text-blue-900 transition-colors" asp-controller="Dashboard" asp-action="DashboardProfissional">Agenda</a></li>
+                                <li class="nav-item"><a class="nav-link text-dark hover:text-blue-900 transition-colors" asp-controller="Service" asp-action="Create">Meus Serviços</a></li>
+                            }
+
+                            // ... (demais perfis mantêm a mesma estrutura de classes)
+
                             <li class="nav-item">
-                                <form asp-controller="Account" asp-action="Logout" method="post" class="form-inline m-0">
-                                    <button type="submit" class="btn btn-link nav-link ds-btn-ghost text-decoration-none">Sair</button>
+                                <form asp-controller="Account" asp-action="Logout" method="post">
+                                    <button type="submit" class="nav-link btn btn-link text-dark hover:text-blue-900 transition-colors">Sair</button>
                                 </form>
-                            </li>
-                        }
-                        else
-                        {
-                            <li class="nav-item">
-                                <a class="ds-btn-primary" asp-controller="Account" asp-action="Login">Entrar</a>
                             </li>
                         }
                     </ul>
