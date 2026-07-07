@@ -13,7 +13,33 @@
     <style>
         [x-cloak] {
         display: none !important;
-        }</style>
+        }
+
+        /* Scrollbar Customizada - Firefox */
+        * {
+        scrollbar-width: thin;
+        scrollbar-color: #cbd5e1 transparent;
+        }
+
+        /* Scrollbar Customizada - Chrome, Edge, Safari */
+        ::-webkit-scrollbar {
+        width: 6px;
+        height: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+        background: transparent;
+        }
+
+        ::-webkit-scrollbar-thumb {
+        background-color: #cbd5e1; /* Tailwind slate-300 */
+        border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+        background-color: #1e3a8a; /* Tailwind blue-900 (Design System Primary) */
+        }
+    </style>
     </head>
     <body class="bg-surface text-on-surface font-sans min-h-screen flex">
 
@@ -42,7 +68,7 @@
 
                     <div>
                         <label class="block text-sm font-semibold text-gray-700 mb-1.5">Como deseja utilizar a plataforma?</label>
-                        <select x-model="role" name="Role" class="w-full rounded-lg border-gray-300 px-4 py-3 outline-none focus:ring-2 focus:ring-blue-600">
+                        <select x-model="role" name="Role" class="w-full rounded-lg border-gray-300 px-4 py-3 outline-none focus:ring-2 focus:ring-blue-600 bg-white">
                             <option value="Cliente">Cliente</option>
                             <option value="Profissional">Profissional</option>
                             <option value="Empresa">Empresa</option>
@@ -54,55 +80,62 @@
                         <input type="text" asp-for="Name" required class="w-full rounded-lg border-gray-300 px-4 py-3 outline-none focus:ring-2 focus:ring-blue-600" />
                     </div>
 
-                    <div>
-                        <label class="block text-sm font-semibold text-gray-700 mb-1.5">E-mail</label>
-                        <input type="email" asp-for="Email" required class="w-full rounded-lg border-gray-300 px-4 py-3 outline-none focus:ring-2 focus:ring-blue-600" />
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-1.5">E-mail</label>
+                            <input type="email" asp-for="Email" required class="w-full rounded-lg border-gray-300 px-4 py-3 outline-none focus:ring-2 focus:ring-blue-600" />
+                        </div>
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-1.5">Telefone</label>
+                            <input type="tel" asp-for="Phone" class="w-full rounded-lg border-gray-300 px-4 py-3 outline-none focus:ring-2 focus:ring-blue-600" placeholder="(00) 00000-0000" />
+                        </div>
                     </div>
 
-                    <!-- Campos Condicionais Profissional -->
-                    <div x-show="role === 'Profissional'" x-cloak class="space-y-4 border-t pt-4">
+                    <div x-show="role === 'Profissional'" x-cloak class="space-y-4 border-t pt-4 border-gray-200">
                         <div>
-                            <label class="block text-sm font-semibold text-gray-700 mb-1.5">Especialidade</label>
-                            <input type="text" name="Specialty" class="w-full rounded-lg border-gray-300 px-4 py-3 outline-none" />
+                            <label class="block text-sm font-semibold text-gray-700 mb-1.5">Especialidade Principal</label>
+                            <input type="text" name="Specialty" :required="role === 'Profissional'" class="w-full rounded-lg border-gray-300 px-4 py-3 outline-none focus:ring-2 focus:ring-blue-600" />
+                        </div>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-semibold text-gray-700 mb-1.5">Anos de Experiência</label>
+                                <input type="number" min="0" name="ExperienceYears" class="w-full rounded-lg border-gray-300 px-4 py-3 outline-none focus:ring-2 focus:ring-blue-600" />
+                            </div>
+                            <div>
+                                <label class="block text-sm font-semibold text-gray-700 mb-1.5">Registo (CRM/CRO)</label>
+                                <input type="text" name="RegistrationNumber" :required="role === 'Profissional'" class="w-full rounded-lg border-gray-300 px-4 py-3 outline-none focus:ring-2 focus:ring-blue-600" />
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-1.5">Descrição Curta</label>
+                            <input type="text" name="Description" class="w-full rounded-lg border-gray-300 px-4 py-3 outline-none focus:ring-2 focus:ring-blue-600" placeholder="Ex: Especialista em reabilitação..." />
                         </div>
                         <div>
                             <label class="block text-sm font-semibold text-gray-700 mb-1.5">Biografia</label>
-                            <textarea name="Biography" class="w-full rounded-lg border-gray-300 px-4 py-3 outline-none"></textarea>
-                        </div>
-                        <div>
-                            <label class="block text-sm font-semibold text-gray-700 mb-1.5">Descrição (Resumo)</label>
-                            <input type="text" name="Description" class="w-full rounded-lg border-gray-300 px-4 py-3 outline-none" />
-                        </div>
-                        <div>
-                            <label class="block text-sm font-semibold text-gray-700 mb-1.5">Anos de Experiência</label>
-                            <input type="number" name="ExperienceYears" class="w-full rounded-lg border-gray-300 px-4 py-3 outline-none" />
-                        </div>
-
-                        <div>
-                            <label class="block text-sm font-semibold text-gray-700 mb-1.5">Número de Registro (CRM/CRO)</label>
-                            <input type="text" name="RegistrationNumber" required class="w-full rounded-lg border-gray-300 px-4 py-3 outline-none focus:ring-2 focus:ring-blue-600" />
+                            <textarea name="Biography" rows="3" class="w-full rounded-lg border-gray-300 px-4 py-3 outline-none focus:ring-2 focus:ring-blue-600"></textarea>
                         </div>
                     </div>
 
-                    <!-- Campo Condicional Empresa -->
-                    <div x-show="role === 'Empresa'" x-cloak>
-                        <label class="block text-sm font-semibold text-gray-700 mb-1.5">Nome da Empresa</label>
-                        <input type="text" name="EstablishmentName" class="w-full rounded-lg border-gray-300 px-4 py-3 outline-none" />
+                    <div x-show="role === 'Empresa'" x-cloak class="space-y-4 border-t pt-4 border-gray-200">
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-1.5">Nome do Estabelecimento</label>
+                            <input type="text" name="EstablishmentName" :required="role === 'Empresa'" class="w-full rounded-lg border-gray-300 px-4 py-3 outline-none focus:ring-2 focus:ring-blue-600" />
+                        </div>
                     </div>
 
-                    <div class="grid grid-cols-2 gap-4">
+                    <div class="grid grid-cols-2 gap-4 border-t pt-4 border-gray-200 mt-2">
                         <div>
                             <label class="block text-sm font-semibold text-gray-700 mb-1.5">Senha</label>
-                            <input type="password" asp-for="PasswordHash" required class="w-full rounded-lg border-gray-300 px-4 py-3 outline-none" />
+                            <input type="password" asp-for="PasswordHash" required class="w-full rounded-lg border-gray-300 px-4 py-3 outline-none focus:ring-2 focus:ring-blue-600" />
                         </div>
                         <div>
-                            <label class="block text-sm font-semibold text-gray-700 mb-1.5">Confirmar</label>
-                            <input type="password" name="PasswordConfirmation" required class="w-full rounded-lg border-gray-300 px-4 py-3 outline-none" />
+                            <label class="block text-sm font-semibold text-gray-700 mb-1.5">Confirmar Senha</label>
+                            <input type="password" name="PasswordConfirmation" required class="w-full rounded-lg border-gray-300 px-4 py-3 outline-none focus:ring-2 focus:ring-blue-600" />
                         </div>
                     </div>
 
                     <button type="submit" class="w-full mt-6 py-3.5 bg-blue-900 text-white font-bold rounded-lg transition-transform hover:scale-[1.02]">
-                        Criar Conta
+                        Concluir Registo
                     </button>
                 </form>
             </div>

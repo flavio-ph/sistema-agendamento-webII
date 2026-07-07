@@ -1,97 +1,61 @@
-﻿@model SistemaAgendamentoWebII.Models.User
+﻿@model IEnumerable<SistemaAgendamentoWebII.Models.Appointment>
+@using System.Security.Claims
+
 @{
-    Layout = null;
+    ViewData["Title"] = "Meu Painel - Cliente";
+    // Extraímos o nome do utilizador diretamente do token de login
+    var userName = User.FindFirstValue(ClaimTypes.Name) ?? "Cliente";
 }
-<!DOCTYPE html>
-<html class="light" lang="pt-br">
-<head>
-    <meta charset="utf-8" />
-    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
-    <title>Agendify - Cadastro</title>
-    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Manrope:wght@600;700;800&display=swap" rel="stylesheet" />
-    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-    <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
-    <style>
-        [x-cloak] {
-        display: none !important;
-        }</style>
-    </head>
-    <body class="bg-surface text-on-surface font-sans min-h-screen flex">
 
-        <div class="hidden lg:flex lg:w-1/2 relative items-center justify-center bg-primary overflow-hidden">
-            <img src="https://i.postimg.cc/kX3y1jNm/bba3d743-6833-456b-b4f3-ab3261457fff.png" alt="Workspace" class="absolute inset-0 w-full h-full object-cover" />
-            <div class="absolute inset-0 bg-gradient-to-br from-primary/90 to-primary-container/85 mix-blend-multiply"></div>
-            <div class="relative z-10 text-center text-white p-12">
-                <h1 class="text-6xl font-heading font-bold mb-4">Agendify.</h1>
-                <p class="text-xl text-[#90a8ff]">A sua plataforma de conexões locais.</p>
-            </div>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
+
+<div class="container py-5" style="max-width: 1200px;">
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-5 gap-3">
+        <div>
+            <h1 class="h3 fw-bold mb-1" style="color: var(--ds-text-main, #0b1c30);">Olá, @userName!</h1>
+            <p class="text-muted mb-0">Acompanhe os seus próximos agendamentos.</p>
         </div>
+        <a asp-controller="Home" asp-action="Index" class="btn text-white fw-bold px-4 py-2 d-inline-flex align-items-center gap-2" style="background: var(--ds-primary, #00236f); border-radius: 0.5rem;">
+            <span class="material-symbols-outlined">add</span>
+            Novo Agendamento
+        </a>
+    </div>
 
-        <div class="w-full lg:w-1/2 flex items-center justify-center p-8 bg-surface-container-lowest overflow-y-auto">
-            <div class="w-full max-w-[420px]" x-data="{ role: 'Cliente' }">
-                <div class="mb-8">
-                    <h2 class="text-3xl font-heading font-bold text-on-surface mb-2">Crie sua conta</h2>
-                    <p class="text-on-surface-variant">Preencha os dados para começar.</p>
-                </div>
+    <div class="row g-4">
+        @if (Model != null && Model.Any())
+        {
+            foreach (var appt in Model)
+            {
+                <div class="col-md-6 col-lg-4">
+                    <div class="card border-0 shadow-sm h-100" style="border-radius: 1rem;">
+                        <div class="card-body p-4">
+                            <div class="d-flex justify-content-between align-items-start mb-3">
+                                <span class="badge" style="background: rgba(0, 163, 108, 0.1); color: #007a51; padding: 6px 12px; border-radius: 2rem;">
+                                    Confirmado
+                                </span>
+                                <h3 class="h4 fw-bold mb-0 text-primary">@appt.AppointmentDate.ToString("dd/MM")</h3>
+                            </div>
 
-                @if (!ViewData.ModelState.IsValid)
-                {
-                    <div class="p-4 mb-6 text-sm text-[#93000a] bg-[#ffdad6] border border-[#ffb4ab] rounded-[8px]">
-                        <div asp-validation-summary="All" class="font-medium"></div>
-                    </div>
-                }
+                            <h4 class="h6 fw-bold mb-1">@(appt.Service?.Name ?? "Serviço não especificado")</h4>
 
-                <form asp-action="Register" method="post" class="space-y-4">
-                    @Html.AntiForgeryToken()
-
-                    <div>
-                        <label class="block text-sm font-semibold text-on-surface-variant mb-1.5">Como deseja utilizar a plataforma?</label>
-                        <select x-model="role" asp-for="Role" class="w-full rounded-[8px] border-outline-variant bg-surface-container-lowest px-4 py-3 text-on-surface focus:border-primary focus:ring-4 focus:ring-primary/20 outline-none">
-                            <option value="Cliente">Quero agendar serviços (Cliente)</option>
-                            <option value="Profissional">Quero oferecer os meus serviços (Profissional)</option>
-                            <option value="Empresa">Quero gerir o meu espaço (Empresa)</option>
-                        </select>
-                    </div>
-
-                    <div>
-                        <label class="block text-sm font-semibold text-on-surface-variant mb-1.5">Nome Completo</label>
-                        <input type="text" asp-for="Name" required class="w-full rounded-[8px] border-outline-variant bg-surface-container-lowest px-4 py-3 text-on-surface focus:border-primary outline-none" placeholder="Digite seu nome" />
-                    </div>
-
-                    <div>
-                        <label class="block text-sm font-semibold text-on-surface-variant mb-1.5">E-mail</label>
-                        <input type="email" asp-for="Email" required class="w-full rounded-[8px] border-outline-variant bg-surface-container-lowest px-4 py-3 text-on-surface focus:border-primary outline-none" placeholder="seu@email.com" />
-                    </div>
-
-                    <div class="grid grid-cols-2 gap-4">
-                        <div>
-                            <label class="block text-sm font-semibold text-on-surface-variant mb-1.5">Senha</label>
-                            <input type="password" asp-for="PasswordHash" required autocomplete="new-password" class="w-full rounded-[8px] border-outline-variant bg-surface-container-lowest px-4 py-3 text-on-surface focus:border-primary outline-none" placeholder="••••••••" />
-                        </div>
-                        <div>
-                            <label class="block text-sm font-semibold text-on-surface-variant mb-1.5">Confirmar</label>
-                            <input type="password" name="PasswordConfirmation" required autocomplete="new-password" class="w-full rounded-[8px] border-outline-variant bg-surface-container-lowest px-4 py-3 text-on-surface focus:border-primary outline-none" placeholder="••••••••" />
+                            <div class="d-flex align-items-center gap-2 text-muted small mt-3">
+                                <span class="material-symbols-outlined" style="font-size: 16px;">schedule</span>
+                                @appt.AppointmentDate.ToString("HH:mm")
+                            </div>
                         </div>
                     </div>
-
-                    <p x-show="role === 'Profissional' || role === 'Empresa'" class="text-xs text-primary font-medium mt-2" x-cloak>
-                        <span class="material-symbols-outlined align-middle" style="font-size: 16px;">info</span>
-                        Poderá configurar a sua especialidade e endereço no Dashboard após o registo.
-                    </p>
-
-                    <button type="submit" class="w-full mt-6 py-3.5 bg-gradient-to-b from-[#1e3a8a] to-[#00236f] text-on-primary font-bold rounded-[8px] shadow-sm hover:scale-[1.02] transition-transform flex items-center justify-center gap-2">
-                        Criar Conta
-                        <span class="material-symbols-outlined text-[20px]">person_add</span>
-                    </button>
-                </form>
-
-                <div class="text-center mt-10">
-                    <span class="text-on-surface-variant font-medium">Já tem uma conta? </span>
-                    <a asp-controller="Account" asp-action="Login" class="text-secondary font-bold hover:underline">Entre aqui</a>
                 </div>
-
+            }
+        }
+        else
+        {
+            <div class="col-12 text-center py-5 mt-4">
+                <div class="d-inline-flex align-items-center justify-content-center bg-light rounded-circle mb-3" style="width: 80px; height: 80px;">
+                    <span class="material-symbols-outlined text-muted" style="font-size: 2.5rem;">event_busy</span>
+                </div>
+                <h4 class="fw-bold text-dark">Nenhum agendamento encontrado</h4>
+                <p class="text-muted max-w-md mx-auto">Você ainda não possui horários marcados. Explore os profissionais disponíveis e agende o seu primeiro serviço.</p>
             </div>
-        </div>
-    </body>
-</html>
+        }
+    </div>
+</div>

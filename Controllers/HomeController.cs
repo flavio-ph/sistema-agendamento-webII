@@ -1,25 +1,31 @@
 using Microsoft.AspNetCore.Mvc;
-using SistemaAgendamentoWebII.Models;
-using System.Diagnostics;
+using Microsoft.EntityFrameworkCore;
+using SistemaAgendamentoWebII.Data;
+using System.Linq;
+using System.Threading.Tasks;
 
-namespace SistemaAgendamentoWebII.Controllers
+namespace SistemaAgendamentoWebII.Controllers;
+
+public class HomeController : Controller
 {
-    public class HomeController : Controller
+    private readonly AppDbContext _context;
+
+    public HomeController(AppDbContext context)
     {
-        public IActionResult Index()
-        {
-            return View();
-        }
+        _context = context;
+    }
 
-        public IActionResult Privacy()
-        {
-            return View();
-        }
+    public async Task<IActionResult> Index()
+    {
+        // Busca profissionais ativos, limitando a 20 para evitar gargalos de performance iniciais
+        var profissionais = await _context.Professionals
+            .Include(p => p.User)
+            .Include(p => p.Services)
+            .Where(p => p.IsActive)
+            .OrderByDescending(p => p.AverageRating)
+            .Take(20)
+            .ToListAsync();
 
-        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-        public IActionResult Error()
-        {
-            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
-        }
+        return View(profissionais);
     }
 }

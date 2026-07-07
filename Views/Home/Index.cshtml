@@ -1,270 +1,57 @@
-﻿@{
-    Layout = null;
+﻿@model IEnumerable<SistemaAgendamentoWebII.Models.Professional>
+
+@{
+    ViewData["Title"] = "Explorar Profissionais";
 }
-<!DOCTYPE html>
-<html class="scroll-smooth" lang="pt-BR">
-<head>
-    <meta charset="utf-8" />
-    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
-    <title>Agendify - Agendamentos Premium</title>
 
-    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Manrope:wght@600;700;800&display=swap" rel="stylesheet" />
-    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
+<div class="container py-5" style="max-width: 1200px;">
+    <div class="text-center mb-5">
+        <h1 class="h2 fw-bold" style="color: var(--ds-text-main, #0b1c30);">Encontre o profissional ideal</h1>
+        <p class="text-muted">Explore os nossos especialistas e agende o seu próximo serviço.</p>
+    </div>
 
-    <script id="tailwind-config">
-        tailwind.config = {
-        darkMode: "class",
-        theme: {
-        extend: {
-        "colors": {
-        "on-error-container": "#93000a",
-        "on-error": "#ffffff",
-        "surface-container-low": "#eff4ff",
-        "secondary-fixed": "#ebddff",
-        "on-primary": "#ffffff",
-        "surface-tint": "#4059aa",
-        "inverse-surface": "#213145",
-        "on-primary-container": "#90a8ff",
-        "on-secondary-container": "#fffbff",
-        "primary": "#00236f",
-        "on-primary-fixed": "#00164e",
-        "surface-container-high": "#dce9ff",
-        "inverse-on-surface": "#eaf1ff",
-        "primary-fixed-dim": "#b6c4ff",
-        "on-tertiary-container": "#36b6fb",
-        "background": "#f8f9ff",
-        "on-secondary": "#ffffff",
-        "secondary-container": "#8b4ef7",
-        "on-background": "#0b1c30",
-        "on-tertiary": "#ffffff",
-        "tertiary": "#002e44",
-        "on-primary-fixed-variant": "#264191",
-        "inverse-primary": "#b6c4ff",
-        "on-secondary-fixed": "#250059",
-        "surface-dim": "#cbdbf5",
-        "on-surface-variant": "#444651",
-        "tertiary-container": "#004565",
-        "error-container": "#ffdad6",
-        "primary-container": "#1e3a8a",
-        "surface-bright": "#f8f9ff",
-        "outline-variant": "#c5c5d3",
-        "secondary-fixed-dim": "#d3bbff",
-        "primary-fixed": "#dce1ff",
-        "secondary": "#712edd",
-        "on-surface": "#0b1c30",
-        "tertiary-fixed-dim": "#89ceff",
-        "surface": "#f8f9ff",
-        "on-tertiary-fixed": "#001e2f",
-        "tertiary-fixed": "#c9e6ff",
-        "surface-container-lowest": "#ffffff",
-        "surface-variant": "#d3e4fe",
-        "error": "#ba1a1a",
-        "on-secondary-fixed-variant": "#5b00c5",
-        "surface-container-highest": "#d3e4fe",
-        "on-tertiary-fixed-variant": "#004c6e",
-        "outline": "#757682",
-        "surface-container": "#e5eeff"
-        },
-        "fontFamily": {
-        "body-md": ["Inter"],
-        "label-md": ["Inter"],
-        "headline-lg": ["Manrope"],
-        "display-lg": ["Manrope"],
-        "body-lg": ["Inter"],
-        "headline-md": ["Manrope"],
-        "headline-lg-mobile": ["Manrope"],
-        "label-sm": ["Inter"]
-        },
-        "fontSize": {
-        "body-md": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
-        "label-md": ["14px", { "lineHeight": "20px", "letterSpacing": "0.01em", "fontWeight": "600" }],
-        "headline-lg": ["32px", { "lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "700" }],
-        "display-lg": ["48px", { "lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "800" }],
-        "body-lg": ["18px", { "lineHeight": "28px", "fontWeight": "400" }],
-        "headline-md": ["24px", { "lineHeight": "32px", "fontWeight": "600" }],
-        "headline-lg-mobile": ["24px", { "lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "700" }],
-        "label-sm": ["12px", { "lineHeight": "16px", "fontWeight": "500" }]
-        }
-        }
-        }
-        }
-    </script>
-    <style>
-        .material-symbols-outlined {
-        font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
-        }
+    <div class="row g-4">
+        @if (Model != null && Model.Any())
+        {
+            foreach (var prof in Model)
+            {
+                <div class="col-md-6 col-lg-4">
+                    <div class="card h-100 border-0 shadow-sm" style="border-radius: 1rem; transition: transform 0.2s;">
+                        <div class="card-body p-4 text-center">
+                            <div class="bg-light rounded-circle d-inline-flex align-items-center justify-content-center fw-bold mb-3"
+                                 style="width: 80px; height: 80px; font-size: 2rem; color: var(--ds-primary, #00236f);">
+                                @(prof.User?.Name?.Substring(0, 1).ToUpper() ?? "P")
+                            </div>
 
-        .glass-panel {
-        background: rgba(255, 255, 255, 0.7);
-        backdrop-filter: blur(16px);
-        -webkit-backdrop-filter: blur(16px);
-        border: 1px solid rgba(197, 197, 211, 0.3);
-        }
+                            <h3 class="h5 fw-bold mb-1 text-dark">@prof.User?.Name</h3>
+                            <p class="text-muted small mb-3">@(prof.Specialty ?? "Profissional independente")</p>
 
-        .soft-shadow {
-        box-shadow: 0 10px 30px -10px rgba(30, 58, 138, 0.08);
-        }
+                            <div class="d-flex justify-content-center gap-2 mb-4">
+                                <span class="badge bg-light text-dark border">
+                                    ⭐ @prof.AverageRating.ToString("0.0")
+                                </span>
+                                <span class="badge bg-light text-dark border">
+                                    @(prof.ExperienceYears ?? 0) anos exp.
+                                </span>
+                            </div>
 
-        .gradient-text {
-        background: linear-gradient(135deg, #00236f 0%, #1e3a8a 100%);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        }
-    </style>
-</head>
-<body class="bg-background text-on-background font-body-md antialiased overflow-x-hidden">
-
-    <nav class="bg-surface/80 dark:bg-surface-container/80 backdrop-blur-xl fixed top-0 w-full z-50 border-b border-outline-variant/30 shadow-sm shadow-primary/5 transition-all duration-300" id="navbar">
-        <div class="flex justify-between items-center w-full px-6 md:px-10 h-20 max-w-[1440px] mx-auto">
-            <div class="flex items-center gap-8">
-                <a class="font-headline-md text-headline-md font-extrabold text-primary dark:text-primary-fixed-dim tracking-tight flex items-center gap-2" href="#">
-                    <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">event_available</span>
-                    Agendify
-                </a>
-                <div class="hidden md:flex gap-6">
-                    <a class="text-primary dark:text-primary-fixed-dim font-bold border-b-2 border-primary dark:border-primary-fixed-dim pb-1 font-label-md text-label-md" href="#">Buscar Serviços</a>
-                    <a class="text-on-surface-variant dark:text-on-surface-variant/70 hover:text-primary transition-colors font-label-md text-label-md" href="#">Profissionais</a>
-                    <a class="text-on-surface-variant dark:text-on-surface-variant/70 hover:text-primary transition-colors font-label-md text-label-md" href="#">Planos</a>
-                    <a class="text-on-surface-variant dark:text-on-surface-variant/70 hover:text-primary transition-colors font-label-md text-label-md" href="#">Sobre</a>
-                </div>
-            </div>
-            <div class="flex items-center gap-4">
-                <a asp-controller="Account" asp-action="Login" class="hidden md:block text-on-surface-variant hover:text-primary transition-colors font-label-md text-label-md">Login</a>
-                <a asp-controller="Account" asp-action="Register" class="bg-primary text-on-primary px-6 py-2.5 rounded-full font-label-md text-label-md hover:bg-primary-container transition-all duration-200 scale-100 active:scale-95 shadow-md shadow-primary/20">Começar</a>
-            </div>
-        </div>
-    </nav>
-
-    <header class="relative pt-32 pb-24 md:pt-48 md:pb-32 overflow-hidden">
-        <div class="absolute inset-0 z-0">
-            <div class="absolute inset-0 bg-gradient-to-b from-surface-container-low/50 to-background"></div>
-            <div class="absolute top-20 -left-32 w-96 h-96 bg-primary/10 rounded-full blur-3xl opacity-60"></div>
-            <div class="absolute top-40 -right-20 w-[500px] h-[500px] bg-secondary-container/10 rounded-full blur-3xl opacity-50"></div>
-        </div>
-        <div class="relative z-10 max-w-[1440px] mx-auto px-6 md:px-10 flex flex-col items-center text-center">
-            <span class="px-4 py-1.5 rounded-full bg-primary/10 text-primary font-label-sm text-label-sm mb-6 border border-primary/20 flex items-center gap-2">
-                <span class="material-symbols-outlined text-[16px]">new_releases</span>
-                A Nova Era de Agendamentos Premium
-            </span>
-            <h1 class="font-display-lg text-display-lg mb-6 max-w-4xl text-on-background">
-                Conecte-se com os <br class="hidden md:block" />
-                <span class="gradient-text">Melhores Profissionais</span>
-            </h1>
-            <p class="font-body-lg text-body-lg text-on-surface-variant max-w-2xl mb-12">
-                Descubra, reserve e gerencie seus compromissos com uma experiência fluida e elegante. De clínicas de estética a barbearias premium, seu tempo valorizado.
-            </p>
-
-            <div class="w-full max-w-3xl glass-panel rounded-2xl p-2 md:p-3 flex flex-col md:flex-row gap-3 soft-shadow mx-auto relative z-20">
-                <div class="flex-1 flex items-center bg-surface rounded-xl px-4 py-3 border border-outline-variant/30 focus-within:border-primary focus-within:ring-2 focus-within:ring-primary/20 transition-all">
-                    <span class="material-symbols-outlined text-outline mr-3">search</span>
-                    <input class="w-full bg-transparent border-none focus:ring-0 text-body-md placeholder-outline p-0" placeholder="O que procura? (ex: Barbearia)" type="text" />
-                </div>
-                <div class="flex-1 flex items-center bg-surface rounded-xl px-4 py-3 border border-outline-variant/30 focus-within:border-primary focus-within:ring-2 focus-within:ring-primary/20 transition-all">
-                    <span class="material-symbols-outlined text-outline mr-3">location_on</span>
-                    <input class="w-full bg-transparent border-none focus:ring-0 text-body-md placeholder-outline p-0" placeholder="Onde?" type="text" />
-                </div>
-                <button class="bg-primary text-on-primary px-8 py-3 rounded-xl font-label-md text-label-md hover:bg-primary-container transition-all shadow-md shadow-primary/20 flex items-center justify-center gap-2 scale-100 active:scale-95">
-                    Buscar
-                </button>
-            </div>
-
-            <div class="mt-16 grid grid-cols-2 md:grid-cols-4 gap-8 md:gap-16 opacity-80">
-                <div class="flex flex-col items-center">
-                    <span class="font-headline-lg text-headline-lg text-primary">10k+</span>
-                    <span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Profissionais</span>
-                </div>
-                <div class="flex flex-col items-center">
-                    <span class="font-headline-lg text-headline-lg text-primary">1M+</span>
-                    <span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Agendamentos</span>
-                </div>
-                <div class="flex flex-col items-center">
-                    <span class="font-headline-lg text-headline-lg text-primary">4.9</span>
-                    <span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Avaliação Média</span>
-                </div>
-                <div class="flex flex-col items-center">
-                    <span class="font-headline-lg text-headline-lg text-primary">99%</span>
-                    <span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Satisfação</span>
-                </div>
-            </div>
-        </div>
-    </header>
-
-    <section class="py-24 bg-surface-container-lowest">
-        <div class="max-w-[1440px] mx-auto px-6 md:px-10">
-            <div class="flex flex-col md:flex-row justify-between items-end mb-12">
-                <div>
-                    <h2 class="font-headline-lg text-headline-lg text-on-background mb-4">Serviços Populares</h2>
-                    <p class="font-body-md text-body-md text-on-surface-variant max-w-xl">Explore as categorias mais procuradas e encontre especialistas prontos para atender você.</p>
-                </div>
-                <a class="text-primary font-label-md text-label-md flex items-center gap-1 hover:underline mt-4 md:mt-0" href="#">Ver todas categorias <span class="material-symbols-outlined text-[18px]">arrow_forward</span></a>
-            </div>
-
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 auto-rows-[250px]">
-                <div class="md:col-span-2 md:row-span-2 rounded-3xl overflow-hidden relative group cursor-pointer bg-gray-900">
-                    <img alt="Barbearia Premium" class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105 opacity-60" src="https://images.unsplash.com/photo-1503951914875-452162b0f3f1?ixlib=rb-4.0.3&auto=format&fit=crop&w=1470&q=80" />
-                    <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent"></div>
-                    <div class="absolute bottom-0 left-0 p-8 z-10">
-                        <span class="bg-surface/20 backdrop-blur-md text-white px-3 py-1 rounded-full font-label-sm text-label-sm mb-3 inline-block border border-white/10">1.2k Profissionais</span>
-                        <h3 class="font-headline-md text-headline-md text-white mb-2">Barbearia Premium</h3>
-                        <p class="font-body-md text-body-md text-white/80">Cortes, barboterapia e cuidados faciais.</p>
-                    </div>
-                </div>
-                <div class="rounded-3xl overflow-hidden relative group cursor-pointer bg-surface-container-high">
-                    <div class="absolute inset-0 p-6 flex flex-col justify-between z-10">
-                        <div class="w-12 h-12 rounded-full bg-white flex items-center justify-center text-primary shadow-sm">
-                            <span class="material-symbols-outlined">spa</span>
-                        </div>
-                        <div>
-                            <h3 class="font-headline-md text-headline-md text-on-background mb-1">Spa & Bem-estar</h3>
-                            <p class="font-body-md text-body-md text-on-surface-variant text-sm">Massagens relaxantes e terapias.</p>
+                            <a asp-controller="Professionals" asp-action="Profile" asp-route-id="@prof.Id"
+                               class="btn w-100 text-white fw-bold py-2" style="background: var(--ds-primary, #00236f); border-radius: 0.5rem;">
+                                Ver Perfil e Agendar
+                            </a>
                         </div>
                     </div>
                 </div>
-                <div class="rounded-3xl overflow-hidden relative group cursor-pointer bg-secondary-fixed/50">
-                    <div class="absolute inset-0 p-6 flex flex-col justify-between z-10">
-                        <div class="w-12 h-12 rounded-full bg-white flex items-center justify-center text-secondary shadow-sm">
-                            <span class="material-symbols-outlined">health_and_safety</span>
-                        </div>
-                        <div>
-                            <h3 class="font-headline-md text-headline-md text-on-background mb-1">Clínicas</h3>
-                            <p class="font-body-md text-body-md text-on-surface-variant text-sm">Consultas e estética.</p>
-                        </div>
-                    </div>
+            }
+        }
+        else
+        {
+            <div class="col-12 text-center py-5">
+                <div class="p-4 bg-light rounded d-inline-block">
+                    <span class="material-symbols-outlined fs-1 text-muted mb-2">search_off</span>
+                    <p class="text-muted mb-0">Nenhum profissional disponível no momento.</p>
                 </div>
             </div>
-        </div>
-    </section>
-
-    <footer class="bg-surface-container-lowest py-12 border-t border-outline-variant/30">
-        <div class="max-w-[1440px] mx-auto px-6 md:px-10 flex flex-col md:flex-row justify-between items-center gap-6">
-            <div class="font-headline-md text-headline-md font-extrabold text-primary flex items-center gap-2">
-                <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">event_available</span>
-                Agendify
-            </div>
-            <div class="flex flex-wrap justify-center gap-6">
-                <a class="text-on-surface-variant hover:text-primary transition-colors font-body-md text-sm" href="#">Política de Privacidade</a>
-                <a class="text-on-surface-variant hover:text-primary transition-colors font-body-md text-sm" href="#">Termos de Serviço</a>
-                <a class="text-on-surface-variant hover:text-primary transition-colors font-body-md text-sm" href="#">Suporte</a>
-            </div>
-            <div class="text-on-surface-variant font-label-sm text-label-sm text-center">
-                © 2026 Agendify Technologies. Todos os direitos reservados.
-            </div>
-        </div>
-    </footer>
-
-    <script>
-        // Navbar scroll effect
-        window.addEventListener('scroll', () => {
-        const nav = document.getElementById('navbar');
-        if (window.scrollY > 20) {
-        nav.classList.add('shadow-md');
-        nav.classList.replace('bg-surface/80', 'bg-surface/95');
-        } else {
-        nav.classList.remove('shadow-md');
-        nav.classList.replace('bg-surface/95', 'bg-surface/80');
         }
-        });
-    </script>
-</body>
-</html>
+    </div>
+</div>
