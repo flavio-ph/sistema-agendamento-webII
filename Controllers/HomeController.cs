@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using SistemaAgendamentoWebII.Data;
@@ -15,15 +16,31 @@ public class HomeController : Controller
         _context = context;
     }
 
-    public async Task<IActionResult> Index()
+    // 1. TELA PÚBLICA: Landing Page Institucional
+    public IActionResult Index()
     {
-        // Busca profissionais ativos, limitando a 20 para evitar gargalos de performance iniciais
+        // Se já estiver logado, atira o utilizador para o seu respectivo painel
+        if (User.Identity != null && User.Identity.IsAuthenticated)
+        {
+            if (User.IsInRole("Profissional"))
+                return RedirectToAction("DashboardProfissional", "Dashboard");
+
+            return RedirectToAction("Index", "Dashboard");
+        }
+
+        // Retorna uma View simples, sem modelo de profissionais
+        return View();
+    }
+
+    // 2. TELA PRIVADA: Listagem de profissionais para clientes logados
+    [Authorize]
+    public async Task<IActionResult> Explorar()
+    {
         var profissionais = await _context.Professionals
             .Include(p => p.User)
             .Include(p => p.Services)
             .Where(p => p.IsActive)
             .OrderByDescending(p => p.AverageRating)
-            .Take(20)
             .ToListAsync();
 
         return View(profissionais);
