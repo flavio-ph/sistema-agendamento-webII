@@ -130,7 +130,7 @@ public class AccountController : Controller
         return userRole switch
         {
             "Profissional" => RedirectToAction("DashboardProfissional", "Dashboard"), // Rota corrigida
-            "Empresa" => RedirectToAction("Index", "DashboardEmpresa"),
+            "Empresa" => RedirectToAction("DashboardEmpresa", "Dashboard"),
             _ => RedirectToAction("Index", "Dashboard")
         };
     }
@@ -142,5 +142,12 @@ public class AccountController : Controller
     {
         await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
         return RedirectToAction("DashboardProfissional", "Dashboard");
+    }
+
+    [HttpGet]
+    [AllowAnonymous]
+    public IActionResult AccessDenied()
+    {
+        return View();
     }
 }

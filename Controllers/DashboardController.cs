@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using SistemaAgendamentoWebII.Data;
+using SistemaAgendamentoWebII.Models;
 using SistemaAgendamentoWebII.Models.ViewModels;
 using System;
 using System.Linq;
@@ -23,8 +24,15 @@ namespace SistemaAgendamentoWebII.Controllers
         // Action para Clientes (Padrão)
         public async Task<IActionResult> Index()
         {
-            if (!User.IsInRole("Cliente")) return Forbid();
+            // Se for um Profissional, desvia para o painel dele
+            if (User.IsInRole("Profissional"))
+                return RedirectToAction("DashboardProfissional");
 
+            // Se for uma Empresa, desvia para o novo painel dela
+            if (User.IsInRole("Empresa"))    
+            return RedirectToAction("DashboardEmpresa");
+
+            // Se não for nenhum dos dois, assume-se que é Cliente
             var userIdString = User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (string.IsNullOrEmpty(userIdString)) return RedirectToAction("Login", "Account");
 
@@ -84,5 +92,37 @@ namespace SistemaAgendamentoWebII.Controllers
 
             return View(viewModel);
         }
+
+        public async Task<IActionResult> DashboardEmpresa()
+        {
+            
+            if (!User.IsInRole("Empresa")) return Forbid();
+
+            var userIdString = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (string.IsNullOrEmpty(userIdString)) return RedirectToAction("Login", "Account");
+
+            var userId = Guid.Parse(userIdString);
+
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == userId);
+
+            
+            var establishment = await _context.Set<Establishment>()
+                .Include(e => e.Professionals)
+                .FirstOrDefaultAsync(e => e.UserId == userId);
+
+           
+            var viewModel = new EstablishmentDashboardViewModel
+            {
+                User = user,
+                Establishment = establishment,
+                TotalProfessionals = establishment?.Professionals?.Count ?? 0,
+                AppointmentsTodayCount = 24, 
+                PendingApprovalsCount = 3, 
+                MonthlyRevenue = 34500.00m 
+            };
+
+            return View(viewModel);
+        }
+
     }
 }
