@@ -108,8 +108,12 @@
 
                             @if (User.IsInRole("Profissional"))
                             {
-                                <li class="nav-item"><a class="nav-link text-dark hover:text-blue-900 transition-colors" asp-controller="Dashboard" asp-action="DashboardProfissional">Agenda</a></li>
-                                <li class="nav-item"><a class="nav-link text-dark hover:text-blue-900 transition-colors" asp-controller="Service" asp-action="Create">Meus Serviços</a></li>
+                                <li class="nav-item">
+                                    <a class="nav-link text-dark hover:text-blue-900 transition-colors" asp-controller="Appointments" asp-action="ProfessionalAgenda">Agenda</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link text-dark hover:text-blue-900 transition-colors" asp-controller="Service" asp-action="Create">Meus Serviços</a>
+                                </li>
                             }
 
                             // ... (demais perfis mantêm a mesma estrutura de classes)

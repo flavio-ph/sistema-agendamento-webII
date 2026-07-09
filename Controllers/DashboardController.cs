@@ -66,31 +66,34 @@ namespace SistemaAgendamentoWebII.Controllers
             return View(profissional);
         }
 
+        [Authorize(Roles = "Profissional")]
+        [HttpGet]
         public async Task<IActionResult> DashboardProfissional()
         {
-            if (!User.IsInRole("Profissional")) return Forbid();
-
             var userIdString = User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (string.IsNullOrEmpty(userIdString)) return RedirectToAction("Login", "Account");
 
-            var userId = Guid.Parse(userIdString);
+            var prof = await _context.Professionals.FirstOrDefaultAsync(p => p.UserId == Guid.Parse(userIdString));
+            if (prof == null) return Forbid();
 
-            var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == userId);
-            var prof = await _context.Professionals
-                .Include(p => p.User)
-                .FirstOrDefaultAsync(p => p.UserId == userId);
+            // Filtra agendamentos de hoje em diante, ordena pelos mais próximos e pega apenas os 5 primeiros
+            var hoje = DateOnly.FromDateTime(DateTime.Now);
 
-            var viewModel = new ProfessionalDashboardViewModel
-            {
-                User = user,
-                Professional = prof,
-                AppointmentsTodayCount = 5,
-                PendingAppointmentsCount = 2,
-                MonthlyEarnings = 12450.00m,
-                AverageRating = 4.9
-            };
+            var proximosAtendimentos = await _context.Agendamentos
+                .Include(a => a.Service)
+                .Include(a => a.Client)
+                .Where(a => a.ProfessionalId == prof.Id && a.AppointmentDate >= hoje)
+                .OrderBy(a => a.AppointmentDate)
+                .ThenBy(a => a.StartTime)
+                .Take(5)
+                .ToListAsync();
 
-            return View(viewModel);
+            // Envia a lista para a View
+            ViewBag.ProximosAtendimentos = proximosAtendimentos;
+
+            // (Se você tiver outras contas ou ViewBags aqui para os números lá de cima, pode manter!)
+
+            return View();
         }
 
         public async Task<IActionResult> DashboardEmpresa()
