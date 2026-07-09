@@ -30,6 +30,7 @@ public class AccountController : Controller
         string PasswordConfirmation,
         string? Specialty,
         string? EstablishmentName,
+        string? CNPJ,
         string? Biography,
         string? Description,
         int? ExperienceYears,
@@ -83,6 +84,7 @@ public class AccountController : Controller
                 Id = Guid.NewGuid(),
                 UserId = user.Id,
                 Name = EstablishmentName,
+                CNPJ = CNPJ,
                 CreatedAt = DateTime.UtcNow
             });
             await _context.SaveChangesAsync();

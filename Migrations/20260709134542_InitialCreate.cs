@@ -12,7 +12,7 @@ namespace SistemaAgendamentoWebII.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "Category",
+                name: "Categories",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
@@ -20,25 +20,7 @@ namespace SistemaAgendamentoWebII.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Category", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Establishments",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    Name = table.Column<string>(type: "character varying(150)", maxLength: 150, nullable: false),
-                    Description = table.Column<string>(type: "text", nullable: true),
-                    Phone = table.Column<string>(type: "character varying(20)", maxLength: 20, nullable: true),
-                    Email = table.Column<string>(type: "character varying(150)", maxLength: 150, nullable: true),
-                    LogoUrl = table.Column<string>(type: "text", nullable: true),
-                    CNPJ = table.Column<string>(type: "character varying(20)", maxLength: 20, nullable: true),
-                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Establishments", x => x.Id);
+                    table.PrimaryKey("PK_Categories", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -49,8 +31,7 @@ namespace SistemaAgendamentoWebII.Migrations
                     Name = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
                     Email = table.Column<string>(type: "character varying(150)", maxLength: 150, nullable: false),
                     PasswordHash = table.Column<string>(type: "text", nullable: false),
-                    Phone = table.Column<string>(type: "character varying(20)", maxLength: 20, nullable: true),
-                    ProfileImage = table.Column<string>(type: "text", nullable: true),
+                    Phone = table.Column<string>(type: "character varying(11)", maxLength: 11, nullable: true),
                     Role = table.Column<string>(type: "character varying(30)", maxLength: 30, nullable: false),
                     IsActive = table.Column<bool>(type: "boolean", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
@@ -62,7 +43,55 @@ namespace SistemaAgendamentoWebII.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Address",
+                name: "Establishments",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    UserId = table.Column<Guid>(type: "uuid", nullable: false),
+                    Name = table.Column<string>(type: "character varying(150)", maxLength: 150, nullable: false),
+                    Description = table.Column<string>(type: "text", nullable: true),
+                    Phone = table.Column<string>(type: "character varying(20)", maxLength: 20, nullable: true),
+                    Email = table.Column<string>(type: "character varying(150)", maxLength: 150, nullable: true),
+                    LogoUrl = table.Column<string>(type: "text", nullable: true),
+                    CNPJ = table.Column<string>(type: "character varying(20)", maxLength: 20, nullable: true),
+                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Establishments", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Establishments_Users_UserId",
+                        column: x => x.UserId,
+                        principalTable: "Users",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Notifications",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    UserId = table.Column<Guid>(type: "uuid", nullable: false),
+                    Title = table.Column<string>(type: "character varying(150)", maxLength: 150, nullable: false),
+                    Message = table.Column<string>(type: "text", nullable: false),
+                    Type = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
+                    IsRead = table.Column<bool>(type: "boolean", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Notifications", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Notifications_Users_UserId",
+                        column: x => x.UserId,
+                        principalTable: "Users",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Addresses",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
@@ -78,34 +107,11 @@ namespace SistemaAgendamentoWebII.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Address", x => x.Id);
+                    table.PrimaryKey("PK_Addresses", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Address_Establishments_EstablishmentId",
+                        name: "FK_Addresses_Establishments_EstablishmentId",
                         column: x => x.EstablishmentId,
                         principalTable: "Establishments",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Notification",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    UserId = table.Column<Guid>(type: "uuid", nullable: false),
-                    Title = table.Column<string>(type: "character varying(150)", maxLength: 150, nullable: false),
-                    Message = table.Column<string>(type: "text", nullable: false),
-                    Type = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
-                    IsRead = table.Column<bool>(type: "boolean", nullable: false),
-                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Notification", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Notification_Users_UserId",
-                        column: x => x.UserId,
-                        principalTable: "Users",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -118,6 +124,8 @@ namespace SistemaAgendamentoWebII.Migrations
                     UserId = table.Column<Guid>(type: "uuid", nullable: false),
                     EstablishmentId = table.Column<Guid>(type: "uuid", nullable: true),
                     Biography = table.Column<string>(type: "text", nullable: true),
+                    Description = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: true),
+                    RegistrationNumber = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: true),
                     Specialty = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: true),
                     ExperienceYears = table.Column<int>(type: "integer", nullable: true),
                     AverageRating = table.Column<decimal>(type: "numeric(3,2)", nullable: false),
@@ -164,7 +172,7 @@ namespace SistemaAgendamentoWebII.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Service",
+                name: "Services",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
@@ -178,15 +186,15 @@ namespace SistemaAgendamentoWebII.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Service", x => x.Id);
+                    table.PrimaryKey("PK_Services", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Service_Category_CategoryId",
+                        name: "FK_Services_Categories_CategoryId",
                         column: x => x.CategoryId,
-                        principalTable: "Category",
+                        principalTable: "Categories",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_Service_Professionals_ProfessionalId",
+                        name: "FK_Services_Professionals_ProfessionalId",
                         column: x => x.ProfessionalId,
                         principalTable: "Professionals",
                         principalColumn: "Id",
@@ -194,11 +202,11 @@ namespace SistemaAgendamentoWebII.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Appointment",
+                name: "Agendamentos",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    ClientId = table.Column<Guid>(type: "uuid", nullable: false),
+                    ClienteId = table.Column<Guid>(type: "uuid", nullable: false),
                     ProfessionalId = table.Column<Guid>(type: "uuid", nullable: false),
                     ServiceId = table.Column<Guid>(type: "uuid", nullable: false),
                     AppointmentDate = table.Column<DateOnly>(type: "date", nullable: false),
@@ -210,47 +218,52 @@ namespace SistemaAgendamentoWebII.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Appointment", x => x.Id);
+                    table.PrimaryKey("PK_Agendamentos", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Appointment_Professionals_ProfessionalId",
+                        name: "FK_Agendamentos_Professionals_ProfessionalId",
                         column: x => x.ProfessionalId,
                         principalTable: "Professionals",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_Appointment_Service_ServiceId",
+                        name: "FK_Agendamentos_Services_ServiceId",
                         column: x => x.ServiceId,
-                        principalTable: "Service",
+                        principalTable: "Services",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_Appointment_Users_ClientId",
-                        column: x => x.ClientId,
+                        name: "FK_Agendamentos_Users_ClienteId",
+                        column: x => x.ClienteId,
                         principalTable: "Users",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_Address_EstablishmentId",
-                table: "Address",
+                name: "IX_Addresses_EstablishmentId",
+                table: "Addresses",
                 column: "EstablishmentId",
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_Appointment_ClientId",
-                table: "Appointment",
-                column: "ClientId");
+                name: "IX_Agendamentos_ClienteId",
+                table: "Agendamentos",
+                column: "ClienteId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Appointment_ProfessionalId",
-                table: "Appointment",
+                name: "IX_Agendamentos_ProfessionalId",
+                table: "Agendamentos",
                 column: "ProfessionalId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Appointment_ServiceId",
-                table: "Appointment",
+                name: "IX_Agendamentos_ServiceId",
+                table: "Agendamentos",
                 column: "ServiceId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Establishments_UserId",
+                table: "Establishments",
+                column: "UserId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Favorites_ProfessionalId",
@@ -258,8 +271,8 @@ namespace SistemaAgendamentoWebII.Migrations
                 column: "ProfessionalId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Notification_UserId",
-                table: "Notification",
+                name: "IX_Notifications_UserId",
+                table: "Notifications",
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
@@ -274,13 +287,13 @@ namespace SistemaAgendamentoWebII.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_Service_CategoryId",
-                table: "Service",
+                name: "IX_Services_CategoryId",
+                table: "Services",
                 column: "CategoryId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Service_ProfessionalId",
-                table: "Service",
+                name: "IX_Services_ProfessionalId",
+                table: "Services",
                 column: "ProfessionalId");
 
             migrationBuilder.CreateIndex(
@@ -294,22 +307,22 @@ namespace SistemaAgendamentoWebII.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "Address");
+                name: "Addresses");
 
             migrationBuilder.DropTable(
-                name: "Appointment");
+                name: "Agendamentos");
 
             migrationBuilder.DropTable(
                 name: "Favorites");
 
             migrationBuilder.DropTable(
-                name: "Notification");
+                name: "Notifications");
 
             migrationBuilder.DropTable(
-                name: "Service");
+                name: "Services");
 
             migrationBuilder.DropTable(
-                name: "Category");
+                name: "Categories");
 
             migrationBuilder.DropTable(
                 name: "Professionals");
