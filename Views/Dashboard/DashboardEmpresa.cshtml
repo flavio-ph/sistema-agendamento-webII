@@ -133,7 +133,6 @@
                     <span class="material-symbols-outlined text-warning">notifications_active</span>
                 </div>
                 <div>
-                    <!-- Conta quantos avisos existem na lista -->
                     <h2 class="prof-stat-val h2 mb-0">@(Model.PlatformNotices?.Count() ?? 0)</h2>
                     <span class="text-muted" style="font-size: 0.75rem;">Requerem atenção do gestor</span>
                 </div>
@@ -142,11 +141,78 @@
     </div>
 
     <!-- SEÇÃO DE TABELAS E BOXES DO PAINEL -->
-   
-        <!-- BOX 1: AGENDAMENTOS RECENTES -->
-        <div class="col-12">
-            <h3 class="h5 fw-bold mb-3" style="font-family: 'Manrope', sans-serif;">Agendamentos Recentes da Empresa</h3>
-            <div class="prof-card p-0 overflow-hidden mb-4">
+    <div class="row g-4">
+
+        <!-- BOX 1: AVISOS RECENTES (Lado Esquerdo - Menor) -->
+        <div class="col-12 col-lg-4">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h3 class="h5 fw-bold mb-0" style="font-family: 'Manrope', sans-serif;">Avisos Recentes</h3>
+                @if (Model.PlatformNotices != null && Model.PlatformNotices.Any())
+                {
+                    <form asp-controller="Dashboard" asp-action="LimparAvisos" method="post" class="m-0">
+                        @Html.AntiForgeryToken()
+                        <button type="submit" class="btn btn-sm btn-outline-danger d-inline-flex align-items-center gap-1"
+                                onclick="return confirm('Tem certeza que deseja apagar todos os avisos?');"
+                                style="border-radius: 10px; padding: 4px 8px;">
+                            <span class="material-symbols-outlined" style="font-size: 1.1rem;">delete</span>
+                            Limpar tudo
+                        </button>
+                    </form>
+                }
+            </div>
+            <div class="prof-card p-0 overflow-hidden h-100">
+                <div class="table-responsive">
+                    <table class="table mb-0 align-middle">
+                        <thead class="bg-light">
+                            <tr>
+                                <th class="px-4 py-3 border-bottom-0 text-muted" style="font-weight: 600; font-size: 0.85rem;">Aviso</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (Model.PlatformNotices != null && Model.PlatformNotices.Any())
+                            {
+                                @foreach (var aviso in Model.PlatformNotices)
+                                {
+                                    <tr>
+                                        <td class="px-4 py-3">
+                                            <div class="d-flex justify-content-between align-items-center mb-1">
+                                                <div class="fw-semibold text-dark">@aviso.Title</div>
+                                               
+                                                <div class="d-flex align-items-center gap-2">
+                                                    <span class="text-primary fw-bold" style="font-size: 0.75rem;">
+                                                        @aviso.CreatedAt.ToString("dd/MM")
+                                                    </span>
+
+                                                    <form asp-controller="Dashboard" asp-action="RemoverAviso" method="post" class="m-0">
+                                                        @Html.AntiForgeryToken()
+                                                        <input type="hidden" name="id" value="@aviso.Id" />
+                                                        <button type="submit" class="btn btn-link p-0 text-danger text-decoration-none" title="Remover aviso">
+                                                            <span class="material-symbols-outlined" style="font-size: 1.1rem;">delete</span>
+                                                        </button>
+                                                    </form>
+                                                </div>
+                                            </div>
+                                            <div class="text-muted text-wrap" style="font-size: 0.85rem;">@aviso.Message</div>
+                                        </td>
+                                    </tr>
+                                }
+                            }
+                            else
+                            {
+                                <tr>
+                                    <td class="px-4 py-4 text-center text-muted">Nenhum aviso no momento.</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- BOX 2: AGENDAMENTOS RECENTES (Lado Direito - Maior) -->
+        <div class="col-12 col-lg-8">
+            <h3 class="h5 fw-bold mb-3" style="font-family: 'Manrope', sans-serif;">Agendamentos Recentes</h3>
+            <div class="prof-card p-0 overflow-hidden h-100">
                 <div class="table-responsive">
                     <table class="table mb-0 align-middle">
                         <thead class="bg-light">
@@ -164,7 +230,7 @@
                                 {
                                     <tr>
                                         <td class="px-4 py-3">
-                                            <div class="fw-semibold text-dark">@(agendamento.Professional?.User?.Name ?? "Profissional Cadastrado")</div>
+                                            <div class="fw-semibold text-dark">@(agendamento.Professional?.User?.Name ?? "Profissional")</div>
                                         </td>
                                         <td class="py-3">
                                             <div class="fw-medium">@(agendamento.Client?.Name ?? "Cliente Externo")</div>
@@ -172,7 +238,7 @@
                                         </td>
                                         <td class="py-3">
                                             <div class="fw-bold text-primary">
-                                                @agendamento.AppointmentDate.ToString("dd/MM/yyyy") às @agendamento.StartTime.ToString(@"hh\:mm")
+                                                @agendamento.AppointmentDate.ToString("dd/MM/yyyy")<br />às @agendamento.StartTime.ToString(@"hh\:mm")
                                             </div>
                                         </td>
                                         <td class="py-3">
@@ -198,47 +264,4 @@
             </div>
         </div>
 
-        <!-- BOX 2: AVISOS RECENTES -->
-        <div class="col-12">
-            <h3 class="h5 fw-bold mb-3" style="font-family: 'Manrope', sans-serif;">Avisos Recentes</h3>
-            <div class="prof-card p-0 overflow-hidden">
-                <div class="table-responsive">
-                    <table class="table mb-0 align-middle">
-                        <thead class="bg-light">
-                            <tr>
-                                <th class="px-4 py-3 border-bottom-0 text-muted" style="font-weight: 600; font-size: 0.85rem;">Data</th>
-                                <th class="py-3 border-bottom-0 text-muted" style="font-weight: 600; font-size: 0.85rem;">Título</th>
-                                <th class="py-3 border-bottom-0 text-muted" style="font-weight: 600; font-size: 0.85rem;">Mensagem</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @if (Model.PlatformNotices != null && Model.PlatformNotices.Any())
-                            {
-                                foreach (var aviso in Model.PlatformNotices)
-                                {
-                                    <tr>
-                                        <td class="px-4 py-3">
-                                            <div class="fw-bold text-primary">@aviso.CreatedAt.ToString("dd/MM/yyyy HH:mm")</div>
-                                        </td>
-                                        <td class="py-3">
-                                            <div class="fw-semibold text-dark">@aviso.Title</div>
-                                        </td>
-                                        <td class="py-3">
-                                            <div class="text-muted" style="font-size: 0.85rem;">@aviso.Message</div>
-                                        </td>
-                                    </tr>
-                                }
-                            }
-                            else
-                            {
-                                <tr>
-                                    <td colspan="3" class="px-4 py-4 text-center text-muted">Nenhum aviso no momento.</td>
-                                </tr>
-                            }
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
     </div>
-</div>

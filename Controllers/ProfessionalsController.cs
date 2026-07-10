@@ -41,7 +41,6 @@ public class ProfessionalsController : Controller
         var userIdString = User.FindFirstValue(ClaimTypes.NameIdentifier);
         if (!Guid.TryParse(userIdString, out var userId)) return RedirectToAction("Login", "Account");
 
-        // Se já for profissional, redireciona para o painel para não duplicar
         var isAlreadyPro = await _context.Professionals.AnyAsync(p => p.UserId == userId);
         if (isAlreadyPro) return RedirectToAction("Index", "Dashboard");
 
@@ -56,14 +55,12 @@ public class ProfessionalsController : Controller
         var userIdString = User.FindFirstValue(ClaimTypes.NameIdentifier);
         if (!Guid.TryParse(userIdString, out var userId)) return RedirectToAction("Login", "Account");
 
-        // Injeta os dados sistémicos invisíveis ao utilizador
         professional.UserId = userId;
         professional.AverageRating = 0;
         professional.IsActive = true;
 
         _context.Professionals.Add(professional);
 
-        // Promove a Role do User no banco de dados
         var user = await _context.Users.FindAsync(userId);
         if (user != null)
         {
@@ -73,8 +70,6 @@ public class ProfessionalsController : Controller
 
         await _context.SaveChangesAsync();
 
-        // Como a Role mudou, o ideal num sistema real é forçar a atualização do Cookie.
-        // Aqui fechamos a sessão para forçar o login com o novo painel administrativo.
         await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
 
         return RedirectToAction("Login", "Account");
@@ -87,7 +82,6 @@ public class ProfessionalsController : Controller
         var professional = await _context.Professionals.FindAsync(id);
         if (professional == null) return NotFound();
 
-        // Segurança: Impede que um profissional edite o perfil de outro
         var userIdString = User.FindFirstValue(ClaimTypes.NameIdentifier);
         if (professional.UserId.ToString() != userIdString) return Forbid();
 
@@ -107,7 +101,7 @@ public class ProfessionalsController : Controller
         if (professional == null) return NotFound();
         if (professional.UserId.ToString() != userIdString) return Forbid();
 
-        // Atualização seletiva: alteramos apenas os campos permitidos
+
         professional.Specialty = model.Specialty;
         professional.ExperienceYears = model.ExperienceYears;
         professional.RegistrationNumber = model.RegistrationNumber;
@@ -116,7 +110,6 @@ public class ProfessionalsController : Controller
         _context.Professionals.Update(professional);
         await _context.SaveChangesAsync();
 
-        // Redireciona de volta para o Dashboard após guardar
         return RedirectToAction("DashboardProfissional", "Dashboard");
     }
 
@@ -126,12 +119,10 @@ public class ProfessionalsController : Controller
     {
         ViewBag.EstablishmentId = establishmentId;
 
-        // Busca profissionais que ainda NÃO estão vinculados a nenhuma empresa
         var query = _context.Professionals
             .Include(p => p.User)
             .Where(p => p.EstablishmentId == null);
 
-        // Se o gestor digitou algo na barra de pesquisa, filtra por Nome ou E-mail
         if (!string.IsNullOrEmpty(searchString))
         {
             query = query.Where(p => p.User.Name.Contains(searchString) || p.User.Email.Contains(searchString));
@@ -147,18 +138,32 @@ public class ProfessionalsController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> VincularConfirmar(Guid professionalId, Guid establishmentId)
     {
-        var profissional = await _context.Professionals.FirstOrDefaultAsync(p => p.Id == professionalId);
+        var profissional = await _context.Professionals
+            .Include(p => p.User)
+            .FirstOrDefaultAsync(p => p.Id == professionalId);
 
-        if (profissional == null) return NotFound();
+        var establishment = await _context.Set<Establishment>().FindAsync(establishmentId);
 
-        // Vincula o profissional à empresa atualizando o ID da empresa dele
+        if (profissional == null || establishment == null) return NotFound();
+
         profissional.EstablishmentId = establishmentId;
-
         _context.Update(profissional);
+
+        var notificacao = new Notification
+        {
+            Id = Guid.NewGuid(),
+            UserId = establishment.UserId,
+            Title = "Novo Membro na Equipe",
+            Message = $"O profissional {profissional.User?.Name} foi adicionado à sua equipe com sucesso.",
+            Type = "Equipe",
+            IsRead = false,
+            CreatedAt = DateTime.UtcNow
+        };
+        _context.Set<Notification>().Add(notificacao);
+
         await _context.SaveChangesAsync();
 
-        // Redireciona de volta para o Dashboard da Empresa com os dados atualizados
-        return RedirectToAction("DashboardEmpresa", "Dashboard");
+        return RedirectToAction("GerirEquipe");
     }
 
 
@@ -168,7 +173,12 @@ public class ProfessionalsController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> RemoverVinculo(Guid professionalId)
     {
-        var profissional = await _context.Professionals.FirstOrDefaultAsync(p => p.Id == professionalId);
+        var userIdString = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (string.IsNullOrEmpty(userIdString)) return RedirectToAction("Login", "Account");
+
+        var profissional = await _context.Professionals
+            .Include(p => p.User)
+            .FirstOrDefaultAsync(p => p.Id == professionalId);
 
         if (profissional == null) return NotFound();
 
@@ -180,12 +190,25 @@ public class ProfessionalsController : Controller
         {
             _context.Agendamentos.RemoveRange(agendamentosDoProfissional);
         }
-        profissional.EstablishmentId = null;
 
+        profissional.EstablishmentId = null;
         _context.Update(profissional);
 
+        var notificacao = new Notification
+        {
+            Id = Guid.NewGuid(),
+            UserId = Guid.Parse(userIdString),
+            Title = "Membro Removido",
+            Message = $"O profissional {profissional.User?.Name} foi removido da sua equipe e os seus agendamentos atrelados à empresa foram cancelados.",
+            Type = "Equipe",
+            IsRead = false,
+            CreatedAt = DateTime.UtcNow
+        };
+        _context.Set<Notification>().Add(notificacao);
+
         await _context.SaveChangesAsync();
-        return RedirectToAction(nameof(GerirEquipe));
+
+        return RedirectToAction("GerirEquipe");
     }
 
     // GET: Professionals/GerirEquipe

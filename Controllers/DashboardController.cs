@@ -20,19 +20,14 @@ namespace SistemaAgendamentoWebII.Controllers
         {
             _context = context;
         }
-
-        // Action para Clientes (Padrão)
         public async Task<IActionResult> Index()
         {
-            // Se for um Profissional, desvia para o painel dele
             if (User.IsInRole("Profissional"))
                 return RedirectToAction("DashboardProfissional");
 
-            // Se for uma Empresa, desvia para o novo painel dela
             if (User.IsInRole("Empresa"))    
             return RedirectToAction("DashboardEmpresa");
 
-            // Se não for nenhum dos dois, assume-se que é Cliente
             var userIdString = User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (string.IsNullOrEmpty(userIdString)) return RedirectToAction("Login", "Account");
 
@@ -47,7 +42,7 @@ namespace SistemaAgendamentoWebII.Controllers
             return View(agendamentos);
         }
 
-        [AllowAnonymous] // Público: qualquer um pode ver o perfil
+        [AllowAnonymous] 
         public async Task<IActionResult> Perfil(Guid id)
         {
             var profissional = await _context.Professionals
@@ -75,8 +70,7 @@ namespace SistemaAgendamentoWebII.Controllers
 
             var prof = await _context.Professionals.FirstOrDefaultAsync(p => p.UserId == Guid.Parse(userIdString));
             if (prof == null) return Forbid();
-
-            // Filtra agendamentos de hoje em diante, ordena pelos mais próximos e pega apenas os 5 primeiros
+    
             var hoje = DateOnly.FromDateTime(DateTime.Now);
 
             var proximosAtendimentos = await _context.Agendamentos
@@ -88,10 +82,8 @@ namespace SistemaAgendamentoWebII.Controllers
                 .Take(5)
                 .ToListAsync();
 
-            // Envia a lista para a View
             ViewBag.ProximosAtendimentos = proximosAtendimentos;
 
-            // (Se você tiver outras contas ou ViewBags aqui para os números lá de cima, pode manter!)
 
             return View();
         }
@@ -117,20 +109,19 @@ namespace SistemaAgendamentoWebII.Controllers
 
             var dataAtual = DateTime.Now;
             var dataAtualDateOnly = DateOnly.FromDateTime(dataAtual);
-
-            // Base de agendamentos filtrada pela empresa atual
+   
             var agendamentosDaEmpresa = _context.Agendamentos
                 .Include(a => a.Professional)
                 .ThenInclude(p => p.User)
                 .Include(a => a.Service)
                 .Where(a => a.Professional.EstablishmentId == establishment.Id);
 
-            // BUSCA OS AGENDAMENTOS RECENTES (Incluindo dados do Cliente e do Profissional)
+            
             var recentAppointments = await agendamentosDaEmpresa
-                .Include(a => a.Client) // Necessário para exibir o nome do cliente
+                .Include(a => a.Client) 
                 .OrderByDescending(a => a.AppointmentDate)
                 .ThenByDescending(a => a.StartTime)
-                .Take(5) // Limita aos 5 mais recentes
+                .Take(5) 
                 .ToListAsync();
 
             var totalAppointments = await agendamentosDaEmpresa.CountAsync();
@@ -138,7 +129,11 @@ namespace SistemaAgendamentoWebII.Controllers
             var monthlyRevenue = await agendamentosDaEmpresa
                 .Where(a => a.AppointmentDate.Month == dataAtual.Month && a.AppointmentDate.Year == dataAtual.Year)
                 .SumAsync(a => a.Service.Price);
-
+            var platformNotices = await _context.Set<Notification>()
+                .Where(n => n.UserId == userId)
+                .OrderByDescending(n => n.CreatedAt)
+                .Take(5) 
+                .ToListAsync();
             var viewModel = new EstablishmentDashboardViewModel
             {
                 EstablishmentId = establishment.Id,
@@ -151,15 +146,61 @@ namespace SistemaAgendamentoWebII.Controllers
                 TotalAppointments = totalAppointments,
                 AppointmentsTodayCount = appointmentsToday,
                 MonthlyRevenue = monthlyRevenue,
-                PendingApprovalsCount = 0,
+                PendingApprovalsCount = platformNotices.Count(n => !n.IsRead),
 
-                PlatformNotices = new List<Notification>(),
-
-                // PREENCHE A NOVA PROPRIEDADE:
-                RecentAppointments = recentAppointments
+                RecentAppointments = recentAppointments,
+                PlatformNotices = platformNotices
             };
 
             return View(viewModel);
+        }
+
+        // POST: Dashboard/LimparAvisos
+        [HttpPost]
+        [Authorize(Roles = "Empresa")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> LimparAvisos()
+        {
+            var userIdString = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (string.IsNullOrEmpty(userIdString)) return RedirectToAction("Login", "Account");
+
+            var userId = Guid.Parse(userIdString);
+
+            var notificacoes = await _context.Set<Notification>()
+                .Where(n => n.UserId == userId)
+                .ToListAsync();
+
+            if (notificacoes.Any())
+            {
+                _context.Set<Notification>().RemoveRange(notificacoes);
+                await _context.SaveChangesAsync();
+            }
+
+            return RedirectToAction(nameof(DashboardEmpresa));
+        }
+
+        // POST: Dashboard/RemoverAvisoIndividual
+        [HttpPost]
+        [Authorize(Roles = "Empresa")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> RemoverAviso(Guid id)
+        {
+            var userIdString = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (string.IsNullOrEmpty(userIdString)) return RedirectToAction("Login", "Account");
+
+            var userId = Guid.Parse(userIdString);
+
+            // Busca apenas o aviso específico, garantindo que ele pertence ao gestor logado (segurança)
+            var notificacao = await _context.Set<Notification>()
+                .FirstOrDefaultAsync(n => n.Id == id && n.UserId == userId);
+
+            if (notificacao != null)
+            {
+                _context.Set<Notification>().Remove(notificacao);
+                await _context.SaveChangesAsync();
+            }
+
+            return RedirectToAction(nameof(DashboardEmpresa));
         }
 
     }

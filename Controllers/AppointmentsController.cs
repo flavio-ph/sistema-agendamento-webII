@@ -60,7 +60,14 @@ namespace SistemaAgendamentoWebII.Controllers
             var userIdString = User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (string.IsNullOrEmpty(userIdString)) return RedirectToAction("Login", "Account");
 
-            var servico = await _context.Services.FindAsync(model.ServiceId);
+            // Busca o serviço e as informações da Empresa vinculada ao profissional (se existir)
+            var servico = await _context.Services
+                .Include(s => s.Professional)
+                    .ThenInclude(p => p.User)
+                .Include(s => s.Professional)
+                    .ThenInclude(p => p.Establishment)
+                .FirstOrDefaultAsync(s => s.Id == model.ServiceId);
+
             if (servico == null) return NotFound();
 
             // 1. Mapeamento de campos e cálculo do horário de término
@@ -123,6 +130,20 @@ namespace SistemaAgendamentoWebII.Controllers
 
             // Se passou por tudo, salva no banco
             _context.Agendamentos.Add(model);
+            if (servico.Professional.EstablishmentId != null && servico.Professional.Establishment != null)
+            {
+                var notificacao = new Notification
+                {
+                    Id = Guid.NewGuid(),
+                    UserId = servico.Professional.Establishment.UserId, // Direciona para o Gestor da Empresa
+                    Title = "Novo Agendamento na Equipe",
+                    Message = $"Novo agendamento com {servico.Professional.User.Name} no dia {model.AppointmentDate:dd/MM/yyyy} às {model.StartTime:hh\\:mm}.",
+                    Type = "Agendamento",
+                    IsRead = false,
+                    CreatedAt = DateTime.UtcNow
+                };
+                _context.Set<Notification>().Add(notificacao);
+            }
             await _context.SaveChangesAsync();
 
             TempData["SuccessMessage"] = "O seu agendamento foi confirmado com sucesso!";
