@@ -96,9 +96,9 @@ namespace SistemaAgendamentoWebII.Controllers
             return View();
         }
 
+        [Authorize(Roles = "Empresa")]
         public async Task<IActionResult> DashboardEmpresa()
         {
-            
             if (!User.IsInRole("Empresa")) return Forbid();
 
             var userIdString = User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -108,20 +108,55 @@ namespace SistemaAgendamentoWebII.Controllers
 
             var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == userId);
 
-            
             var establishment = await _context.Set<Establishment>()
                 .Include(e => e.Professionals)
+                .ThenInclude(p => p.User)
                 .FirstOrDefaultAsync(e => e.UserId == userId);
 
-           
+            if (establishment == null) return NotFound("Empresa não encontrada.");
+
+            var dataAtual = DateTime.Now;
+            var dataAtualDateOnly = DateOnly.FromDateTime(dataAtual);
+
+            // Base de agendamentos filtrada pela empresa atual
+            var agendamentosDaEmpresa = _context.Agendamentos
+                .Include(a => a.Professional)
+                .ThenInclude(p => p.User)
+                .Include(a => a.Service)
+                .Where(a => a.Professional.EstablishmentId == establishment.Id);
+
+            // BUSCA OS AGENDAMENTOS RECENTES (Incluindo dados do Cliente e do Profissional)
+            var recentAppointments = await agendamentosDaEmpresa
+                .Include(a => a.Client) // Necessário para exibir o nome do cliente
+                .OrderByDescending(a => a.AppointmentDate)
+                .ThenByDescending(a => a.StartTime)
+                .Take(5) // Limita aos 5 mais recentes
+                .ToListAsync();
+
+            var totalAppointments = await agendamentosDaEmpresa.CountAsync();
+            var appointmentsToday = await agendamentosDaEmpresa.CountAsync(a => a.AppointmentDate == dataAtualDateOnly);
+            var monthlyRevenue = await agendamentosDaEmpresa
+                .Where(a => a.AppointmentDate.Month == dataAtual.Month && a.AppointmentDate.Year == dataAtual.Year)
+                .SumAsync(a => a.Service.Price);
+
             var viewModel = new EstablishmentDashboardViewModel
             {
+                EstablishmentId = establishment.Id,
                 User = user,
                 Establishment = establishment,
-                TotalProfessionals = establishment?.Professionals?.Count ?? 0,
-                AppointmentsTodayCount = 24, 
-                PendingApprovalsCount = 3, 
-                MonthlyRevenue = 34500.00m 
+
+                ActiveProfessionalsCount = establishment.Professionals?.Count() ?? 0,
+                TotalProfessionals = establishment.Professionals?.Count() ?? 0,
+                Professionals = establishment.Professionals?.ToList() ?? new List<Professional>(),
+                TotalAppointments = totalAppointments,
+                AppointmentsTodayCount = appointmentsToday,
+                MonthlyRevenue = monthlyRevenue,
+                PendingApprovalsCount = 0,
+
+                PlatformNotices = new List<Notification>(),
+
+                // PREENCHE A NOVA PROPRIEDADE:
+                RecentAppointments = recentAppointments
             };
 
             return View(viewModel);

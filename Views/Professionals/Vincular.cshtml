@@ -1,0 +1,76 @@
+﻿@model IEnumerable<SistemaAgendamentoWebII.Models.Professional>
+
+@{
+    ViewData["Title"] = "Vincular Profissional";
+    var establishmentId = ViewBag.EstablishmentId;
+}
+
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="fw-bold text-dark" style="font-family: 'Manrope', sans-serif;">Buscar Profissional</h2>
+            <p class="text-muted mb-0">Procure por profissionais cadastrados na plataforma para adicioná-los à sua equipe.</p>
+        </div>
+        <a asp-controller="Dashboard" asp-action="DashboardEmpresa" class="btn btn-outline-secondary">Voltar ao Painel</a>
+    </div>
+
+    <form asp-action="Vincular" method="get" class="row g-3 mb-4">
+        <input type="hidden" name="establishmentId" value="@establishmentId" />
+        <div class="col-md-9">
+            <input type="text" name="searchString" class="form-control form-control-lg"
+                   placeholder="Digite o nome ou e-mail do profissional..." value="@Context.Request.Query["searchString"]" />
+        </div>
+        <div class="col-md-3">
+            <button type="submit" class="btn btn-primary btn-lg w-100" style="background-color: #00236f; border: none;">Buscar</button>
+        </div>
+    </form>
+
+    <div class="card shadow-sm border-0 rounded-3 overflow-hidden">
+        <div class="table-responsive">
+            <table class="table align-middle mb-0">
+                <thead class="bg-light">
+                    <tr>
+                        <th class="px-4 py-3 border-bottom-0 text-muted" style="font-weight: 600;">Nome do Profissional</th>
+                        <th class="py-3 border-bottom-0 text-muted" style="font-weight: 600;">E-mail de Contato</th>
+                        <th class="py-3 border-bottom-0 text-muted text-end px-4" style="font-weight: 600;">Ação</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model != null && Model.Any())
+                    {
+                        foreach (var prof in Model)
+                        {
+                            <tr>
+                                <td class="px-4 py-3">
+                                    <div class="fw-semibold text-dark">@prof.User?.Name</div>
+                                </td>
+                                <td class="py-3 text-muted">
+                                    @prof.User?.Email
+                                </td>
+                                <td class="py-3 text-end px-4">
+                                    <form asp-action="VincularConfirmar" method="post" class="d-inline">
+                                        @Html.AntiForgeryToken()
+                                        <input type="hidden" name="professionalId" value="@prof.Id" />
+                                        <input type="hidden" name="establishmentId" value="@establishmentId" />
+                                        <button type="submit" class="btn btn-success btn-sm px-3 rounded-2 fw-medium">
+                                            Adicionar à Empresa
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="3" class="text-center py-5 text-muted">
+                                <span class="material-symbols-outlined fs-1 d-block mb-2">search_off</span>
+                                Nenhum profissional disponível ou encontrado com este nome/e-mail.
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

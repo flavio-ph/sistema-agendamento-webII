@@ -120,4 +120,96 @@ public class ProfessionalsController : Controller
         return RedirectToAction("DashboardProfissional", "Dashboard");
     }
 
+    // GET: Professionals/Vincular
+    [Authorize(Roles = "Empresa")]
+    public async Task<IActionResult> Vincular(Guid establishmentId, string searchString)
+    {
+        ViewBag.EstablishmentId = establishmentId;
+
+        // Busca profissionais que ainda NÃO estão vinculados a nenhuma empresa
+        var query = _context.Professionals
+            .Include(p => p.User)
+            .Where(p => p.EstablishmentId == null);
+
+        // Se o gestor digitou algo na barra de pesquisa, filtra por Nome ou E-mail
+        if (!string.IsNullOrEmpty(searchString))
+        {
+            query = query.Where(p => p.User.Name.Contains(searchString) || p.User.Email.Contains(searchString));
+        }
+
+        var profissionaisDisponiveis = await query.ToListAsync();
+        return View(profissionaisDisponiveis);
+    }
+
+    // POST: Professionals/VincularConfirmar
+    [HttpPost]
+    [Authorize(Roles = "Empresa")]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> VincularConfirmar(Guid professionalId, Guid establishmentId)
+    {
+        var profissional = await _context.Professionals.FirstOrDefaultAsync(p => p.Id == professionalId);
+
+        if (profissional == null) return NotFound();
+
+        // Vincula o profissional à empresa atualizando o ID da empresa dele
+        profissional.EstablishmentId = establishmentId;
+
+        _context.Update(profissional);
+        await _context.SaveChangesAsync();
+
+        // Redireciona de volta para o Dashboard da Empresa com os dados atualizados
+        return RedirectToAction("DashboardEmpresa", "Dashboard");
+    }
+
+
+    // POST: Professionals/RemoverVinculo
+    [HttpPost]
+    [Authorize(Roles = "Empresa")]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> RemoverVinculo(Guid professionalId)
+    {
+        var profissional = await _context.Professionals.FirstOrDefaultAsync(p => p.Id == professionalId);
+
+        if (profissional == null) return NotFound();
+
+        var agendamentosDoProfissional = await _context.Agendamentos
+            .Where(a => a.ProfessionalId == professionalId)
+            .ToListAsync();
+
+        if (agendamentosDoProfissional.Any())
+        {
+            _context.Agendamentos.RemoveRange(agendamentosDoProfissional);
+        }
+        profissional.EstablishmentId = null;
+
+        _context.Update(profissional);
+
+        await _context.SaveChangesAsync();
+        return RedirectToAction(nameof(GerirEquipe));
+    }
+
+    // GET: Professionals/GerirEquipe
+    [Authorize(Roles = "Empresa")]
+    public async Task<IActionResult> GerirEquipe()
+    {
+        var userIdString = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (string.IsNullOrEmpty(userIdString)) return RedirectToAction("Login", "Account");
+
+        var userId = Guid.Parse(userIdString);
+       
+        var establishment = await _context.Set<Establishment>()
+            .FirstOrDefaultAsync(e => e.UserId == userId);
+
+        if (establishment == null) return NotFound("Empresa não encontrada.");
+
+        var equipe = await _context.Professionals
+            .Include(p => p.User)
+            .Where(p => p.EstablishmentId == establishment.Id)
+            .ToListAsync();
+
+        ViewBag.EstablishmentId = establishment.Id;
+
+        return View(equipe);
+    }
+
 }

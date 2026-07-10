@@ -3,8 +3,9 @@
 
 @{
     ViewData["Title"] = "Painel da Empresa";
-    var establishment = Model?.Establishment;
-    var user = Model?.User;
+    // Como você está usando propriedades diretas na ViewModel, ajustei as chamadas
+    var establishmentName = Model.Establishment?.Name ?? "Gestor da Empresa";
+    var establishmentCnpj = Model.Establishment?.CNPJ ?? "Não informado";
 }
 
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
@@ -50,24 +51,41 @@
             <div class="d-flex align-items-center gap-3">
                 <div class="bg-primary-container text-white rounded-circle d-flex align-items-center justify-content-center fw-bold"
                      style="width: 56px; height: 56px; background-color: var(--ds-primary, #00236f);">
-                    @((establishment?.Name?.Substring(0, 1) ?? "E").ToUpper())
+                    @establishmentName.Substring(0, 1).ToUpper()
                 </div>
                 <div>
                     <h1 class="h3 fw-bold mb-0" style="font-family: 'Manrope', sans-serif; color: var(--ds-primary, #00236f);">
-                        Olá, @(establishment?.Name ?? "Gestor da Empresa")
+                        Olá, @establishmentName
                     </h1>
-                    <p class="text-muted mb-0">CNPJ: @(establishment?.CNPJ ?? "Não informado") • Visão Geral do Negócio</p>
+                    <p class="text-muted mb-0">CNPJ: @establishmentCnpj • Visão Geral do Negócio</p>
                 </div>
             </div>
         </div>
-        <div class="col-md-4 text-md-end">
-            <button class="btn btn-primary d-inline-flex align-items-center gap-2" style="background-color: var(--ds-primary, #00236f); border: none; border-radius: 8px; padding: 10px 20px;">
+
+        <div class="col-md-4 d-flex justify-content-md-end gap-2 mt-3 mt-md-0">
+
+            <a asp-controller="Professionals"
+               asp-action="GerirEquipe"
+               class="btn btn-primary d-inline-flex align-items-center gap-2 fw-medium"
+               style="background-color: var(--ds-primary, #00236f); border: none; border-radius: 8px; padding: 10px 20px; text-decoration: none;">
+                <span class="material-symbols-outlined fs-5">manage_accounts</span>
+                Gerir Equipe
+            </a>
+
+            <a asp-controller="Professionals"
+               asp-action="Vincular"
+               asp-route-establishmentId="@Model.EstablishmentId"
+               class="btn btn-primary d-inline-flex align-items-center gap-2 fw-medium"
+               style="background-color: var(--ds-primary, #00236f); border: none; border-radius: 8px; padding: 10px 20px; text-decoration: none;">
                 <span class="material-symbols-outlined fs-5">group_add</span>
                 Novo Profissional
-            </button>
+            </a>
+
         </div>
+
     </div>
 
+    <!-- CARDS DINÂMICOS -->
     <div class="row g-4 mb-5">
         <div class="col-md-6 col-xl-3">
             <div class="prof-card h-100 d-flex flex-column justify-content-between">
@@ -76,7 +94,7 @@
                     <span class="material-symbols-outlined text-primary">badge</span>
                 </div>
                 <div>
-                    <h2 class="prof-stat-val h2 mb-0">@(Model?.TotalProfessionals ?? 0)</h2>
+                    <h2 class="prof-stat-val h2 mb-0">@Model.ActiveProfessionalsCount</h2>
                     <span class="text-success fw-medium" style="font-size: 0.75rem;">Equipe cadastrada</span>
                 </div>
             </div>
@@ -86,11 +104,11 @@
             <div class="prof-card h-100 d-flex flex-column justify-content-between">
                 <div class="d-flex justify-content-between align-items-start mb-3">
                     <span class="text-muted fw-semibold" style="font-size: 0.875rem;">Agendamentos (Geral)</span>
-                    <span class="material-symbols-outlined text-info">today</span>
+                    <span class="material-symbols-outlined text-primary">calendar_month</span>
                 </div>
                 <div>
-                    <h2 class="prof-stat-val h2 mb-0">@(Model?.AppointmentsTodayCount ?? 0)</h2>
-                    <span class="text-muted" style="font-size: 0.75rem;">Hoje, em todas as agendas</span>
+                    <h2 class="prof-stat-val h2 mb-0">@Model.TotalAppointments</h2>
+                    <span class="text-muted" style="font-size: 0.75rem;">Em todas as agendas</span>
                 </div>
             </div>
         </div>
@@ -98,12 +116,12 @@
         <div class="col-md-6 col-xl-3">
             <div class="prof-card h-100 d-flex flex-column justify-content-between">
                 <div class="d-flex justify-content-between align-items-start mb-3">
-                    <span class="text-muted fw-semibold" style="font-size: 0.875rem;">Faturamento Global (Mês)</span>
+                    <span class="text-muted fw-semibold" style="font-size: 0.875rem;">Faturamento Global</span>
                     <span class="material-symbols-outlined text-success">payments</span>
                 </div>
                 <div>
-                    <h2 class="prof-stat-val h2 mb-0">@((Model?.MonthlyRevenue ?? 0).ToString("C"))</h2>
-                    <span class="text-success fw-medium" style="font-size: 0.75rem;">Estimativa total</span>
+                    <h2 class="prof-stat-val h2 mb-0">@Model.MonthlyRevenue.ToString("C")</h2>
+                    <span class="text-success fw-medium" style="font-size: 0.75rem;">Mês atual</span>
                 </div>
             </div>
         </div>
@@ -115,17 +133,20 @@
                     <span class="material-symbols-outlined text-warning">notifications_active</span>
                 </div>
                 <div>
-                    <h2 class="prof-stat-val h2 mb-0">@(Model?.PendingApprovalsCount ?? 0)</h2>
+                    <!-- Conta quantos avisos existem na lista -->
+                    <h2 class="prof-stat-val h2 mb-0">@(Model.PlatformNotices?.Count() ?? 0)</h2>
                     <span class="text-muted" style="font-size: 0.75rem;">Requerem atenção do gestor</span>
                 </div>
             </div>
         </div>
     </div>
 
-    <div class="row g-4">
+    <!-- SEÇÃO DE TABELAS E BOXES DO PAINEL -->
+   
+        <!-- BOX 1: AGENDAMENTOS RECENTES -->
         <div class="col-12">
             <h3 class="h5 fw-bold mb-3" style="font-family: 'Manrope', sans-serif;">Agendamentos Recentes da Empresa</h3>
-            <div class="prof-card p-0 overflow-hidden">
+            <div class="prof-card p-0 overflow-hidden mb-4">
                 <div class="table-responsive">
                     <table class="table mb-0 align-middle">
                         <thead class="bg-light">
@@ -137,30 +158,83 @@
                             </tr>
                         </thead>
                         <tbody>
+                            @if (Model.RecentAppointments != null && Model.RecentAppointments.Any())
+                            {
+                                foreach (var agendamento in Model.RecentAppointments)
+                                {
+                                    <tr>
+                                        <td class="px-4 py-3">
+                                            <div class="fw-semibold text-dark">@(agendamento.Professional?.User?.Name ?? "Profissional Cadastrado")</div>
+                                        </td>
+                                        <td class="py-3">
+                                            <div class="fw-medium">@(agendamento.Client?.Name ?? "Cliente Externo")</div>
+                                            <div class="text-muted" style="font-size: 0.75rem;">@agendamento.Service?.Name</div>
+                                        </td>
+                                        <td class="py-3">
+                                            <div class="fw-bold text-primary">
+                                                @agendamento.AppointmentDate.ToString("dd/MM/yyyy") às @agendamento.StartTime.ToString(@"hh\:mm")
+                                            </div>
+                                        </td>
+                                        <td class="py-3">
+                                            @{
+                                                var badgeClass = agendamento.Status?.ToLower() == "confirmado" ? "badge-confirmado" : "badge-pendente";
+                                            }
+                                            <span class="ds-badge-soft @badgeClass">@agendamento.Status</span>
+                                        </td>
+                                    </tr>
+                                }
+                            }
+                            else
+                            {
+                                <tr>
+                                    <td colspan="4" class="px-4 py-4 text-center text-muted">
+                                        Nenhum agendamento realizado para esta empresa ainda.
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- BOX 2: AVISOS RECENTES -->
+        <div class="col-12">
+            <h3 class="h5 fw-bold mb-3" style="font-family: 'Manrope', sans-serif;">Avisos Recentes</h3>
+            <div class="prof-card p-0 overflow-hidden">
+                <div class="table-responsive">
+                    <table class="table mb-0 align-middle">
+                        <thead class="bg-light">
                             <tr>
-                                <td class="px-4 py-3">
-                                    <div class="fw-semibold text-dark">Carlos Silva</div>
-                                    <div class="text-muted" style="font-size: 0.75rem;">Barbeiro Master</div>
-                                </td>
-                                <td class="py-3">
-                                    <div class="fw-medium">João Pedro</div>
-                                    <div class="text-muted" style="font-size: 0.75rem;">Corte Degradê</div>
-                                </td>
-                                <td class="py-3"><div class="fw-bold text-primary">Hoje, 14:00</div></td>
-                                <td class="py-3"><span class="ds-badge-soft badge-confirmado">Confirmado</span></td>
+                                <th class="px-4 py-3 border-bottom-0 text-muted" style="font-weight: 600; font-size: 0.85rem;">Data</th>
+                                <th class="py-3 border-bottom-0 text-muted" style="font-weight: 600; font-size: 0.85rem;">Título</th>
+                                <th class="py-3 border-bottom-0 text-muted" style="font-weight: 600; font-size: 0.85rem;">Mensagem</th>
                             </tr>
-                            <tr>
-                                <td class="px-4 py-3">
-                                    <div class="fw-semibold text-dark">Ana Souza</div>
-                                    <div class="text-muted" style="font-size: 0.75rem;">Manicure</div>
-                                </td>
-                                <td class="py-3">
-                                    <div class="fw-medium">Maria Clara</div>
-                                    <div class="text-muted" style="font-size: 0.75rem;">Pé e Mão</div>
-                                </td>
-                                <td class="py-3"><div class="fw-bold text-primary">Hoje, 15:30</div></td>
-                                <td class="py-3"><span class="ds-badge-soft badge-pendente">Pendente</span></td>
-                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (Model.PlatformNotices != null && Model.PlatformNotices.Any())
+                            {
+                                foreach (var aviso in Model.PlatformNotices)
+                                {
+                                    <tr>
+                                        <td class="px-4 py-3">
+                                            <div class="fw-bold text-primary">@aviso.CreatedAt.ToString("dd/MM/yyyy HH:mm")</div>
+                                        </td>
+                                        <td class="py-3">
+                                            <div class="fw-semibold text-dark">@aviso.Title</div>
+                                        </td>
+                                        <td class="py-3">
+                                            <div class="text-muted" style="font-size: 0.85rem;">@aviso.Message</div>
+                                        </td>
+                                    </tr>
+                                }
+                            }
+                            else
+                            {
+                                <tr>
+                                    <td colspan="3" class="px-4 py-4 text-center text-muted">Nenhum aviso no momento.</td>
+                                </tr>
+                            }
                         </tbody>
                     </table>
                 </div>
