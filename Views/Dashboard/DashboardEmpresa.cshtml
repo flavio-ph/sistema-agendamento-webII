@@ -151,8 +151,7 @@
                 {
                     <form asp-controller="Dashboard" asp-action="LimparAvisos" method="post" class="m-0">
                         @Html.AntiForgeryToken()
-                        <button type="submit" class="btn btn-sm btn-outline-danger d-inline-flex align-items-center gap-1"
-                                onclick="return confirm('Tem certeza que deseja apagar todos os avisos?');"
+                        <button type="button" class="btn btn-sm btn-outline-danger d-inline-flex align-items-center gap-1 btn-limpar-avisos"
                                 style="border-radius: 10px; padding: 4px 8px;">
                             <span class="material-symbols-outlined" style="font-size: 1.1rem;">delete</span>
                             Limpar tudo
@@ -186,7 +185,7 @@
                                                     <form asp-controller="Dashboard" asp-action="RemoverAviso" method="post" class="m-0">
                                                         @Html.AntiForgeryToken()
                                                         <input type="hidden" name="id" value="@aviso.Id" />
-                                                        <button type="submit" class="btn btn-link p-0 text-danger text-decoration-none" title="Remover aviso">
+                                                        <button type="button" class="btn btn-link p-0 text-danger text-decoration-none btn-remover-aviso" title="Remover aviso">
                                                             <span class="material-symbols-outlined" style="font-size: 1.1rem;">delete</span>
                                                         </button>
                                                     </form>
@@ -265,3 +264,60 @@
         </div>
 
     </div>
+
+    @section Scripts {
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+        <script>
+            // Script para excluir UM aviso específico
+            document.querySelectorAll('.btn-remover-aviso').forEach(button => {
+            button.addEventListener('click', function (e) {
+            e.preventDefault(); // Evita qualquer comportamento padrão
+            const form = this.closest('form'); // Pega o formulário pai diretamente
+
+            Swal.fire({
+            title: 'Excluir aviso?',
+            text: "Você não poderá reverter esta ação.",
+            showCancelButton: true,
+            confirmButtonColor: '#00236f',
+            cancelButtonColor: '#dc3545',
+            confirmButtonText: 'Sim, excluir',
+            cancelButtonText: 'Cancelar',
+            background: '#ffffff',
+            didOpen: (popup) => { popup.style.borderRadius = '2rem'; } // Arredondamento maior aplicado aqui
+            }).then((result) => {
+            if (result.isConfirmed) {
+            // Força o envio do formulário de forma nativa e infalível
+            HTMLFormElement.prototype.submit.call(form);
+            }
+            });
+            });
+            });
+
+            // Script para LIMPAR TODOS os avisos
+            document.querySelectorAll('.btn-limpar-avisos').forEach(button => {
+            button.addEventListener('click', function (e) {
+            e.preventDefault();
+            const form = this.closest('form');
+
+            Swal.fire({
+            title: 'Limpar todos os avisos?',
+            text: "Tem certeza que deseja apagar todos os avisos de uma vez?",
+            showCancelButton: true,
+            confirmButtonColor: '#dc3545',
+            cancelButtonColor: '#6c757d',
+            confirmButtonText: 'Sim, limpar tudo!',
+            cancelButtonText: 'Cancelar',
+            background: '#ffffff',
+            didOpen: (popup) => { popup.style.borderRadius = '2rem'; } // Arredondamento maior aplicado aqui
+            }).then((result) => {
+            if (result.isConfirmed) {
+            HTMLFormElement.prototype.submit.call(form);
+            }
+            });
+            });
+            });
+        </script>
+
+
+    }

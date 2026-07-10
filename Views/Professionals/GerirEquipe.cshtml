@@ -44,8 +44,7 @@
                                     <form asp-controller="Professionals" asp-action="RemoverVinculo" method="post" class="d-inline">
                                         @Html.AntiForgeryToken()
                                         <input type="hidden" name="professionalId" value="@prof.Id" />
-                                        <button type="submit" class="btn btn-danger btn-sm rounded-2 fw-medium"
-                                                onclick="return confirm('Tem certeza? Isso removerá o profissional da sua equipe e APAGARÁ todos os agendamentos dele!');">
+                                        <button type="button" class="btn btn-danger btn-sm rounded-2 fw-medium btn-remover-prof">
                                             Remover da Equipe
                                         </button>
                                     </form>
@@ -67,3 +66,35 @@
         </div>
     </div>
 </div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <script>
+        document.querySelectorAll('.btn-remover-prof').forEach(button => {
+        button.addEventListener('click', function (e) {
+        e.preventDefault(); // Impede qualquer ação padrão indesejada
+
+        // Encontra o formulário pai diretamente, não importa a classe
+        const form = this.closest('form');
+
+        Swal.fire({
+        title: 'Tem certeza?',
+        text: "Isso removerá o profissional da equipe e APAGARÁ todos os agendamentos dele!",
+        showCancelButton: true,
+        confirmButtonColor: '#dc3545', // Vermelho Perigo
+        cancelButtonColor: '#6c757d', // Cinza Cancelar
+        confirmButtonText: 'Sim, remover!',
+        cancelButtonText: 'Cancelar',
+        background: '#ffffff',
+        didOpen: (popup) => { popup.style.borderRadius = '2rem'; } // Arredondamento maior aplicado aqui
+        }).then((result) => {
+        if (result.isConfirmed) {
+        // Força o envio real e nativo do formulário para o C#
+        HTMLFormElement.prototype.submit.call(form);
+        }
+        });
+        });
+        });
+    </script>
+}
