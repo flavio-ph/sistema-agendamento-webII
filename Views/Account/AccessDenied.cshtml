@@ -1,0 +1,22 @@
+﻿@{
+    ViewData["Title"] = "Acesso Negado";
+}
+
+<div class="container text-center py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow-sm border-0 p-5" style="border-radius: 1rem;">
+                <span class="material-symbols-outlined text-danger mb-3" style="font-size: 4rem; font-variation-settings: 'FILL' 1;">gpp_bad</span>
+                <h1 class="h3 fw-bold mb-3" style="font-family: 'Manrope', sans-serif; color: #0b1c30;">Acesso Restrito</h1>
+                <p class="text-muted mb-4">Você não possui permissão para visualizar esta página com o seu tipo de conta atual.</p>
+                <div class="d-grid gap-2 d-sm-flex justify-content-sm-center">
+                    <a href="/" class="btn btn-primary px-4 me-sm-2" style="background-color: var(--ds-primary, #00236f); border: none; border-radius: 8px;">Ir para o Início</a>
+                    <form asp-controller="Account" asp-action="Logout" method="post" style="display: inline;">
+                        @Html.AntiForgeryToken()
+                        <button type="submit" class="btn btn-outline-secondary px-4" style="border-radius: 8px;">Trocar de Conta</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -38,6 +38,19 @@ namespace SistemaAgendamentoWebII.Controllers
             }
 
             ViewBag.Categories = new SelectList(categories, "Id", "Name");
+            var userIdString = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (!string.IsNullOrEmpty(userIdString))
+            {
+                var prof = await _context.Professionals.FirstOrDefaultAsync(p => p.UserId == Guid.Parse(userIdString));
+                if (prof != null)
+                {
+                    // Busca os serviços e guarda no ViewBag
+                    ViewBag.MeusServicos = await _context.Services
+                        .Where(s => s.ProfessionalId == prof.Id)
+                        .OrderBy(s => s.Name)
+                        .ToListAsync();
+                }
+            }
             return View();
         }
 
@@ -69,7 +82,7 @@ namespace SistemaAgendamentoWebII.Controllers
             _context.Services.Add(model);
             await _context.SaveChangesAsync();
 
-            return RedirectToAction("DashboardProfissional", "Dashboard");
+            return RedirectToAction("Create");
         }
     }
 }

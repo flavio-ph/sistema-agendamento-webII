@@ -1,0 +1,323 @@
+﻿@model SistemaAgendamentoWebII.Models.ViewModels.EstablishmentDashboardViewModel
+@using SistemaAgendamentoWebII.Models
+
+@{
+    ViewData["Title"] = "Painel da Empresa";
+    // Como você está usando propriedades diretas na ViewModel, ajustei as chamadas
+    var establishmentName = Model.Establishment?.Name ?? "Gestor da Empresa";
+    var establishmentCnpj = Model.Establishment?.CNPJ ?? "Não informado";
+}
+
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
+
+<style>
+    /* Componentes Customizados do Painel - Mantendo a identidade visual */
+    .prof-card {
+        background: var(--ds-surface, #ffffff);
+        border: 1px solid var(--ds-border, #e5eeff);
+        border-radius: 1rem;
+        padding: 1.5rem;
+        box-shadow: 0 12px 24px -8px rgba(30, 58, 138, 0.05);
+    }
+
+    .prof-stat-val {
+        font-family: 'Manrope', sans-serif;
+        font-weight: 700;
+        color: var(--ds-text-main, #0b1c30);
+    }
+
+    .ds-badge-soft {
+        padding: 6px 12px;
+        border-radius: 2rem;
+        font-size: 0.75rem;
+        font-weight: 600;
+        display: inline-block;
+    }
+
+    .badge-confirmado {
+        background: rgba(0, 163, 108, 0.1);
+        color: #007a51;
+    }
+
+    .badge-pendente {
+        background: rgba(245, 158, 11, 0.1);
+        color: #b45309;
+    }
+</style>
+
+<div class="py-4">
+    <div class="row align-items-center g-4 mb-5">
+        <div class="col-md-8">
+            <div class="d-flex align-items-center gap-3">
+                <div class="bg-primary-container text-white rounded-circle d-flex align-items-center justify-content-center fw-bold"
+                     style="width: 56px; height: 56px; background-color: var(--ds-primary, #00236f);">
+                    @establishmentName.Substring(0, 1).ToUpper()
+                </div>
+                <div>
+                    <h1 class="h3 fw-bold mb-0" style="font-family: 'Manrope', sans-serif; color: var(--ds-primary, #00236f);">
+                        Olá, @establishmentName
+                    </h1>
+                    <p class="text-muted mb-0">CNPJ: @establishmentCnpj • Visão Geral do Negócio</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4 d-flex justify-content-md-end gap-2 mt-3 mt-md-0">
+
+            <a asp-controller="Professionals"
+               asp-action="GerirEquipe"
+               class="btn btn-primary d-inline-flex align-items-center gap-2 fw-medium"
+               style="background-color: var(--ds-primary, #00236f); border: none; border-radius: 8px; padding: 10px 20px; text-decoration: none;">
+                <span class="material-symbols-outlined fs-5">manage_accounts</span>
+                Gerir Equipe
+            </a>
+
+            <a asp-controller="Professionals"
+               asp-action="Vincular"
+               asp-route-establishmentId="@Model.EstablishmentId"
+               class="btn btn-primary d-inline-flex align-items-center gap-2 fw-medium"
+               style="background-color: var(--ds-primary, #00236f); border: none; border-radius: 8px; padding: 10px 20px; text-decoration: none;">
+                <span class="material-symbols-outlined fs-5">group_add</span>
+                Novo Profissional
+            </a>
+
+        </div>
+
+    </div>
+
+    <!-- CARDS DINÂMICOS -->
+    <div class="row g-4 mb-5">
+        <div class="col-md-6 col-xl-3">
+            <div class="prof-card h-100 d-flex flex-column justify-content-between">
+                <div class="d-flex justify-content-between align-items-start mb-3">
+                    <span class="text-muted fw-semibold" style="font-size: 0.875rem;">Profissionais Ativos</span>
+                    <span class="material-symbols-outlined text-primary">badge</span>
+                </div>
+                <div>
+                    <h2 class="prof-stat-val h2 mb-0">@Model.ActiveProfessionalsCount</h2>
+                    <span class="text-success fw-medium" style="font-size: 0.75rem;">Equipe cadastrada</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 col-xl-3">
+            <div class="prof-card h-100 d-flex flex-column justify-content-between">
+                <div class="d-flex justify-content-between align-items-start mb-3">
+                    <span class="text-muted fw-semibold" style="font-size: 0.875rem;">Agendamentos (Geral)</span>
+                    <span class="material-symbols-outlined text-primary">calendar_month</span>
+                </div>
+                <div>
+                    <h2 class="prof-stat-val h2 mb-0">@Model.TotalAppointments</h2>
+                    <span class="text-muted" style="font-size: 0.75rem;">Em todas as agendas</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 col-xl-3">
+            <div class="prof-card h-100 d-flex flex-column justify-content-between">
+                <div class="d-flex justify-content-between align-items-start mb-3">
+                    <span class="text-muted fw-semibold" style="font-size: 0.875rem;">Faturamento Global</span>
+                    <span class="material-symbols-outlined text-success">payments</span>
+                </div>
+                <div>
+                    <h2 class="prof-stat-val h2 mb-0">@Model.MonthlyRevenue.ToString("C")</h2>
+                    <span class="text-success fw-medium" style="font-size: 0.75rem;">Mês atual</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 col-xl-3">
+            <div class="prof-card h-100 d-flex flex-column justify-content-between">
+                <div class="d-flex justify-content-between align-items-start mb-3">
+                    <span class="text-muted fw-semibold" style="font-size: 0.875rem;">Avisos da Plataforma</span>
+                    <span class="material-symbols-outlined text-warning">notifications_active</span>
+                </div>
+                <div>
+                    <h2 class="prof-stat-val h2 mb-0">@(Model.PlatformNotices?.Count() ?? 0)</h2>
+                    <span class="text-muted" style="font-size: 0.75rem;">Requerem atenção do gestor</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- SEÇÃO DE TABELAS E BOXES DO PAINEL -->
+    <div class="row g-4">
+
+        <!-- BOX 1: AVISOS RECENTES (Lado Esquerdo - Menor) -->
+        <div class="col-12 col-lg-4">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h3 class="h5 fw-bold mb-0" style="font-family: 'Manrope', sans-serif;">Avisos Recentes</h3>
+                @if (Model.PlatformNotices != null && Model.PlatformNotices.Any())
+                {
+                    <form asp-controller="Dashboard" asp-action="LimparAvisos" method="post" class="m-0">
+                        @Html.AntiForgeryToken()
+                        <button type="button" class="btn btn-sm btn-outline-danger d-inline-flex align-items-center gap-1 btn-limpar-avisos"
+                                style="border-radius: 10px; padding: 4px 8px;">
+                            <span class="material-symbols-outlined" style="font-size: 1.1rem;">delete</span>
+                            Limpar tudo
+                        </button>
+                    </form>
+                }
+            </div>
+            <div class="prof-card p-0 overflow-hidden h-100">
+                <div class="table-responsive">
+                    <table class="table mb-0 align-middle">
+                        <thead class="bg-light">
+                            <tr>
+                                <th class="px-4 py-3 border-bottom-0 text-muted" style="font-weight: 600; font-size: 0.85rem;">Aviso</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (Model.PlatformNotices != null && Model.PlatformNotices.Any())
+                            {
+                                @foreach (var aviso in Model.PlatformNotices)
+                                {
+                                    <tr>
+                                        <td class="px-4 py-3">
+                                            <div class="d-flex justify-content-between align-items-center mb-1">
+                                                <div class="fw-semibold text-dark">@aviso.Title</div>
+                                               
+                                                <div class="d-flex align-items-center gap-2">
+                                                    <span class="text-primary fw-bold" style="font-size: 0.75rem;">
+                                                        @aviso.CreatedAt.ToString("dd/MM")
+                                                    </span>
+
+                                                    <form asp-controller="Dashboard" asp-action="RemoverAviso" method="post" class="m-0">
+                                                        @Html.AntiForgeryToken()
+                                                        <input type="hidden" name="id" value="@aviso.Id" />
+                                                        <button type="button" class="btn btn-link p-0 text-danger text-decoration-none btn-remover-aviso" title="Remover aviso">
+                                                            <span class="material-symbols-outlined" style="font-size: 1.1rem;">delete</span>
+                                                        </button>
+                                                    </form>
+                                                </div>
+                                            </div>
+                                            <div class="text-muted text-wrap" style="font-size: 0.85rem;">@aviso.Message</div>
+                                        </td>
+                                    </tr>
+                                }
+                            }
+                            else
+                            {
+                                <tr>
+                                    <td class="px-4 py-4 text-center text-muted">Nenhum aviso no momento.</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- BOX 2: AGENDAMENTOS RECENTES (Lado Direito - Maior) -->
+        <div class="col-12 col-lg-8">
+            <h3 class="h5 fw-bold mb-3" style="font-family: 'Manrope', sans-serif;">Agendamentos Recentes</h3>
+            <div class="prof-card p-0 overflow-hidden h-100">
+                <div class="table-responsive">
+                    <table class="table mb-0 align-middle">
+                        <thead class="bg-light">
+                            <tr>
+                                <th class="px-4 py-3 border-bottom-0 text-muted" style="font-weight: 600; font-size: 0.85rem;">Profissional</th>
+                                <th class="py-3 border-bottom-0 text-muted" style="font-weight: 600; font-size: 0.85rem;">Cliente / Serviço</th>
+                                <th class="py-3 border-bottom-0 text-muted" style="font-weight: 600; font-size: 0.85rem;">Horário</th>
+                                <th class="py-3 border-bottom-0 text-muted" style="font-weight: 600; font-size: 0.85rem;">Estado</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (Model.RecentAppointments != null && Model.RecentAppointments.Any())
+                            {
+                                foreach (var agendamento in Model.RecentAppointments)
+                                {
+                                    <tr>
+                                        <td class="px-4 py-3">
+                                            <div class="fw-semibold text-dark">@(agendamento.Professional?.User?.Name ?? "Profissional")</div>
+                                        </td>
+                                        <td class="py-3">
+                                            <div class="fw-medium">@(agendamento.Client?.Name ?? "Cliente Externo")</div>
+                                            <div class="text-muted" style="font-size: 0.75rem;">@agendamento.Service?.Name</div>
+                                        </td>
+                                        <td class="py-3">
+                                            <div class="fw-bold text-primary">
+                                                @agendamento.AppointmentDate.ToString("dd/MM/yyyy")<br />às @agendamento.StartTime.ToString(@"hh\:mm")
+                                            </div>
+                                        </td>
+                                        <td class="py-3">
+                                            @{
+                                                var badgeClass = agendamento.Status?.ToLower() == "confirmado" ? "badge-confirmado" : "badge-pendente";
+                                            }
+                                            <span class="ds-badge-soft @badgeClass">@agendamento.Status</span>
+                                        </td>
+                                    </tr>
+                                }
+                            }
+                            else
+                            {
+                                <tr>
+                                    <td colspan="4" class="px-4 py-4 text-center text-muted">
+                                        Nenhum agendamento realizado para esta empresa ainda.
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    @section Scripts {
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+        <script>
+            // Script para excluir UM aviso específico
+            document.querySelectorAll('.btn-remover-aviso').forEach(button => {
+            button.addEventListener('click', function (e) {
+            e.preventDefault(); // Evita qualquer comportamento padrão
+            const form = this.closest('form'); // Pega o formulário pai diretamente
+
+            Swal.fire({
+            title: 'Excluir aviso?',
+            text: "Você não poderá reverter esta ação.",
+            showCancelButton: true,
+            confirmButtonColor: '#00236f',
+            cancelButtonColor: '#dc3545',
+            confirmButtonText: 'Sim, excluir',
+            cancelButtonText: 'Cancelar',
+            background: '#ffffff',
+            didOpen: (popup) => { popup.style.borderRadius = '2rem'; } // Arredondamento maior aplicado aqui
+            }).then((result) => {
+            if (result.isConfirmed) {
+            // Força o envio do formulário de forma nativa e infalível
+            HTMLFormElement.prototype.submit.call(form);
+            }
+            });
+            });
+            });
+
+            // Script para LIMPAR TODOS os avisos
+            document.querySelectorAll('.btn-limpar-avisos').forEach(button => {
+            button.addEventListener('click', function (e) {
+            e.preventDefault();
+            const form = this.closest('form');
+
+            Swal.fire({
+            title: 'Limpar todos os avisos?',
+            text: "Tem certeza que deseja apagar todos os avisos de uma vez?",
+            showCancelButton: true,
+            confirmButtonColor: '#dc3545',
+            cancelButtonColor: '#6c757d',
+            confirmButtonText: 'Sim, limpar tudo!',
+            cancelButtonText: 'Cancelar',
+            background: '#ffffff',
+            didOpen: (popup) => { popup.style.borderRadius = '2rem'; } // Arredondamento maior aplicado aqui
+            }).then((result) => {
+            if (result.isConfirmed) {
+            HTMLFormElement.prototype.submit.call(form);
+            }
+            });
+            });
+            });
+        </script>
+
+
+    }

@@ -118,10 +118,10 @@
             </div>
         </div>
         <div class="col-md-4 text-md-end">
-            <button class="ds-btn-primary d-inline-flex align-items-center gap-2">
-                <span class="material-symbols-outlined fs-5">event</span>
+            <a asp-controller="Appointments" asp-action="ProfessionalAgenda" class="btn btn-primary text-white bg-blue-900 fw-bold px-4 py-2 rounded-lg ...">
+                <span class="material-symbols-outlined align-middle me-2">calendar_month</span>
                 Ver Minha Agenda completa
-            </button>
+            </a>
         </div>
     </div>
 
@@ -234,60 +234,38 @@
                             <th>Serviço Solicitado</th>
                             <th>Horário de Início</th>
                             <th>Estado</th>
-                            <th class="text-end">Ações</th>
                         </tr>
                     </thead>
                     <tbody>
-                        @if (Model?.UpcomingAppointments != null && Model.UpcomingAppointments.Any())
+                        @if (ViewBag.ProximosAtendimentos != null && ((IEnumerable<SistemaAgendamentoWebII.Models.Appointment>)ViewBag.ProximosAtendimentos).Any())
                         {
-                            foreach (var app in Model.UpcomingAppointments)
+                            foreach (var item in ViewBag.ProximosAtendimentos)
                             {
                                 <tr>
                                     <td>
-                                        <div class="fw-semibold">@app.ClientName</div>
-                                        <div class="text-muted" style="font-size: 0.75rem;">@app.ClientEmail</div>
-                                    </td>
-                                    <td><span class="fw-medium">@app.ServiceName</span></td>
-                                    <td>
-                                        <div class="fw-bold text-primary">@app.StartTime.ToString(@"hh\:mm")</div>
+                                        <div class="fw-bold text-dark">@(item.Client?.Name ?? "Cliente Removido")</div>
+                                        <div class="small text-muted">@(item.Client?.Email ?? "-")</div>
                                     </td>
                                     <td>
-                                        <span class="ds-badge-soft badge-@app.Status.ToLower()">
-                                            @app.Status
+                                        <span class="fw-medium">@(item.Service?.Name ?? "-")</span>
+                                    </td>
+                                    <td class="text-primary fw-semibold">
+                                        @item.StartTime.ToString(@"hh\:mm")
+                                        <span class="text-muted small ms-1">(@item.AppointmentDate.ToString("dd/MM"))</span>
+                                    </td>
+                                    <td>
+                                        <span class="badge py-1 px-3 rounded-pill @(item.Status == "Confirmado" ? "bg-success-subtle text-success" : "bg-warning-subtle text-warning")">
+                                            @item.Status
                                         </span>
-                                    </td>
-                                    <td class="text-end">
-                                        <a asp-action="DetalhesAgendamento" asp-route-id="@app.AppointmentId" class="btn ds-btn-ghost py-1 px-2 border-0">
-                                            <span class="material-symbols-outlined align-middle">visibility</span>
-                                        </a>
-                                    </td>
+                                    </td>                           
                                 </tr>
                             }
                         }
                         else
                         {
                             <tr>
-                                <td>
-                                    <div class="fw-semibold">Guilherme Fonseca</div>
-                                    <div class="text-muted" style="font-size: 0.75rem;">guilherme@exemplo.pt</div>
-                                </td>
-                                <td><span class="fw-medium">Corte Degradê + Barba</span></td>
-                                <td><div class="fw-bold text-primary">09:00</div></td>
-                                <td><span class="ds-badge-soft badge-confirmado">Confirmado</span></td>
-                                <td class="text-end">
-                                    <button class="btn ds-btn-ghost py-1 px-2 border-0"><span class="material-symbols-outlined align-middle">visibility</span></button>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <div class="fw-semibold">Beatriz Costa</div>
-                                    <div class="text-muted" style="font-size: 0.75rem;">beatriz.c@exemplo.pt</div>
-                                </td>
-                                <td><span class="fw-medium">Design de Sobrancelhas</span></td>
-                                <td><div class="fw-bold text-primary">10:30</div></td>
-                                <td><span class="ds-badge-soft badge-pendente">Pendente</span></td>
-                                <td class="text-end">
-                                    <button class="btn ds-btn-ghost py-1 px-2 border-0"><span class="material-symbols-outlined align-middle">visibility</span></button>
+                                <td colspan="4" class="text-center py-4 text-muted">
+                                    Nenhum atendimento programado para os próximos dias.
                                 </td>
                             </tr>
                         }

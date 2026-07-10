@@ -1,0 +1,102 @@
+﻿@model IEnumerable<SistemaAgendamentoWebII.Models.Appointment>
+
+@{
+    ViewData["Title"] = "Minha Agenda Completa";
+}
+
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
+
+<div class="container py-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div class="d-flex align-items-center gap-3">
+            <span class="material-symbols-outlined fs-2" style="color: #00236f;">calendar_month</span>
+            <h1 class="h3 fw-bold mb-0" style="font-family: 'Manrope', sans-serif;">Minha Agenda Completa</h1>
+        </div>
+        <a asp-controller="Dashboard" asp-action="DashboardProfissional" class="btn btn-light border fw-semibold d-inline-flex align-items-center gap-2">
+            <span class="material-symbols-outlined fs-5">arrow_back</span> Voltar ao Painel
+        </a>
+    </div>
+
+    <div class="card shadow-sm border-0" style="border-radius: 1.25rem;">
+        <div class="card-body p-4">
+            @if (!Model.Any())
+            {
+                <div class="text-center py-5">
+                    <span class="material-symbols-outlined text-muted mb-2" style="font-size: 3rem;">event_busy</span>
+                    <h4 class="h5 fw-bold text-muted mb-1">Nenhum agendamento cadastrado</h4>
+                    <p class="text-muted mb-0">Você ainda não possui horários marcados por clientes.</p>
+                </div>
+            }
+            else
+            {
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="table-light text-secondary small text-uppercase fw-bold border-0">
+                            <tr>
+                                <th class="ps-3">Data</th>
+                                <th>Horário</th>
+                                <th>Cliente</th>
+                                <th>Serviço Solicitado</th>
+                                <th class="text-end pe-3">Estado</th>
+                                <th class="text-center pe-3">Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model)
+                            {
+                                <tr>
+                                    <td class="fw-semibold ps-3">@item.AppointmentDate.ToString("dd/MM/yyyy")</td>
+                                    <td>
+                                        <span class="badge bg-light text-dark border py-1.5 px-2.5">
+                                            ⏱ @item.StartTime.ToString(@"hh\:mm") - @item.EndTime.ToString(@"hh\:mm")
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <div class="fw-bold text-dark">@(item.Client?.Name ?? "Cliente removido")</div>
+                                        <div class="small text-muted">@(item.Client?.Phone ?? "-")</div>
+                                    </td>
+                                    <td>
+                                        <span class="fw-medium">@(item.Service?.Name ?? "Serviço não identificado")</span>
+                                        <div class="small text-muted">R$ @(item.Service?.Price.ToString("F2") ?? "0,00")</div>
+                                    </td>
+                                    <td class="text-end pe-3">
+                                        <span class="badge py-2 px-3 rounded-pill @(item.Status == "Confirmado" ? "bg-success-subtle text-success" : (item.Status == "Cancelado" ? "bg-danger-subtle text-danger" : "bg-warning-subtle text-warning"))">
+                                            @item.Status
+                                        </span>
+                                    </td>
+
+                                    <td class="text-center pe-3">
+                                        <div class="d-flex justify-content-center gap-2">
+                                            @if (item.Status != "Concluído" && item.Status != "Cancelado")
+                                            {
+                                                <form asp-controller="Appointments" asp-action="UpdateStatus" method="post" style="display:inline;">
+                                                    <input type="hidden" name="id" value="@item.Id" />
+                                                    <input type="hidden" name="status" value="Concluído" />
+                                                    <button type="submit" class="btn btn-sm btn-light border text-success transition-transform hover:scale-110" title="Marcar como Concluído">
+                                                        <span class="material-symbols-outlined fs-6 align-middle">check_circle</span>
+                                                    </button>
+                                                </form>
+
+                                                <form asp-controller="Appointments" asp-action="UpdateStatus" method="post" style="display:inline;" onsubmit="return confirm('Tem certeza que deseja cancelar este agendamento?');">
+                                                    <input type="hidden" name="id" value="@item.Id" />
+                                                    <input type="hidden" name="status" value="Cancelado" />
+                                                    <button type="submit" class="btn btn-sm btn-light border text-danger transition-transform hover:scale-110" title="Cancelar Agendamento">
+                                                        <span class="material-symbols-outlined fs-6 align-middle">cancel</span>
+                                                    </button>
+                                                </form>
+                                            }
+                                            else
+                                            {
+                                                <span class="text-muted small fw-medium">Finalizado</span>
+                                            }
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+        </div>
+    </div>
+</div>

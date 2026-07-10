@@ -10,11 +10,13 @@ public class Favorite
     public Guid ClientId { get; set; }
 
     [ForeignKey("ClientId")]
-    public User Client { get; set; }
+    [InverseProperty("Favorites")] // Avisa o EF para ligar com a ICollection<Favorite> do User
+    public User? Client { get; set; }
 
     [Required]
     public Guid ProfessionalId { get; set; }
 
     [ForeignKey("ProfessionalId")]
-    public Professional Professional { get; set; }
+    [InverseProperty("Favorites")] // Avisa o EF para ligar com a ICollection<Favorite> do Professional
+    public Professional? Professional { get; set; }
 }

@@ -42,7 +42,7 @@ public class AppDbContext : DbContext
 
         modelBuilder.Entity<Favorite>()
             .HasOne(f => f.Professional)
-            .WithMany()
+            .WithMany(p => p.Favorites)
             .HasForeignKey(f => f.ProfessionalId)
             .OnDelete(DeleteBehavior.Restrict);
     }

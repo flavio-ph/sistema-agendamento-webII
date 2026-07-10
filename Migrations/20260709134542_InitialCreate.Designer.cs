@@ -12,8 +12,8 @@ using SistemaAgendamentoWebII.Data;
 namespace SistemaAgendamentoWebII.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20260628232458_AdicionarCamposProfissional")]
-    partial class AdicionarCamposProfissional
+    [Migration("20260709134542_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -137,7 +137,7 @@ namespace SistemaAgendamentoWebII.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Category");
+                    b.ToTable("Categories");
                 });
 
             modelBuilder.Entity("SistemaAgendamentoWebII.Models.Establishment", b =>
@@ -176,6 +176,8 @@ namespace SistemaAgendamentoWebII.Migrations
                         .HasColumnType("uuid");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("UserId");
 
                     b.ToTable("Establishments");
                 });
@@ -244,8 +246,8 @@ namespace SistemaAgendamentoWebII.Migrations
                         .HasColumnType("text");
 
                     b.Property<string>("Description")
-                        .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
 
                     b.Property<Guid?>("EstablishmentId")
                         .HasColumnType("uuid");
@@ -257,8 +259,8 @@ namespace SistemaAgendamentoWebII.Migrations
                         .HasColumnType("boolean");
 
                     b.Property<string>("RegistrationNumber")
-                        .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
 
                     b.Property<string>("Specialty")
                         .HasMaxLength(100)
@@ -342,8 +344,8 @@ namespace SistemaAgendamentoWebII.Migrations
                         .HasColumnType("text");
 
                     b.Property<string>("Phone")
-                        .HasMaxLength(20)
-                        .HasColumnType("character varying(20)");
+                        .HasMaxLength(11)
+                        .HasColumnType("character varying(11)");
 
                     b.Property<string>("Role")
                         .IsRequired()
@@ -399,6 +401,17 @@ namespace SistemaAgendamentoWebII.Migrations
                     b.Navigation("Service");
                 });
 
+            modelBuilder.Entity("SistemaAgendamentoWebII.Models.Establishment", b =>
+                {
+                    b.HasOne("SistemaAgendamentoWebII.Models.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("SistemaAgendamentoWebII.Models.Favorite", b =>
                 {
                     b.HasOne("SistemaAgendamentoWebII.Models.User", "Client")
@@ -408,7 +421,7 @@ namespace SistemaAgendamentoWebII.Migrations
                         .IsRequired();
 
                     b.HasOne("SistemaAgendamentoWebII.Models.Professional", "Professional")
-                        .WithMany()
+                        .WithMany("Favorites")
                         .HasForeignKey("ProfessionalId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
@@ -480,6 +493,8 @@ namespace SistemaAgendamentoWebII.Migrations
             modelBuilder.Entity("SistemaAgendamentoWebII.Models.Professional", b =>
                 {
                     b.Navigation("Appointments");
+
+                    b.Navigation("Favorites");
 
                     b.Navigation("Services");
                 });

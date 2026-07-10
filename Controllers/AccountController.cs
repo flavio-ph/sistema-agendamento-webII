@@ -30,6 +30,7 @@ public class AccountController : Controller
         string PasswordConfirmation,
         string? Specialty,
         string? EstablishmentName,
+        string? CNPJ,
         string? Biography,
         string? Description,
         int? ExperienceYears,
@@ -83,6 +84,7 @@ public class AccountController : Controller
                 Id = Guid.NewGuid(),
                 UserId = user.Id,
                 Name = EstablishmentName,
+                CNPJ = CNPJ,
                 CreatedAt = DateTime.UtcNow
             });
             await _context.SaveChangesAsync();
@@ -130,7 +132,7 @@ public class AccountController : Controller
         return userRole switch
         {
             "Profissional" => RedirectToAction("DashboardProfissional", "Dashboard"), // Rota corrigida
-            "Empresa" => RedirectToAction("Index", "DashboardEmpresa"),
+            "Empresa" => RedirectToAction("DashboardEmpresa", "Dashboard"),
             _ => RedirectToAction("Index", "Dashboard")
         };
     }
@@ -142,5 +144,12 @@ public class AccountController : Controller
     {
         await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
         return RedirectToAction("DashboardProfissional", "Dashboard");
+    }
+
+    [HttpGet]
+    [AllowAnonymous]
+    public IActionResult AccessDenied()
+    {
+        return View();
     }
 }

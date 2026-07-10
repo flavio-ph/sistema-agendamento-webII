@@ -20,7 +20,11 @@
                     <div class="row g-4">
                         <div class="col-md-6">
                             <label asp-for="Name" class="form-label fw-bold text-muted small">Nome do Serviço</label>
-                            <input asp-for="Name" class="form-control form-control-lg bg-light" placeholder="Ex: Corte de Cabelo" required />
+                            <input asp-for="Name" type="text"
+                                   maxlength="30"
+                                   onkeypress="return (event.charCode >= 65 && event.charCode <= 90) || (event.charCode >= 97 && event.charCode <= 122) || (event.charCode >= 192 && event.charCode <= 255) || event.charCode == 32"
+                                   title="Apenas letras e espaços são permitidos (máximo 30 caracteres)."
+                                   class="form-control form-control-lg bg-light" placeholder="Ex: Corte de Cabelo" required />
                             <span asp-validation-for="Name" class="text-danger small"></span>
                         </div>
 
@@ -40,7 +44,12 @@
 
                         <div class="col-md-6">
                             <label asp-for="DurationMinutes" class="form-label fw-bold text-muted small">Duração (Minutos)</label>
-                            <input asp-for="DurationMinutes" type="number" step="5" min="5" class="form-control form-control-lg bg-light" placeholder="Ex: 30" required />
+                            <input asp-for="DurationMinutes" type="number"
+                                   min="1" max="9999"
+                                   onkeypress="return event.charCode >= 48 && event.charCode <= 57"
+                                   oninput="if(this.value.length > 4) this.value = this.value.slice(0, 4);"
+                                   title="Apenas números (máximo 4 dígitos)."
+                                   class="form-control form-control-lg bg-light" placeholder="Ex: 30" required />
                             <span asp-validation-for="DurationMinutes" class="text-danger small"></span>
                         </div>
 
@@ -60,6 +69,61 @@
                         </button>
                     </div>
                 </form>
+                <hr class="my-5 text-muted" />
+
+                <div class="mb-4 d-flex align-items-center gap-2">
+                    <span class="material-symbols-outlined fs-3" style="color: #00236f;">list_alt</span>
+                    <h3 class="h4 fw-bold mb-0" style="color: #00236f;">Meus Serviços Cadastrados</h3>
+                </div>
+
+                @if (ViewBag.MeusServicos != null && ((IEnumerable<SistemaAgendamentoWebII.Models.Service>)ViewBag.MeusServicos).Any())
+                {
+                    <div class="card shadow-sm border-0" style="border-radius: 1.25rem;">
+                        <div class="table-responsive">
+                            <table class="table table-hover align-middle mb-0">
+                                <thead class="table-light text-secondary small text-uppercase fw-bold border-0">
+                                    <tr>
+                                        <th class="ps-4 py-3 w-25">Nome do Serviço</th>
+                                        <th class="w-25">Descrição</th>
+                                        <th>Duração</th>
+                                        <th>Preço</th>
+                                        <th class="text-center pe-4">Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var item in ViewBag.MeusServicos)
+                                    {
+                                        <tr>
+                                            <td class="fw-semibold text-dark ps-4">@item.Name</td>
+
+                                            <td class="text-muted small text-truncate" style="max-width: 200px;" title="@item.Description">
+                                                @(string.IsNullOrWhiteSpace(item.Description) ? "-" : item.Description)
+                                            </td>
+
+                                            <td class="text-muted">⏱ @item.DurationMinutes min</td>
+                                            <td class="text-success fw-bold">R$ @item.Price.ToString("F2")</td>
+                                            <td class="text-center pe-4">
+                                                <span class="badge py-1.5 px-3 rounded-pill bg-success-subtle text-success">
+                                                    Ativo
+                                                </span>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                }
+                else
+                {
+                    <div class="card shadow-sm border-0 bg-light" style="border-radius: 1.25rem;">
+                        <div class="card-body text-center py-5">
+                            <span class="material-symbols-outlined text-muted mb-2" style="font-size: 3rem;">inventory_2</span>
+                            <h4 class="h5 fw-bold text-muted mb-1">Nenhum serviço cadastrado</h4>
+                            <p class="text-muted mb-0">Preencha o formulário acima para adicionar o seu primeiro serviço.</p>
+                        </div>
+                    </div>
+                }
             </div>
         </div>
     </div>

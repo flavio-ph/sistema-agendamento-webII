@@ -1,7 +1,12 @@
 ﻿@model SistemaAgendamentoWebII.Models.Professional
+@using System.Security.Claims
 
 @{
     ViewData["Title"] = Model.User?.Name ?? "Perfil do Profissional";
+
+    // Identifica se o perfil acessado é o do próprio usuário logado
+    var usuarioLogadoId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+    var ehOProprioPerfil = usuarioLogadoId == Model.UserId.ToString();
 }
 
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
@@ -66,10 +71,19 @@
                                     <span class="text-muted small">⏱ @servico.DurationMinutes min</span>
                                 </div>
 
-                                <a asp-controller="Appointments" asp-action="Create" asp-route-serviceId="@servico.Id"
-                                   class="btn text-white fw-bold px-4" style="background: var(--ds-primary, #00236f); border-radius: 0.5rem;">
-                                    Agendar
-                                </a>
+                                @if (!ehOProprioPerfil)
+                                {
+                                    <a asp-controller="Appointments" asp-action="Create" asp-route-serviceId="@servico.Id"
+                                       class="btn text-white fw-bold px-4" style="background: var(--ds-primary, #00236f); border-radius: 0.5rem;">
+                                        Agendar
+                                    </a>
+                                }
+                                else
+                                {
+                                    <button class="btn btn-secondary fw-bold px-4" style="border-radius: 0.5rem;" disabled title="Este é o seu próprio serviço">
+                                        Seu Serviço
+                                    </button>
+                                }
                             </div>
                         </div>
                     </div>
