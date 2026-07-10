@@ -93,7 +93,9 @@
     <header>
         <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
             <div class="container">
-                <a class="navbar-brand fw-bold text-blue-900" asp-controller="Home" asp-action="Index">Agendify</a>
+                <span class="navbar-brand mb-0 fw-bold" style="cursor: default; color: inherit;">
+                    Agendify
+                </span>
 
                 <div class="collapse navbar-collapse">
                     <ul class="navbar-nav ms-auto">
@@ -136,11 +138,15 @@
         </main>
     </div>
 
-    <footer class="border-top footer text-muted mt-auto py-4 bg-white" style="border-color: var(--ds-border) !important;">
-        <div class="container" style="max-width: 1440px;">
-            <div class="d-flex justify-content-between align-items-center">
-                <span>&copy; @DateTime.Now.Year - Sistema de Agendamento</span>
-                <a asp-area="" asp-controller="Home" asp-action="Privacy" class="text-muted text-decoration-none ds-nav-link">Privacidade</a>
+    <footer class="border-top footer text-muted py-3 mt-auto">
+        <div class="container text-center text-md-start d-flex flex-column flex-md-row justify-content-between align-items-center">
+            <div class="mb-2 mb-md-0">
+                &copy; @DateTime.Now.Year - Sistema de Agendamento
+            </div>
+            <div>
+                <a asp-area="" asp-controller="Home" asp-action="Privacy" class="text-decoration-none text-muted">
+                    Política de Privacidade
+                </a>
             </div>
         </div>
     </footer>

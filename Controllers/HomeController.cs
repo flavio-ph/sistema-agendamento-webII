@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using SistemaAgendamentoWebII.Data;
@@ -28,4 +29,11 @@ public class HomeController : Controller
 
         return View(profissionais);
     }
+
+    [AllowAnonymous] // Permite que qualquer pessoa acesse (mesmo sem estar logada)
+    public IActionResult Privacy()
+    {
+        return View();
+    }
+
 }

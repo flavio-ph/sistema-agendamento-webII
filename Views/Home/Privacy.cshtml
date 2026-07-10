@@ -1,6 +1,87 @@
 ﻿@{
-    ViewData["Title"] = "Privacy Policy";
+    ViewData["Title"] = "Política de Privacidade";
 }
-<h1>@ViewData["Title"]</h1>
 
-<p>Use this page to detail your site's privacy policy.</p>
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <h1 class="fw-bold mb-4" style="font-family: 'Manrope', sans-serif; color: var(--ds-primary, #00236f);">
+                @ViewData["Title"]
+            </h1>
+
+            <div class="card shadow-sm border-0 rounded-3 p-4 p-md-5 bg-white">
+                <div class="text-secondary" style="line-height: 1.8;">
+
+                    <p class="mb-4"><strong>Última atualização:</strong> @DateTime.Now.ToString("dd/MM/yyyy")</p>
+
+                    <p>Bem-vindo ao <strong>Agendify</strong>. Nós levamos a sua privacidade a sério e estamos comprometidos em proteger os seus dados pessoais. Esta Política de Privacidade explica como coletamos, usamos, armazenamos e compartilhamos suas informações quando você utiliza nosso site, aplicativo e serviços de agendamento.</p>
+
+                    <p>Ao utilizar o Agendify, você concorda com as práticas descritas neste documento.</p>
+
+                    <hr class="my-4">
+
+                    <h4 class="fw-bold text-dark mt-4">1. Informações que Coletamos</h4>
+                    <p>Para fornecer nossos serviços de agendamento de forma eficiente e personalizada, podemos coletar os seguintes tipos de informações:</p>
+                    <ul>
+                        <li><strong>Dados de Cadastro e Contato:</strong> Nome completo, endereço de e-mail, número de telefone e data de nascimento, fornecidos durante a criação da conta ou no momento da marcação.</li>
+                        <li><strong>Dados de Agendamento:</strong> Histórico de marcações, datas, horários, serviços solicitados e profissionais/estabelecimentos escolhidos.</li>
+                        <li><strong>Dados de Pagamento (se aplicável):</strong> Informações de faturamento e detalhes de métodos de pagamento (processados de forma segura por parceiros financeiros e gateways de pagamento).</li>
+                        <li><strong>Dados de Navegação e Dispositivo:</strong> Endereço IP, tipo de navegador, sistema operacional, páginas visitadas e interações com a plataforma (geralmente coletados via cookies).</li>
+                    </ul>
+
+                    <h4 class="fw-bold text-dark mt-4">2. Como Usamos Suas Informações</h4>
+                    <p>Os dados coletados são essenciais para o funcionamento da plataforma e são utilizados para as seguintes finalidades:</p>
+                    <ul>
+                        <li><strong>Prestação do Serviço:</strong> Processar, confirmar, reagendar e cancelar seus agendamentos junto aos prestadores de serviço.</li>
+                        <li><strong>Comunicação:</strong> Enviar notificações operacionais importantes (via e-mail, SMS ou WhatsApp), como lembretes de horários, confirmações e atualizações de status.</li>
+                        <li><strong>Melhoria da Plataforma:</strong> Analisar o comportamento de uso para aprimorar a interface, corrigir bugs e desenvolver novas funcionalidades no Agendify.</li>
+                        <li><strong>Suporte ao Cliente:</strong> Prestar assistência técnica e responder a dúvidas, sugestões ou reclamações.</li>
+                    </ul>
+
+                    <h4 class="fw-bold text-dark mt-4">3. Compartilhamento de Informações</h4>
+                    <p>O Agendify <strong>não vende</strong> nem comercializa seus dados pessoais. Suas informações são compartilhadas apenas nas seguintes situações estritamente necessárias:</p>
+                    <ul>
+                        <li><strong>Com Profissionais e Estabelecimentos:</strong> Seus dados de contato e os detalhes do serviço são compartilhados exclusivamente com o estabelecimento ou profissional com o qual você realizou o agendamento, para que o serviço possa ser prestado.</li>
+                        <li><strong>Com Provedores de Serviço:</strong> Empresas parceiras que auxiliam na operação da plataforma (hospedagem de servidores em nuvem, serviços de disparo de mensagens, análise de dados e gateways de pagamento), sempre sob rigorosos acordos de confidencialidade e segurança.</li>
+                        <li><strong>Por Exigência Legal:</strong> Quando solicitado por autoridades competentes, ordem judicial ou para cumprir obrigações legais, como a Lei Geral de Proteção de Dados (LGPD).</li>
+                    </ul>
+
+                    <h4 class="fw-bold text-dark mt-4">4. Segurança e Armazenamento</h4>
+                    <p>Adotamos medidas de segurança técnicas, administrativas e físicas rigorosas (como criptografia de dados e servidores seguros) para proteger suas informações contra acessos não autorizados, perdas, alterações ou vazamentos. Seus dados são retidos apenas pelo tempo necessário para cumprir as finalidades descritas nesta política ou exigências legais.</p>
+
+                    <h4 class="fw-bold text-dark mt-4">5. Uso de Cookies</h4>
+                    <p>Utilizamos cookies e tecnologias semelhantes para reconhecer seu navegador, lembrar suas preferências (como manter sua conta logada) e entender como você interage com o Agendify. Você pode gerenciar ou desativar os cookies a qualquer momento nas configurações do seu navegador, embora isso possa afetar o funcionamento de algumas partes do site.</p>
+
+                    <h4 class="fw-bold text-dark mt-4">6. Seus Direitos (Em conformidade com a LGPD)</h4>
+                    <p>Você tem controle sobre seus dados pessoais. A qualquer momento, é seu direito solicitar:</p>
+                    <ul>
+                        <li><strong>Acesso e Confirmação:</strong> Saber se tratamos seus dados e solicitar uma cópia das informações que possuímos.</li>
+                        <li><strong>Retificação:</strong> Corrigir ou atualizar dados incompletos, inexatos ou desatualizados em seu perfil.</li>
+                        <li><strong>Exclusão ou Anonimização:</strong> Solicitar a eliminação dos seus dados pessoais da nossa base, desde que não sejam mais necessários para obrigações legais ou contratos vigentes.</li>
+                        <li><strong>Revogação de Consentimento:</strong> Cancelar sua inscrição em nossa lista de e-mails promocionais e de marketing.</li>
+                    </ul>
+                    <p>Para exercer esses direitos, basta entrar em contato conosco ou acessar a aba de configurações do seu perfil na plataforma.</p>
+
+                    <h4 class="fw-bold text-dark mt-4">7. Alterações nesta Política</h4>
+                    <p>O Agendify reserva-se o direito de atualizar esta Política de Privacidade periodicamente para refletir mudanças em nossas operações ou obrigações regulatórias. Notificaremos os usuários sobre mudanças significativas por e-mail ou através de um aviso destacado em nosso site, alterando também a data de "Última atualização" no topo deste documento.</p>
+
+                    <h4 class="fw-bold text-dark mt-4">8. Contato</h4>
+                    <p>Se você tiver dúvidas, preocupações ou solicitações referentes a esta Política de Privacidade e ao tratamento de seus dados, entre em contato com nosso Encarregado de Proteção de Dados (DPO):</p>
+                    <ul>
+                        <li><strong>E-mail:</strong> privacidade@agendify.com.br</li>
+                        <li><strong>Telefone:</strong> (XX) XXXX-XXXX</li>
+                        <li><strong>Endereço Comercial:</strong> [Inserir endereço físico da empresa]</li>
+                    </ul>
+
+                </div>
+            </div>
+
+            <div class="mt-4">
+                <a href="javascript:history.back()" class="btn btn-outline-secondary">
+                    <span class="material-symbols-outlined align-middle fs-6 me-1"></span>
+                    Voltar
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
