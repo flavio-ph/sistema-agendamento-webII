@@ -111,9 +111,11 @@
                 </div>
                 <div>
                     <h1 class="h3 fw-bold mb-0" style="font-family: 'Manrope', sans-serif; color: var(--ds-primary, #00236f);">
-                        Olá, @(user?.Name ?? "Profissional")
+                        Olá, @(Model?.User?.Name ?? User.Identity.Name)
                     </h1>
-                    <p class="text-muted mb-0">@(professional?.Specialty ?? "Especialidade não definida") • Painel de Controlo</p>
+                    <p class="text-muted mb-0">
+                        @(Model?.Professional?.Specialty ?? "Especialidade não definida") • Painel de Controle
+                    </p>
                 </div>
             </div>
         </div>

@@ -68,9 +68,12 @@ namespace SistemaAgendamentoWebII.Controllers
             var userIdString = User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (string.IsNullOrEmpty(userIdString)) return RedirectToAction("Login", "Account");
 
-            var prof = await _context.Professionals.FirstOrDefaultAsync(p => p.UserId == Guid.Parse(userIdString));
+            var prof = await _context.Professionals
+                .Include(p => p.User)
+                .FirstOrDefaultAsync(p => p.UserId == Guid.Parse(userIdString));
+
             if (prof == null) return Forbid();
-    
+
             var hoje = DateOnly.FromDateTime(DateTime.Now);
 
             var proximosAtendimentos = await _context.Agendamentos
@@ -83,9 +86,13 @@ namespace SistemaAgendamentoWebII.Controllers
                 .ToListAsync();
 
             ViewBag.ProximosAtendimentos = proximosAtendimentos;
+            var viewModel = new SistemaAgendamentoWebII.Models.ViewModels.ProfessionalDashboardViewModel
+            {
+                User = prof.User,
+                Professional = prof
+            };
 
-
-            return View();
+            return View(viewModel);
         }
 
         [Authorize(Roles = "Empresa")]
