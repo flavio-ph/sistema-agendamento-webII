@@ -104,8 +104,19 @@
                             // Classes de navegação com transição para azul no hover
                             @if (User.IsInRole("Cliente"))
                             {
-                                <li class="nav-item"><a class="nav-link text-dark hover:text-blue-900 transition-colors" asp-controller="Dashboard" asp-action="Index">Meus Agendamentos</a></li>
-                                <li class="nav-item"><a class="nav-link text-dark hover:text-blue-900 transition-colors" asp-controller="Home" asp-action="Index">Explorar</a></li>
+                                @if (User.IsInRole("Cliente"))
+                                {
+                                    <li class="nav-item">
+                                        <a class="nav-link text-dark hover:text-blue-900 transition-colors" asp-controller="Dashboard" asp-action="Index">
+                                            Meus Agendamentos
+                                        </a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link text-dark hover:text-blue-900 transition-colors" asp-controller="Home" asp-action="Explorar">
+                                            Explorar
+                                        </a>
+                                    </li>
+                                }
                             }
 
                             @if (User.IsInRole("Profissional"))
