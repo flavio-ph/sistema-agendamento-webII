@@ -1,129 +1,162 @@
 ﻿@model SistemaAgendamentoWebII.Models.Service
 
 @{
-    ViewData["Title"] = "Novo Serviço";
+    ViewData["Title"] = "Serviços";
 }
 
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
 
-<div class="container py-5" style="max-width: 800px;">
-    <div class="card shadow-sm border-0" style="border-radius: 1.25rem;">
+<style>
+    :root {
+        --ds-primary: #00236f;
+        --ds-primary-hover: #00184f;
+    }
+
+    .btn-primary-custom {
+        background-color: var(--ds-primary);
+        color: white;
+        transition: background-color 0.2s ease;
+    }
+
+        .btn-primary-custom:hover {
+            background-color: var(--ds-primary-hover);
+            color: white;
+        }
+</style>
+
+<div class="container py-5">
+
+    <!-- CARD 1: FORMULÁRIO DE CADASTRO -->
+    <div class="card shadow-sm border-0 mb-5" style="border-radius: 1.25rem;">
         <div class="card-body p-4 p-md-5">
             <div class="d-flex align-items-center gap-3 mb-4">
-                <span class="material-symbols-outlined fs-2" style="color: var(--ds-primary, #00236f);">add_circle</span>
-                <h1 class="h3 fw-bold mb-0" style="font-family: 'Manrope', sans-serif;">Cadastrar Novo Serviço</h1>
+                <span class="material-symbols-outlined fs-2" style="color: var(--ds-primary);">add_circle</span>
+                <h1 class="h3 fw-bold mb-0" style="font-family: 'Manrope', sans-serif; color: var(--ds-primary);">Cadastrar Novo Serviço</h1>
             </div>
 
             <form asp-action="Create" method="post">
-                <div asp-validation-summary="All" class="text-danger small mb-3 fw-bold p-2 bg-danger bg-opacity-10 rounded"></div>
+                <div asp-validation-summary="All" class="text-danger small mb-4 fw-bold p-3 bg-danger bg-opacity-10 rounded border border-danger border-opacity-25" style="display: @(ViewData.ModelState.IsValid ? "none" : "block");"></div>
+
                 <div class="row g-4 mb-4">
-                    <div class="row g-4">
-                        <div class="col-md-6">
-                            <label asp-for="Name" class="form-label fw-bold text-muted small">Nome do Serviço</label>
-                            <input asp-for="Name" type="text"
-                                   maxlength="30"
-                                   onkeypress="return (event.charCode >= 65 && event.charCode <= 90) || (event.charCode >= 97 && event.charCode <= 122) || (event.charCode >= 192 && event.charCode <= 255) || event.charCode == 32"
-                                   title="Apenas letras e espaços são permitidos (máximo 30 caracteres)."
-                                   class="form-control form-control-lg bg-light" placeholder="Ex: Corte de Cabelo" required />
-                            <span asp-validation-for="Name" class="text-danger small"></span>
-                        </div>
-
-                        <div class="col-md-6">
-                            <label asp-for="CategoryId" class="form-label fw-bold text-muted small">Categoria</label>
-                            <select asp-for="CategoryId" asp-items="ViewBag.Categories" class="form-select form-select-lg bg-light" required>
-                                <option value="">Selecione uma categoria...</option>
-                            </select>
-                            <span asp-validation-for="CategoryId" class="text-danger small"></span>
-                        </div>
-
-                        <div class="col-md-6">
-                            <label asp-for="Price" class="form-label fw-bold text-muted small">Preço (R$)</label>
-                            <input asp-for="Price" type="number" step="0.01" min="0" class="form-control form-control-lg bg-light" placeholder="0,00" required />
-                            <span asp-validation-for="Price" class="text-danger small"></span>
-                        </div>
-
-                        <div class="col-md-6">
-                            <label asp-for="DurationMinutes" class="form-label fw-bold text-muted small">Duração (Minutos)</label>
-                            <input asp-for="DurationMinutes" type="number"
-                                   min="1" max="9999"
-                                   onkeypress="return event.charCode >= 48 && event.charCode <= 57"
-                                   oninput="if(this.value.length > 4) this.value = this.value.slice(0, 4);"
-                                   title="Apenas números (máximo 4 dígitos)."
-                                   class="form-control form-control-lg bg-light" placeholder="Ex: 30" required />
-                            <span asp-validation-for="DurationMinutes" class="text-danger small"></span>
-                        </div>
-
-                        <div class="col-12">
-                            <label asp-for="Description" class="form-label fw-bold text-muted small">Descrição do Serviço</label>
-                            <textarea asp-for="Description" class="form-control form-control-lg bg-light" rows="3" placeholder="Detalhe o que está incluído no serviço..."></textarea>
-                            <span asp-validation-for="Description" class="text-danger small"></span>
-                        </div>
+                    <div class="col-md-6">
+                        <label asp-for="Name" class="form-label fw-bold text-muted small">Nome do Serviço <span class="text-danger">*</span></label>
+                        <input asp-for="Name" type="text" maxlength="30" class="form-control form-control-lg bg-light" placeholder="Ex: Corte de Cabelo" required />
+                        <span asp-validation-for="Name" class="text-danger small mt-1 d-block"></span>
                     </div>
 
-                    <hr class="my-5 text-muted" />
-
-                    <div class="d-flex justify-content-end gap-3">
-                        <a asp-controller="Dashboard" asp-action="DashboardProfissional" class="btn btn-light fw-bold px-4 py-2 border">Cancelar</a>
-                        <button type="submit" class="btn text-white fw-bold px-4 py-2" style="background: var(--ds-primary, #00236f); border-radius: 0.5rem;">
-                            Salvar Serviço
-                        </button>
+                    <div class="col-md-6">
+                        <label asp-for="CategoryId" class="form-label fw-bold text-muted small">Categoria <span class="text-danger">*</span></label>
+                        <select asp-for="CategoryId" asp-items="ViewBag.Categories" class="form-select form-select-lg bg-light" required>
+                            <option value="">Selecione uma categoria...</option>
+                        </select>
+                        <span asp-validation-for="CategoryId" class="text-danger small mt-1 d-block"></span>
                     </div>
-                </form>
-                <hr class="my-5 text-muted" />
 
-                <div class="mb-4 d-flex align-items-center gap-2">
-                    <span class="material-symbols-outlined fs-3" style="color: #00236f;">list_alt</span>
-                    <h3 class="h4 fw-bold mb-0" style="color: #00236f;">Meus Serviços Cadastrados</h3>
+                    <div class="col-md-6">
+                        <label asp-for="Price" class="form-label fw-bold text-muted small">Preço (R$) <span class="text-danger">*</span></label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light border-end-0">R$</span>
+                            <input asp-for="Price" type="number" step="0.01" min="0" class="form-control form-control-lg bg-light border-start-0 ps-0" placeholder="0,00" required />
+                        </div>
+                        <span asp-validation-for="Price" class="text-danger small mt-1 d-block"></span>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label asp-for="DurationMinutes" class="form-label fw-bold text-muted small">Duração (Minutos) <span class="text-danger">*</span></label>
+                        <div class="input-group">
+                            <input asp-for="DurationMinutes" type="number" min="1" max="1440" class="form-control form-control-lg bg-light border-end-0" placeholder="Ex: 30" required />
+                            <span class="input-group-text bg-light border-start-0 text-muted">min</span>
+                        </div>
+                        <span asp-validation-for="DurationMinutes" class="text-danger small mt-1 d-block"></span>
+                    </div>
+
+                    <div class="col-12">
+                        <label asp-for="Description" class="form-label fw-bold text-muted small">Descrição do Serviço</label>
+                        <textarea asp-for="Description" class="form-control form-control-lg bg-light" rows="3" placeholder="Detalhe o que está incluído no serviço (opcional)..."></textarea>
+                        <span asp-validation-for="Description" class="text-danger small mt-1 d-block"></span>
+                    </div>
                 </div>
 
-                @if (ViewBag.MeusServicos != null && ((IEnumerable<SistemaAgendamentoWebII.Models.Service>)ViewBag.MeusServicos).Any())
-                {
-                    <div class="card shadow-sm border-0" style="border-radius: 1.25rem;">
-                        <div class="table-responsive">
-                            <table class="table table-hover align-middle mb-0">
-                                <thead class="table-light text-secondary small text-uppercase fw-bold border-0">
-                                    <tr>
-                                        <th class="ps-4 py-3 w-25">Nome do Serviço</th>
-                                        <th class="w-25">Descrição</th>
-                                        <th>Duração</th>
-                                        <th>Preço</th>
-                                        <th class="text-center pe-4">Status</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @foreach (var item in ViewBag.MeusServicos)
-                                    {
-                                        <tr>
-                                            <td class="fw-semibold text-dark ps-4">@item.Name</td>
-
-                                            <td class="text-muted small text-truncate" style="max-width: 200px;" title="@item.Description">
-                                                @(string.IsNullOrWhiteSpace(item.Description) ? "-" : item.Description)
-                                            </td>
-
-                                            <td class="text-muted">⏱ @item.DurationMinutes min</td>
-                                            <td class="text-success fw-bold">R$ @item.Price.ToString("F2")</td>
-                                            <td class="text-center pe-4">
-                                                <span class="badge py-1.5 px-3 rounded-pill bg-success-subtle text-success">
-                                                    Ativo
-                                                </span>
-                                            </td>
-                                        </tr>
-                                    }
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                }
-                else
-                {
-                    <div class="card shadow-sm border-0 bg-light" style="border-radius: 1.25rem;">
-                        <div class="card-body text-center py-5">
-                            <span class="material-symbols-outlined text-muted mb-2" style="font-size: 3rem;">inventory_2</span>
-                            <h4 class="h5 fw-bold text-muted mb-1">Nenhum serviço cadastrado</h4>
-                            <p class="text-muted mb-0">Preencha o formulário acima para adicionar o seu primeiro serviço.</p>
-                        </div>
-                    </div>
-                }
-            </div>
+                <div class="d-flex justify-content-end gap-3 mt-4 pt-3 border-top">
+                    <a asp-controller="Dashboard" asp-action="DashboardProfissional" class="btn btn-light fw-bold px-4 py-2 border">Cancelar</a>
+                    <button type="submit" class="btn btn-primary-custom fw-bold px-4 py-2 rounded-3">
+                        Salvar Serviço
+                    </button>
+                </div>
+            </form>
         </div>
     </div>
+
+    <!-- CARD 2: LISTA DE SERVIÇOS -->
+    <div class="d-flex align-items-center gap-2 mb-3 px-2">
+        <span class="material-symbols-outlined fs-3" style="color: var(--ds-primary);">list_alt</span>
+        <h2 class="h4 fw-bold mb-0" style="color: var(--ds-primary);">Meus Serviços Cadastrados</h2>
+    </div>
+
+    @if (ViewBag.MeusServicos != null && ((IEnumerable<SistemaAgendamentoWebII.Models.Service>)ViewBag.MeusServicos).Any())
+    {
+        <div class="card shadow-sm border-0" style="border-radius: 1.25rem;">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light text-secondary small text-uppercase fw-bold border-0">
+                        <tr>
+                            <th class="ps-4 py-3">Nome do Serviço</th>
+                            <th>Descrição</th>
+                            <th>Duração</th>
+                            <th>Preço</th>
+                            <th class="text-center">Status</th>
+                            <th class="text-end pe-4">Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in ViewBag.MeusServicos)
+                        {
+                            <tr>
+                                <td class="fw-semibold text-dark ps-4">@item.Name</td>
+
+                                <td class="text-muted small text-truncate" style="max-width: 250px;" title="@item.Description">
+                                    @(string.IsNullOrWhiteSpace(item.Description) ? "-" : item.Description)
+                                </td>
+
+                                <td class="text-muted">
+                                    <div class="d-flex align-items-center gap-1">
+                                        <span class="material-symbols-outlined fs-6">schedule</span>
+                                        @item.DurationMinutes min
+                                    </div>
+                                </td>
+
+                                <td class="text-success fw-bold">R$ @item.Price.ToString("F2")</td>
+
+                                <td class="text-center">
+                                    <span class="badge py-2 px-3 rounded-pill bg-success bg-opacity-10 text-success border border-success border-opacity-25">
+                                        Ativo
+                                    </span>
+                                </td>
+
+                                <td class="text-end pe-4">
+                                    <!-- Substitua pelos seus links reais de Edit/Delete -->
+                                    <a href="#" class="btn btn-sm btn-light text-primary rounded-circle p-2 me-1" title="Editar">
+                                        <span class="material-symbols-outlined fs-6 d-block">edit</span>
+                                    </a>
+                                    <a href="#" class="btn btn-sm btn-light text-danger rounded-circle p-2" title="Excluir">
+                                        <span class="material-symbols-outlined fs-6 d-block">delete</span>
+                                    </a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="card shadow-sm border-0 bg-light" style="border-radius: 1.25rem;">
+            <div class="card-body text-center py-5">
+                <span class="material-symbols-outlined text-muted mb-3" style="font-size: 3.5rem;">inventory_2</span>
+                <h4 class="h5 fw-bold text-dark mb-2">Nenhum serviço cadastrado</h4>
+                <p class="text-muted mb-0">Preencha o formulário acima para adicionar o seu primeiro serviço e começar a receber agendamentos.</p>
+            </div>
+        </div>
+    }
+</div>

@@ -5,7 +5,7 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - Sistema de Agendamento</title>
+    <title>@ViewData["Title"] - Agendify</title>
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -30,6 +30,9 @@
                 background-color: var(--ds-bg);
                 font-family: 'Inter', sans-serif;
                 color: var(--ds-text-main);
+                display: flex;
+                flex-direction: column;
+                min-height: 100vh; /* Garante que o body ocupe a tela toda */
             }
 
             /* Navbar Customizada */
@@ -37,24 +40,34 @@
                 background-color: var(--ds-surface);
                 box-shadow: var(--ds-shadow-nav);
                 border-bottom: 1px solid var(--ds-border);
+                padding-top: 0.75rem;
+                padding-bottom: 0.75rem;
             }
 
             .ds-brand {
                 font-family: 'Manrope', sans-serif;
                 font-weight: 800;
-                font-size: 1.25rem;
+                font-size: 1.5rem;
                 color: var(--ds-primary) !important;
                 letter-spacing: -0.02em;
+                text-decoration: none;
+                transition: opacity 0.2s;
             }
+
+                .ds-brand:hover {
+                    opacity: 0.85;
+                }
 
             .ds-nav-link {
                 font-weight: 500;
                 color: var(--ds-text-muted) !important;
-                transition: color 0.2s ease;
+                transition: color 0.2s ease, transform 0.2s ease;
+                padding: 0.5rem 1rem !important;
             }
 
                 .ds-nav-link:hover {
                     color: var(--ds-primary) !important;
+                    transform: translateY(-1px);
                 }
 
             /* Botões */
@@ -63,7 +76,7 @@
                 color: #ffffff !important;
                 border: none;
                 border-radius: 0.5rem; /* 8px */
-                padding: 8px 20px;
+                padding: 8px 24px;
                 font-weight: 600;
                 box-shadow: 0 4px 12px rgba(0, 35, 111, 0.15);
                 transition: transform 0.2s ease, box-shadow 0.2s ease;
@@ -77,85 +90,94 @@
 
             .ds-btn-ghost {
                 color: var(--ds-text-muted);
-                font-weight: 500;
+                font-weight: 600;
                 border-radius: 0.5rem;
-                padding: 8px 16px;
+                padding: 8px 20px;
                 transition: all 0.2s;
+                text-decoration: none;
+                border: none;
+                background: transparent;
             }
 
                 .ds-btn-ghost:hover {
-                    background-color: #eff4ff; /* surface-container-low */
+                    background-color: #eff4ff;
                     color: var(--ds-primary);
                 }
     </style>
 </head>
 <body>
     <header>
-        <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
+        <nav class="navbar navbar-expand-lg ds-navbar sticky-top">
             <div class="container">
-                <span class="navbar-brand mb-0 fw-bold" style="cursor: default; color: inherit;">
+                <a class="navbar-brand ds-brand" asp-controller="Home" asp-action="Index">
                     Agendify
-                </span>
+                </a>
 
-                <div class="collapse navbar-collapse">
-                    <ul class="navbar-nav ms-auto">
+                <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarPrincipal" aria-controls="navbarPrincipal" aria-expanded="false" aria-label="Alternar navegação">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <div class="collapse navbar-collapse" id="navbarPrincipal">
+                    <ul class="navbar-nav me-auto mb-2 mb-lg-0 mt-3 mt-lg-0 gap-1">
+                        <li class="nav-item">
+                            <a class="nav-link ds-nav-link" asp-controller="Home" asp-action="Index">Início</a>
+                        </li>
+
                         @if (User.Identity.IsAuthenticated)
                         {
-                            // Classes de navegação com transição para azul no hover
                             @if (User.IsInRole("Cliente"))
                             {
-                                @if (User.IsInRole("Cliente"))
-                                {
-                                    <li class="nav-item">
-                                        <a class="nav-link text-dark hover:text-blue-900 transition-colors" asp-controller="Dashboard" asp-action="Index">
-                                            Meus Agendamentos
-                                        </a>
-                                    </li>
-                                    <li class="nav-item">
-                                        <a class="nav-link text-dark hover:text-blue-900 transition-colors" asp-controller="Home" asp-action="Explorar">
-                                            Explorar
-                                        </a>
-                                    </li>
-                                }
+                                <li class="nav-item">
+                                    <a class="nav-link ds-nav-link" asp-controller="Dashboard" asp-action="Index">Meus Agendamentos</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link ds-nav-link" asp-controller="Home" asp-action="Index">Explorar</a>
+                                </li>
                             }
 
                             @if (User.IsInRole("Profissional"))
                             {
                                 <li class="nav-item">
-                                    <a class="nav-link text-dark hover:text-blue-900 transition-colors" asp-controller="Appointments" asp-action="ProfessionalAgenda">Agenda</a>
+                                    <a class="nav-link ds-nav-link" asp-controller="Appointments" asp-action="ProfessionalAgenda">Minha Agenda</a>
                                 </li>
                                 <li class="nav-item">
-                                    <a class="nav-link text-dark hover:text-blue-900 transition-colors" asp-controller="Service" asp-action="Create">Meus Serviços</a>
+                                    <a class="nav-link ds-nav-link" asp-controller="Services" asp-action="Create">Meus Serviços</a>
                                 </li>
                             }
-
-                            // ... (demais perfis mantêm a mesma estrutura de classes)
-
-                            <li class="nav-item">
-                                <form asp-controller="Account" asp-action="Logout" method="post">
-                                    <button type="submit" class="nav-link btn btn-link text-dark hover:text-blue-900 transition-colors">Sair</button>
-                                </form>
-                            </li>
                         }
                     </ul>
+
+                    <div class="d-flex align-items-center gap-2 mt-3 mt-lg-0">
+                        @if (User.Identity.IsAuthenticated)
+                        {
+                            <form asp-controller="Account" asp-action="Logout" method="post" class="m-0">
+                                <button type="submit" class="ds-btn-ghost">Sair</button>
+                            </form>
+                        }
+                        else
+                        {
+                            <a asp-controller="Account" asp-action="Login" class="ds-btn-ghost">Entrar</a>
+                            <a asp-controller="Account" asp-action="Register" class="ds-btn-primary">Cadastrar</a>
+                        }
+                    </div>
                 </div>
             </div>
         </nav>
     </header>
 
-    <div class="container" style="max-width: 1440px;">
+    <div class="container py-4 flex-grow-1" style="max-width: 1440px;">
         <main role="main" class="pb-5">
             @RenderBody()
         </main>
     </div>
 
-    <footer class="border-top footer text-muted py-3 mt-auto">
-        <div class="container text-center text-md-start d-flex flex-column flex-md-row justify-content-between align-items-center">
-            <div class="mb-2 mb-md-0">
-                &copy; @DateTime.Now.Year - Sistema de Agendamento
+    <footer class="border-top footer text-muted py-4 bg-white mt-auto">
+        <div class="container d-flex flex-column flex-md-row justify-content-between align-items-center gap-3">
+            <div class="fw-medium">
+                &copy; @DateTime.Now.Year - Agendify
             </div>
             <div>
-                <a asp-area="" asp-controller="Home" asp-action="Privacy" class="text-decoration-none text-muted">
+                <a asp-area="" asp-controller="Home" asp-action="Privacy" class="text-decoration-none text-muted" style="transition: color 0.2s;">
                     Política de Privacidade
                 </a>
             </div>

@@ -9,11 +9,11 @@ using System.Security.Claims;
 namespace SistemaAgendamentoWebII.Controllers
 {
     [Authorize(Roles = "Profissional")]
-    public class ServiceController : Controller
+    public class ServicesController : Controller
     {
         private readonly AppDbContext _context;
 
-        public ServiceController(AppDbContext context)
+        public ServicesController(AppDbContext context)
         {
             _context = context;
         }
