@@ -65,8 +65,21 @@
 
             @if (ViewBag.Error != null)
             {
-                <div class="p-4 mb-6 text-sm text-[#93000a] bg-[#ffdad6] border border-[#ffb4ab] rounded-[8px]">
-                    @ViewBag.Error
+                <div class="p-4 mb-6 text-sm text-[#93000a] bg-[#ffdad6] border border-[#ffb4ab] rounded-[8px] flex justify-between items-start gap-2">
+                    <span>@ViewBag.Error</span>
+                    <button type="button" onclick="this.parentElement.remove()" class="text-[#93000a] hover:opacity-75 focus:outline-none flex-shrink-0 transition-opacity">
+                        <span class="material-symbols-outlined" style="font-size: 20px;">close</span>
+                    </button>
+                </div>
+            }
+
+            @if (TempData["SuccessMessage"] != null)
+            {
+                <div class="p-4 mb-6 text-sm text-[#005c3a] bg-[#cbf0d9] border border-[#a0e0bb] rounded-[8px] flex justify-between items-start gap-2">
+                    <span>@TempData["SuccessMessage"]</span>
+                    <button type="button" onclick="this.parentElement.remove()" class="text-[#005c3a] hover:opacity-75 focus:outline-none flex-shrink-0 transition-opacity">
+                        <span class="material-symbols-outlined" style="font-size: 20px;">close</span>
+                    </button>
                 </div>
             }
 
@@ -81,7 +94,9 @@
                 <div>
                     <div class="flex justify-between items-center mb-1.5">
                         <label class="block text-sm font-semibold text-on-surface-variant">Senha</label>
-                        <a href="#" class="text-sm font-semibold text-primary hover:underline">Esqueceu a senha?</a>
+                        <a asp-controller="Account" asp-action="ForgotPassword" class="text-decoration-none small fw-semibold" style="color: var(--ds-primary, #00236f);">
+                            Esqueceu a senha?
+                        </a>
                     </div>
                     <input type="password" name="password" required class="w-full rounded-[8px] border-outline-variant bg-surface-container-lowest px-4 py-3 text-on-surface transition-all focus:border-primary focus:ring-[4px] focus:ring-primary/20 outline-none" placeholder="••••••••" />
                 </div>

@@ -152,4 +152,43 @@ public class AccountController : Controller
     {
         return View();
     }
+
+    [HttpGet]
+    [AllowAnonymous]
+    public IActionResult ForgotPassword()
+    {
+        return View();
+    }
+
+    [HttpPost]
+    [AllowAnonymous]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> ForgotPassword(string email)
+    {
+        // 1. Verifica se o campo veio vazio
+        if (string.IsNullOrEmpty(email))
+        {
+            ModelState.AddModelError("Email", "Por favor, informe o seu e-mail.");
+            return View();
+        }
+
+        // 2. Busca o usuário no banco de dados
+        var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == email);
+
+        // 3. Se NÃO encontrar, devolve um erro na mesma tela
+        if (user == null)
+        {
+            ModelState.AddModelError("Email", "Este e-mail não foi encontrado em nosso banco de dados.");
+            return View();
+        }
+
+        // 4. Se ENCONTRAR o usuário:
+        // AQUI ENTRARÁ A LÓGICA DE ENVIO DE E-MAIL REAL NO FUTURO
+        // Ex: _emailService.SendResetPasswordEmail(user.Email, token);
+
+        // Manda a mensagem de sucesso e redireciona pro login
+        TempData["SuccessMessage"] = "Um link de recuperação foi enviado para o seu e-mail.";
+
+        return RedirectToAction("Login");
+    }
 }
