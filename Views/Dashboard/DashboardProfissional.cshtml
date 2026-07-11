@@ -1,12 +1,11 @@
 ﻿@model SistemaAgendamentoWebII.Models.ViewModels.ProfessionalDashboardViewModel
-@using SistemaAgendamentoWebII.Models
-@using System.Security.Claims
 
 @{
     ViewData["Title"] = "Painel do Profissional";
     var professional = Model?.Professional;
     var user = Model?.User;
 }
+
 
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
 
@@ -50,7 +49,7 @@
         color: #dc2626;
     }
 
-    /* Gráfico de Barras SaaS Puro CSS (Fidelidade ao code.html) */
+   
     .ds-chart-container {
         height: 200px;
         display: flex;
@@ -71,13 +70,15 @@
         display: flex;
         flex-direction: column;
         align-items: center;
+        justify-content: flex-end;
+        height: 100%;
         flex-grow: 1;
         z-index: 2;
     }
 
     .ds-chart-bar {
         width: 32px;
-        background-color: #d3e4fe; /* surface-container-highest */
+        background-color: #d3e4fe;
         border-radius: 4px 4px 0 0;
         transition: all 0.3s ease;
         position: relative;
@@ -120,7 +121,7 @@
             </div>
         </div>
         <div class="col-md-4 text-md-end">
-            <a asp-controller="Appointments" asp-action="ProfessionalAgenda" class="btn btn-primary text-white bg-blue-900 fw-bold px-4 py-2 rounded-lg ...">
+            <a asp-controller="Appointments" asp-action="ProfessionalAgenda" class="btn text-white fw-bold px-4 py-2 rounded-lg" style="background-color: #00236f; border: none; transition: 0.2s;">
                 <span class="material-symbols-outlined align-middle me-2">calendar_month</span>
                 Ver Minha Agenda completa
             </a>
@@ -144,13 +145,13 @@
         <div class="col-md-6 col-xl-3">
             <div class="prof-card h-100 d-flex flex-column justify-content-between">
                 <div class="d-flex justify-content-between align-items-start mb-3">
-                    <span class="text-muted fw-semibold" style="font-size: 0.875rem;">Aguardando Confirmação</span>
-                    <span class="material-symbols-outlined text-warning">pending_actions</span>
+                    <span class="text-muted fw-semibold" style="font-size: 0.875rem;">Agendamentos Gerais</span>
+                    <span class="material-symbols-outlined text-info">calendar_month</span>
                 </div>
                 <div>
-                    <h2 class="prof-stat-val h2 mb-0">@(Model?.PendingAppointmentsCount ?? 0)</h2>
-                    <!-- Erro das aspas corrigido na linha abaixo: -->
-                    <span class="text-muted" style="font-size: 0.75rem;">Requerem atenção</span>
+
+                    <h2 class="prof-stat-val h2 mb-0">@(ViewBag.TotalAppointments ?? 0)</h2>
+                    <span class="text-muted" style="font-size: 0.75rem;">Histórico completo</span>
                 </div>
             </div>
         </div>
@@ -193,9 +194,9 @@
                     <div class="ds-chart-grid-line" style="top: 50%;"></div>
                     <div class="ds-chart-grid-line" style="top: 75%;"></div>
 
-                    @if (Model?.WeeklyOverview != null && Model.WeeklyOverview.Any())
+                    @if (ViewBag.WeeklyOverview != null)
                     {
-                        foreach (var day in Model.WeeklyOverview)
+                        foreach (dynamic day in ViewBag.WeeklyOverview)
                         {
                             <div class="ds-chart-bar-wrapper">
                                 <div class="ds-chart-bar @(day.IsToday ? "active" : "")"
@@ -209,12 +210,12 @@
                     else
                     {
                         var mockDays = new[] {
-                            new { Name = "Seg", Val = 40, Act = false },
-                            new { Name = "Ter", Val = 65, Act = false },
-                            new { Name = "Qua", Val = 85, Act = true },
-                            new { Name = "Qui", Val = 50, Act = false },
-                            new { Name = "Sex", Val = 95, Act = false }
-                        };
+        new { Name = "Seg", Val = 40, Act = false },
+        new { Name = "Ter", Val = 65, Act = false },
+        new { Name = "Qua", Val = 85, Act = true },
+        new { Name = "Qui", Val = 50, Act = false },
+        new { Name = "Sex", Val = 95, Act = false }
+    };
                         foreach (var m in mockDays)
                         {
                             <div class="ds-chart-bar-wrapper">
@@ -260,7 +261,7 @@
                                         <span class="badge py-1 px-3 rounded-pill @(item.Status == "Confirmado" ? "bg-success-subtle text-success" : "bg-warning-subtle text-warning")">
                                             @item.Status
                                         </span>
-                                    </td>                           
+                                    </td>
                                 </tr>
                             }
                         }

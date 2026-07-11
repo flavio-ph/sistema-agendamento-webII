@@ -41,6 +41,8 @@ public class Appointment
 
     public string? Notes { get; set; }
 
+    public int? Rating { get; set; }
+
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
     // Propriedade calculada para resolver o erro no DashboardController

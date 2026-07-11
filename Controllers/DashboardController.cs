@@ -25,8 +25,8 @@ namespace SistemaAgendamentoWebII.Controllers
             if (User.IsInRole("Profissional"))
                 return RedirectToAction("DashboardProfissional");
 
-            if (User.IsInRole("Empresa"))    
-            return RedirectToAction("DashboardEmpresa");
+            if (User.IsInRole("Empresa"))
+                return RedirectToAction("DashboardEmpresa");
 
             var userIdString = User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (string.IsNullOrEmpty(userIdString)) return RedirectToAction("Login", "Account");
@@ -42,7 +42,7 @@ namespace SistemaAgendamentoWebII.Controllers
             return View(agendamentos);
         }
 
-        [AllowAnonymous] 
+        [AllowAnonymous]
         public async Task<IActionResult> Perfil(Guid id)
         {
             var profissional = await _context.Professionals
@@ -92,7 +92,7 @@ namespace SistemaAgendamentoWebII.Controllers
                          && a.AppointmentDate.Year == dataHoje.Year
                          && a.Status != "Cancelado")
                 .SumAsync(a => a.Service.Price);
-     
+
             var proximosAtendimentos = await agendamentosBase
                 .Include(a => a.Client)
                 .Where(a => a.AppointmentDate >= hojeDateOnly)
@@ -102,7 +102,7 @@ namespace SistemaAgendamentoWebII.Controllers
                 .ToListAsync();
 
             ViewBag.ProximosAtendimentos = proximosAtendimentos;
-           
+
             var viewModel = new SistemaAgendamentoWebII.Models.ViewModels.ProfessionalDashboardViewModel
             {
                 User = prof.User,
@@ -110,8 +110,48 @@ namespace SistemaAgendamentoWebII.Controllers
                 AppointmentsTodayCount = agendamentosHojeCount,
                 PendingAppointmentsCount = pendentesCount,
                 MonthlyEarnings = ganhosMensais,
-                AverageRating = (double)prof.AverageRating 
+                AverageRating = (double)prof.AverageRating
             };
+
+            ViewBag.TotalAppointments = await agendamentosBase.CountAsync();
+
+            // === INÍCIO DO CÁLCULO DO GRÁFICO SEMANAL (Segunda a Domingo) ===
+            int diff = (7 + (dataHoje.DayOfWeek - DayOfWeek.Monday)) % 7;
+            var inicioSemana = hojeDateOnly.AddDays(-1 * diff);
+            var fimSemana = inicioSemana.AddDays(6);
+
+            var agendamentosSemana = await agendamentosBase
+                .Where(a => a.AppointmentDate >= inicioSemana
+                         && a.AppointmentDate <= fimSemana
+                         && a.Status != "Cancelado")
+                .ToListAsync();
+
+            int maxCount = 1;
+            for (int i = 0; i < 7; i++)
+            {
+                int count = agendamentosSemana.Count(a => a.AppointmentDate == inicioSemana.AddDays(i));
+                if (count > maxCount) maxCount = count;
+            }
+
+            var nomesDias = new[] { "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb", "Dom" };
+            var listaDias = new List<ChartDayData>();
+
+            for (int i = 0; i < 7; i++)
+            {
+                var data = inicioSemana.AddDays(i);
+                int count = agendamentosSemana.Count(a => a.AppointmentDate == data);
+
+                listaDias.Add(new ChartDayData
+                {
+                    DayName = nomesDias[i],
+                    Count = count,
+                    PercentageValue = (int)Math.Round((double)count / maxCount * 100),
+                    IsToday = data == hojeDateOnly
+                });
+            }
+
+            ViewBag.WeeklyOverview = listaDias;
+            // === FIM DO CÁLCULO DO GRÁFICO ===
 
             return View(viewModel);
         }
@@ -137,19 +177,19 @@ namespace SistemaAgendamentoWebII.Controllers
 
             var dataAtual = DateTime.Now;
             var dataAtualDateOnly = DateOnly.FromDateTime(dataAtual);
-   
+
             var agendamentosDaEmpresa = _context.Agendamentos
                 .Include(a => a.Professional)
                 .ThenInclude(p => p.User)
                 .Include(a => a.Service)
                 .Where(a => a.Professional.EstablishmentId == establishment.Id);
 
-            
+
             var recentAppointments = await agendamentosDaEmpresa
-                .Include(a => a.Client) 
+                .Include(a => a.Client)
                 .OrderByDescending(a => a.AppointmentDate)
                 .ThenByDescending(a => a.StartTime)
-                .Take(5) 
+                .Take(5)
                 .ToListAsync();
 
             var totalAppointments = await agendamentosDaEmpresa.CountAsync();
@@ -160,7 +200,7 @@ namespace SistemaAgendamentoWebII.Controllers
             var platformNotices = await _context.Set<Notification>()
                 .Where(n => n.UserId == userId)
                 .OrderByDescending(n => n.CreatedAt)
-                .Take(5) 
+                .Take(5)
                 .ToListAsync();
             var viewModel = new EstablishmentDashboardViewModel
             {
@@ -231,5 +271,139 @@ namespace SistemaAgendamentoWebII.Controllers
             return RedirectToAction(nameof(DashboardEmpresa));
         }
 
+        [Authorize(Roles = "Cliente")]
+        [HttpGet]
+        public async Task<IActionResult> MeuPerfil()
+        {
+            // Pega o ID do usuário logado através do token/cookie de autenticação
+            var userIdString = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (string.IsNullOrEmpty(userIdString)) return RedirectToAction("Login", "Account");
+
+            var userId = Guid.Parse(userIdString);
+
+            // Busca os dados do usuário no banco
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == userId);
+
+            if (user == null) return NotFound();
+
+            return View(user); // Envia o modelo do usuário para a tela
+        }
+
+        [Authorize(Roles = "Cliente")]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> MeuPerfil(string email, string currentPassword, string newPassword, string confirmNewPassword)
+        {
+            var userIdString = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (string.IsNullOrEmpty(userIdString)) return RedirectToAction("Login", "Account");
+
+            var userId = Guid.Parse(userIdString);
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == userId);
+
+            if (user == null) return NotFound();
+
+            // 1. Atualização do E-mail
+            if (string.IsNullOrWhiteSpace(email))
+            {
+                ModelState.AddModelError("Email", "O e-mail não pode ficar vazio.");
+                return View(user);
+            }
+
+            // Verifica se o novo e-mail já está sendo usado por outro usuário
+            var emailEmUso = await _context.Users.AnyAsync(u => u.Email == email && u.Id != userId);
+            if (emailEmUso)
+            {
+                ModelState.AddModelError("Email", "Este e-mail já está cadastrado para outra conta.");
+                return View(user);
+            }
+
+            user.Email = email;
+
+            // 2. Atualização da Senha (só processa se o usuário digitou algo nos campos de senha)
+            if (!string.IsNullOrEmpty(currentPassword) || !string.IsNullOrEmpty(newPassword) || !string.IsNullOrEmpty(confirmNewPassword))
+            {
+                // Verifica se a senha atual confere
+                if (string.IsNullOrEmpty(currentPassword) || !BCrypt.Net.BCrypt.Verify(currentPassword, user.PasswordHash))
+                {
+                    ModelState.AddModelError("CurrentPassword", "A senha atual está incorreta.");
+                    return View(user);
+                }
+
+                // Regra de tamanho da nova senha
+                if (string.IsNullOrEmpty(newPassword) || newPassword.Length < 6)
+                {
+                    ModelState.AddModelError("NewPassword", "A nova senha deve ter pelo menos 6 caracteres.");
+                    return View(user);
+                }
+
+                // Verifica se a confirmação bate
+                if (newPassword != confirmNewPassword)
+                {
+                    ModelState.AddModelError("ConfirmNewPassword", "A confirmação não bate com a nova senha.");
+                    return View(user);
+                }
+
+                // Criptografa e substitui a senha antiga
+                user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(newPassword);
+            }
+
+            _context.Users.Update(user);
+            await _context.SaveChangesAsync();
+
+            TempData["SuccessMessage"] = "O seu perfil foi atualizado com sucesso!";
+            return RedirectToAction("MeuPerfil");
+        }
+
+        [HttpPost]
+        [Authorize(Roles = "Cliente")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> AvaliarProfissional(Guid appointmentId, int nota)
+        {
+            // 1. Busca o agendamento e inclui os dados do profissional
+            var appt = await _context.Agendamentos
+                .Include(a => a.Professional)
+                .FirstOrDefaultAsync(a => a.Id == appointmentId);
+
+            // 2. Validações de segurança
+            if (appt == null || appt.Status != "Concluído")
+            {
+                TempData["ErrorMessage"] = "Apenas serviços concluídos podem ser avaliados.";
+                return RedirectToAction("Index");
+            }
+
+            if (appt.Rating != null)
+            {
+                TempData["ErrorMessage"] = "Este atendimento já foi avaliado.";
+                return RedirectToAction("Index");
+            }
+
+            // 3. Salva a nota (de 1 a 5)
+            appt.Rating = nota;
+            _context.Agendamentos.Update(appt);
+
+            // 4. Recalcula a média de notas do profissional
+            var todasNotas = await _context.Agendamentos
+                .Where(a => a.ProfessionalId == appt.ProfessionalId && a.Rating != null)
+                .Select(a => a.Rating.Value)
+                .ToListAsync();
+
+            todasNotas.Add(nota); // Inclui a nota atual no cálculo
+
+            appt.Professional.AverageRating = (decimal)todasNotas.Average();
+            _context.Professionals.Update(appt.Professional);
+
+            await _context.SaveChangesAsync();
+
+            TempData["SuccessMessage"] = "Profissional avaliado com sucesso! Obrigado pelo seu feedback.";
+            return RedirectToAction("Index");
+        }
+
     }
+}
+public class ChartDayData
+{
+    public string DayName { get; set; }
+    public int Count { get; set; }
+    public int PercentageValue { get; set; }
+    public bool IsToday { get; set; }
 }

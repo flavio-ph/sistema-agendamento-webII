@@ -1,0 +1,87 @@
+﻿@model SistemaAgendamentoWebII.Models.User
+
+@{
+    ViewData["Title"] = "Meu Perfil";
+}
+
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
+
+<div class="container py-5" style="max-width: 800px;">
+    
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert d-flex align-items-center gap-3 mb-4 border-0 shadow-sm alert-dismissible fade show" role="alert"
+             style="background-color: rgba(0, 163, 108, 0.1); color: #007a51; border-radius: 1rem;">
+            <span class="material-symbols-outlined fs-4">task_alt</span>
+            <span class="fw-bold">@TempData["SuccessMessage"]</span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Fechar"></button>
+        </div>
+    }
+
+    <div class="d-flex align-items-center gap-3 mb-4">
+        <span class="material-symbols-outlined fs-2" style="color: var(--ds-primary, #00236f);">account_circle</span>
+        <h1 class="h3 fw-bold mb-0" style="color: var(--ds-text-main, #0b1c30);">Meu Perfil</h1>
+    </div>
+
+    <div class="card border-0 shadow-sm" style="border-radius: 1.25rem;">
+        <div class="card-body p-4 p-md-5 text-center">
+            
+            <div class="bg-light rounded-circle d-inline-flex align-items-center justify-content-center fw-bold mb-4"
+                 style="width: 120px; height: 120px; font-size: 3.5rem; color: var(--ds-primary, #00236f); border: 2px solid var(--ds-border-light, #e2e8f0);">
+                @(Model.Name?.Substring(0, 1).ToUpper() ?? "U")
+            </div>
+            
+            <h2 class="h4 fw-bold mb-1 text-dark">@Model.Name</h2>
+            <p class="text-muted mb-4">@Model.Role desde @Model.CreatedAt.ToString("MMM yyyy")</p>
+
+            <hr class="my-4 text-muted" />
+
+            <form asp-action="MeuPerfil" method="post">
+                <div class="row text-start g-4">
+                    
+                    <div class="col-md-6">
+                        <label class="fw-bold text-muted small mb-1">Nome Completo</label>
+                        <input type="text" class="form-control form-control-lg bg-light text-muted" value="@Model.Name" readonly title="O nome não pode ser alterado por aqui." />
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <label class="fw-bold text-muted small mb-1">E-mail</label>
+                        <input type="email" name="email" class="form-control form-control-lg" value="@Model.Email" required />
+                        @Html.ValidationMessage("Email", new { @class = "text-danger small fw-bold mt-1 d-block" })
+                    </div>
+
+                    <div class="col-12 mt-5">
+                        <h4 class="h5 fw-bold mb-1">Segurança e Senha</h4>
+                        <p class="text-muted small mb-0">Preencha os campos abaixo <b>apenas</b> se desejar alterar a sua senha atual.</p>
+                    </div>
+
+                    <div class="col-md-12">
+                        <label class="fw-bold text-muted small mb-1">Senha Atual</label>
+                        <input type="password" name="currentPassword" class="form-control form-control-lg bg-light" placeholder="Digite sua senha atual" />
+                        @Html.ValidationMessage("CurrentPassword", new { @class = "text-danger small fw-bold mt-1 d-block" })
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="fw-bold text-muted small mb-1">Nova Senha</label>
+                        <input type="password" name="newPassword" class="form-control form-control-lg bg-light" placeholder="Mínimo de 6 caracteres" />
+                        @Html.ValidationMessage("NewPassword", new { @class = "text-danger small fw-bold mt-1 d-block" })
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="fw-bold text-muted small mb-1">Confirmar Nova Senha</label>
+                        <input type="password" name="confirmNewPassword" class="form-control form-control-lg bg-light" placeholder="Repita a nova senha" />
+                        @Html.ValidationMessage("ConfirmNewPassword", new { @class = "text-danger small fw-bold mt-1 d-block" })
+                    </div>
+                </div>
+
+                <div class="mt-5 d-flex justify-content-end gap-3">
+                    <a asp-controller="Dashboard" asp-action="Index" class="btn btn-light fw-bold px-4 py-2 border" style="border-radius: 0.5rem;">Cancelar</a>
+                    <button type="submit" class="btn text-white fw-bold px-4 py-2" style="background: var(--ds-primary, #00236f); border-radius: 0.5rem;">
+                        Salvar Alterações
+                    </button>
+                </div>
+            </form>
+
+        </div>
+    </div>
+</div>
