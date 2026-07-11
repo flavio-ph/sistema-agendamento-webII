@@ -1,5 +1,4 @@
 ﻿@using System.Security.Claims
-
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -16,93 +15,91 @@
     <link rel="stylesheet" href="~/SistemaAgendamentoWebII.styles.css" asp-append-version="true" />
 
     <style>
-            :root {
-                --ds-bg: #f8f9ff;
-                --ds-surface: #ffffff;
-                --ds-primary: #00236f;
-                --ds-text-main: #0b1c30;
-                --ds-text-muted: #444651;
-                --ds-border: #e5eeff;
-                --ds-shadow-nav: 0 12px 24px -8px rgba(30, 58, 138, 0.05);
+        :root {
+            --ds-bg: #f8f9ff;
+            --ds-surface: #ffffff;
+            --ds-primary: #00236f;
+            --ds-text-main: #0b1c30;
+            --ds-text-muted: #444651;
+            --ds-border: #e5eeff;
+            --ds-shadow-nav: 0 12px 24px -8px rgba(30, 58, 138, 0.05);
+        }
+
+        body {
+            background-color: var(--ds-bg);
+            font-family: 'Inter', sans-serif;
+            color: var(--ds-text-main);
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        .ds-navbar {
+            background-color: var(--ds-surface);
+            box-shadow: var(--ds-shadow-nav);
+            border-bottom: 1px solid var(--ds-border);
+            padding-top: 0.75rem;
+            padding-bottom: 0.75rem;
+        }
+
+        .ds-brand {
+            font-family: 'Manrope', sans-serif;
+            font-weight: 800;
+            font-size: 1.5rem;
+            color: var(--ds-primary) !important;
+            letter-spacing: -0.02em;
+            text-decoration: none;
+            transition: opacity 0.2s;
+        }
+
+            .ds-brand:hover {
+                opacity: 0.85;
             }
 
-            body {
-                background-color: var(--ds-bg);
-                font-family: 'Inter', sans-serif;
-                color: var(--ds-text-main);
-                display: flex;
-                flex-direction: column;
-                min-height: 100vh; /* Garante que o body ocupe a tela toda */
-            }
+        .ds-nav-link {
+            font-weight: 500;
+            color: var(--ds-text-muted) !important;
+            transition: color 0.2s ease, transform 0.2s ease;
+            padding: 0.5rem 1rem !important;
+        }
 
-            /* Navbar Customizada */
-            .ds-navbar {
-                background-color: var(--ds-surface);
-                box-shadow: var(--ds-shadow-nav);
-                border-bottom: 1px solid var(--ds-border);
-                padding-top: 0.75rem;
-                padding-bottom: 0.75rem;
-            }
-
-            .ds-brand {
-                font-family: 'Manrope', sans-serif;
-                font-weight: 800;
-                font-size: 1.5rem;
+            .ds-nav-link:hover {
                 color: var(--ds-primary) !important;
-                letter-spacing: -0.02em;
-                text-decoration: none;
-                transition: opacity 0.2s;
+                transform: translateY(-1px);
             }
 
-                .ds-brand:hover {
-                    opacity: 0.85;
-                }
+        .ds-btn-primary {
+            background: linear-gradient(180deg, #1e3a8a 0%, var(--ds-primary) 100%);
+            color: #ffffff !important;
+            border: none;
+            border-radius: 0.5rem;
+            padding: 8px 24px;
+            font-weight: 600;
+            box-shadow: 0 4px 12px rgba(0, 35, 111, 0.15);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            text-decoration: none;
+        }
 
-            .ds-nav-link {
-                font-weight: 500;
-                color: var(--ds-text-muted) !important;
-                transition: color 0.2s ease, transform 0.2s ease;
-                padding: 0.5rem 1rem !important;
+            .ds-btn-primary:hover {
+                transform: scale(1.02);
+                box-shadow: 0 6px 16px rgba(0, 35, 111, 0.25);
             }
 
-                .ds-nav-link:hover {
-                    color: var(--ds-primary) !important;
-                    transform: translateY(-1px);
-                }
+        .ds-btn-ghost {
+            color: var(--ds-text-muted);
+            font-weight: 600;
+            border-radius: 0.5rem;
+            padding: 8px 20px;
+            transition: all 0.2s;
+            text-decoration: none;
+            border: none;
+            background: transparent;
+        }
 
-            /* Botões */
-            .ds-btn-primary {
-                background: linear-gradient(180deg, #1e3a8a 0%, var(--ds-primary) 100%);
-                color: #ffffff !important;
-                border: none;
-                border-radius: 0.5rem; /* 8px */
-                padding: 8px 24px;
-                font-weight: 600;
-                box-shadow: 0 4px 12px rgba(0, 35, 111, 0.15);
-                transition: transform 0.2s ease, box-shadow 0.2s ease;
-                text-decoration: none;
+            .ds-btn-ghost:hover {
+                background-color: #eff4ff;
+                color: var(--ds-primary);
             }
-
-                .ds-btn-primary:hover {
-                    transform: scale(1.02);
-                    box-shadow: 0 6px 16px rgba(0, 35, 111, 0.25);
-                }
-
-            .ds-btn-ghost {
-                color: var(--ds-text-muted);
-                font-weight: 600;
-                border-radius: 0.5rem;
-                padding: 8px 20px;
-                transition: all 0.2s;
-                text-decoration: none;
-                border: none;
-                background: transparent;
-            }
-
-                .ds-btn-ghost:hover {
-                    background-color: #eff4ff;
-                    color: var(--ds-primary);
-                }
     </style>
 </head>
 <body>
@@ -146,6 +143,14 @@
                                 <li class="nav-item">
                                     <a class="nav-link ds-nav-link" asp-controller="Services" asp-action="Create">Meus Serviços</a>
                                 </li>
+                            }
+
+                            @if (User.IsInRole("Empresa"))
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link ds-nav-link" asp-controller="Establishments" asp-action="Edit">Editar Empresa</a>
+                                </li>
+                              
                             }
                         }
                     </ul>
