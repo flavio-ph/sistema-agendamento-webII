@@ -51,7 +51,7 @@ namespace SistemaAgendamentoWebII.Controllers
                         .ToListAsync();
                 }
             }
-            return View();
+            return View("~/Views/Service/Create.cshtml");
         }
 
         [HttpPost]
@@ -76,7 +76,10 @@ namespace SistemaAgendamentoWebII.Controllers
 
             if (!ModelState.IsValid)
             {
-                ViewBag.Categories = new SelectList(await _context.Categories.ToListAsync(), "Id", "Name", model.CategoryId); return View(model);
+                ViewBag.Categories = new SelectList(await _context.Categories.ToListAsync(), "Id", "Name", model.CategoryId);
+
+                // Retornando com o caminho exato do arquivo para ignorar o erro de nomenclatura
+                return View("~/Views/Service/Create.cshtml", model);
             }
 
             _context.Services.Add(model);
