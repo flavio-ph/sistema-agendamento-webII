@@ -74,22 +74,43 @@ namespace SistemaAgendamentoWebII.Controllers
 
             if (prof == null) return Forbid();
 
-            var hoje = DateOnly.FromDateTime(DateTime.Now);
+            var dataHoje = DateTime.Now;
+            var hojeDateOnly = DateOnly.FromDateTime(dataHoje);
 
-            var proximosAtendimentos = await _context.Agendamentos
+            var agendamentosBase = _context.Agendamentos
                 .Include(a => a.Service)
+                .Where(a => a.ProfessionalId == prof.Id);
+
+            var agendamentosHojeCount = await agendamentosBase
+                .CountAsync(a => a.AppointmentDate == hojeDateOnly && a.Status != "Cancelado");
+
+            var pendentesCount = await agendamentosBase
+                .CountAsync(a => a.Status == "Pendente" || a.Status == "Aguardando");
+
+            var ganhosMensais = await agendamentosBase
+                .Where(a => a.AppointmentDate.Month == dataHoje.Month
+                         && a.AppointmentDate.Year == dataHoje.Year
+                         && a.Status != "Cancelado")
+                .SumAsync(a => a.Service.Price);
+     
+            var proximosAtendimentos = await agendamentosBase
                 .Include(a => a.Client)
-                .Where(a => a.ProfessionalId == prof.Id && a.AppointmentDate >= hoje)
+                .Where(a => a.AppointmentDate >= hojeDateOnly)
                 .OrderBy(a => a.AppointmentDate)
                 .ThenBy(a => a.StartTime)
                 .Take(5)
                 .ToListAsync();
 
             ViewBag.ProximosAtendimentos = proximosAtendimentos;
+           
             var viewModel = new SistemaAgendamentoWebII.Models.ViewModels.ProfessionalDashboardViewModel
             {
                 User = prof.User,
-                Professional = prof
+                Professional = prof,
+                AppointmentsTodayCount = agendamentosHojeCount,
+                PendingAppointmentsCount = pendentesCount,
+                MonthlyEarnings = ganhosMensais,
+                AverageRating = (double)prof.AverageRating 
             };
 
             return View(viewModel);
