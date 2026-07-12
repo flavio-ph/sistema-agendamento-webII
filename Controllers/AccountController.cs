@@ -25,27 +25,47 @@ public class AccountController : Controller
     [HttpPost]
     [ValidateAntiForgeryToken]
     [AllowAnonymous]
+    [HttpPost]
     public async Task<IActionResult> Register(
-        User user,
-        string PasswordConfirmation,
-        string? Specialty,
-        string? EstablishmentName,
-        string? CNPJ,
-        string? Biography,
-        string? Description,
-        int? ExperienceYears,
-        string? RegistrationNumber)
+    User user,
+    string PasswordConfirmation,
+    string? Specialty,
+    string? EstablishmentName,
+    string? CNPJ,
+    string? Biography,
+    string? Description,
+    int? ExperienceYears,
+    string? RegistrationNumber)
     {
+        // Captura a role do formulário (que vem via JS/Alpine.js)
         string roleSelecionada = Request.Form["Role"].ToString();
         user.Role = !string.IsNullOrEmpty(roleSelecionada) ? roleSelecionada : "Cliente";
 
-        if (!ModelState.IsValid) return View(user);
-
+        // 1. Validações de duplicidade
+        // Verifica se e-mail já existe
         if (await _context.Users.AnyAsync(u => u.Email == user.Email))
         {
             ModelState.AddModelError("Email", "Este e-mail já está cadastrado.");
-            return View(user);
         }
+
+        // Verifica se telefone já existe
+        if (await _context.Users.AnyAsync(u => u.Phone == user.Phone))
+        {
+            ModelState.AddModelError("Phone", "Este telefone já está em uso.");
+        }
+
+        // Validação específica de CNPJ para Empresas
+        if (user.Role == "Empresa" && !string.IsNullOrEmpty(CNPJ))
+        {
+            if (await _context.Establishments.AnyAsync(e => e.CNPJ == CNPJ))
+            {
+                ModelState.AddModelError("CNPJ", "Este CNPJ já está cadastrado.");
+            }
+        }
+
+        // 2. Validação básica de modelo e senhas
+        // Se algum erro foi adicionado acima, ModelState.IsValid será false
+        if (!ModelState.IsValid) return View(user);
 
         if (user.PasswordHash != PasswordConfirmation)
         {
@@ -53,6 +73,7 @@ public class AccountController : Controller
             return View(user);
         }
 
+        // 3. Persistência do utilizador
         user.Id = Guid.NewGuid();
         user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(user.PasswordHash);
         user.IsActive = true;
@@ -61,9 +82,10 @@ public class AccountController : Controller
         _context.Users.Add(user);
         await _context.SaveChangesAsync();
 
+        // 4. Criação de Perfis Vinculados
         if (user.Role == "Profissional")
         {
-            var novoProfissional = new Professional
+            _context.Professionals.Add(new Professional
             {
                 Id = Guid.NewGuid(),
                 UserId = user.Id,
@@ -73,22 +95,22 @@ public class AccountController : Controller
                 ExperienceYears = ExperienceYears ?? 0,
                 RegistrationNumber = RegistrationNumber ?? "SEM-REGISTRO",
                 IsActive = true
-            };
-            _context.Professionals.Add(novoProfissional);
-            await _context.SaveChangesAsync();
+            });
         }
-        else if (user.Role == "Empresa" && !string.IsNullOrEmpty(EstablishmentName))
+        else if (user.Role == "Empresa")
         {
             _context.Establishments.Add(new Establishment
             {
                 Id = Guid.NewGuid(),
                 UserId = user.Id,
-                Name = EstablishmentName,
+                Name = EstablishmentName ?? "Empresa sem nome",
                 CNPJ = CNPJ,
                 CreatedAt = DateTime.UtcNow
             });
-            await _context.SaveChangesAsync();
         }
+
+        // Salva o perfil (Profissional ou Empresa)
+        await _context.SaveChangesAsync();
 
         return RedirectToAction(nameof(Login));
     }

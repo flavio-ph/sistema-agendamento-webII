@@ -27,22 +27,33 @@
         --ds-ring: rgba(0, 35, 111, 0.15);
         }
 
-        [x-cloak] { display: none !important; }
+        [x-cloak] {
+        display: none !important;
+        }
 
         * {
         scrollbar-width: thin;
         scrollbar-color: #cbd5e1 transparent;
         }
 
-        ::-webkit-scrollbar { width: 6px; height: 6px; }
-        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar {
+        width: 6px;
+        height: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+        background: transparent;
+        }
+
         ::-webkit-scrollbar-thumb {
         background-color: #cbd5e1;
         border-radius: 10px;
         }
-        ::-webkit-scrollbar-thumb:hover { background-color: var(--ds-primary); }
 
-        /* Padronização de Componentes UI */
+        ::-webkit-scrollbar-thumb:hover {
+        background-color: var(--ds-primary);
+        }
+
         .ds-label {
         display: block;
         font-size: 0.875rem;
@@ -87,7 +98,7 @@
 </head>
 <body class="font-sans min-h-screen flex m-0 p-0" style="background-color: var(--ds-bg);">
 
-    <!-- Painel Esquerdo: Marketing -->
+    <!-- Painel Esquerdo -->
     <div class="hidden lg:flex lg:w-1/2 relative items-center justify-center" style="background-color: var(--ds-primary);">
         <img src="https://i.postimg.cc/kX3y1jNm/bba3d743-6833-456b-b4f3-ab3261457fff.png" alt="Workspace" class="absolute inset-0 w-full h-full object-cover" />
         <div class="absolute inset-0 mix-blend-multiply" style="background: linear-gradient(to bottom right, rgba(30, 58, 138, 0.9), rgba(30, 58, 138, 0.85));"></div>
@@ -97,9 +108,8 @@
         </div>
     </div>
 
-    <!-- Painel Direito: Formulário com scroll independente -->
+    <!-- Painel Direito -->
     <div class="w-full lg:w-1/2 h-screen overflow-y-auto flex items-center justify-center p-6 sm:p-12">
-        <!-- O margin-y auto garante centralização vertical em telas grandes, o py-8 garante margem durante o scroll -->
         <div class="w-full max-w-md my-auto py-8" x-data="{ role: 'Cliente' }">
 
             <div class="mb-8">
@@ -121,11 +131,7 @@
 
                 <div>
                     <label class="ds-label">Nome Completo</label>
-                    <input type="text" asp-for="Name" required
-                           :pattern="role === 'Empresa' ? '.*' : '^[a-zA-ZÀ-ÿ]+\\s+[a-zA-ZÀ-ÿ]+.*$'"
-                           title="Por favor, informe nome e sobrenome."
-                           placeholder="Ex: João da Silva"
-                           class="ds-input" />
+                    <input type="text" asp-for="Name" required class="ds-input" placeholder="Ex: João da Silva" />
                     <span asp-validation-for="Name" class="text-red-500 text-xs mt-1 block"></span>
                 </div>
 
@@ -142,38 +148,25 @@
                     </div>
                 </div>
 
-                <!-- Secção Condicional: Profissional -->
+                <!-- Profissional -->
                 <div x-show="role === 'Profissional'" x-cloak class="space-y-5 pt-4 mt-2 border-t" style="border-color: var(--ds-border);">
                     <div>
                         <label class="ds-label">Especialidade Principal</label>
-                        <input type="text" name="Specialty" :required="role === 'Profissional'"
-                               maxlength="50"
-                               onkeypress="return (event.charCode >= 65 && event.charCode <= 90) || (event.charCode >= 97 && event.charCode <= 122) || (event.charCode >= 192 && event.charCode <= 255) || event.charCode == 32"
-                               title="Apenas letras são permitidas."
-                               class="ds-input" placeholder="Ex: Fisioterapeuta" />
+                        <input type="text" name="Specialty" :required="role === 'Profissional'" class="ds-input" placeholder="Ex: Fisioterapeuta" />
                     </div>
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div>
                             <label class="ds-label">Anos de Experiência</label>
-                            <input type="number" min="0" max="80" name="ExperienceYears"
-                                   oninput="if(this.value > 80) this.value = 80; if(this.value < 0) this.value = 0;"
-                                   class="ds-input" placeholder="Ex: 5" />
+                            <input type="number" min="0" max="80" name="ExperienceYears" class="ds-input" placeholder="Ex: 5" />
                         </div>
                         <div>
                             <label class="ds-label">Registo (CRM/CRO)</label>
-                            <input type="text" name="RegistrationNumber" :required="role === 'Profissional'"
-                                   maxlength="20"
-                                   pattern="^[A-Za-z0-9/-]+$"
-                                   title="Apenas letras, números e traços."
-                                   placeholder="Ex: CRM-12345"
-                                   class="ds-input" />
+                            <input type="text" name="RegistrationNumber" :required="role === 'Profissional'" class="ds-input" placeholder="Ex: CRM-12345" />
                         </div>
                     </div>
                     <div>
                         <label class="ds-label">Descrição Curta</label>
-                        <input type="text" name="Description"
-                               onkeypress="return (event.charCode >= 65 && event.charCode <= 90) || (event.charCode >= 97 && event.charCode <= 122) || (event.charCode >= 192 && event.charCode <= 255) || event.charCode == 32"
-                               class="ds-input" placeholder="Ex: Especialista em reabilitação" />
+                        <input type="text" name="Description" class="ds-input" placeholder="Ex: Especialista em reabilitação" />
                     </div>
                     <div>
                         <label class="ds-label">Biografia</label>
@@ -181,20 +174,16 @@
                     </div>
                 </div>
 
-                <!-- Secção Condicional: Empresa -->
+                <!-- Empresa -->
                 <div x-show="role === 'Empresa'" x-cloak class="space-y-5 pt-4 mt-2 border-t" style="border-color: var(--ds-border);">
                     <div>
                         <label class="ds-label">Nome do Estabelecimento</label>
-                        <input type="text" name="EstablishmentName" :required="role === 'Empresa'" class="ds-input" placeholder="Razão social ou Nome fantasia" />
+                        <input type="text" name="EstablishmentName" :required="role === 'Empresa'" class="ds-input" placeholder="Razão social" />
                     </div>
                     <div>
                         <label class="ds-label">CNPJ</label>
-                        <input type="text" name="CNPJ" :required="role === 'Empresa'"
-                               maxlength="14"
-                               onkeypress="return event.charCode >= 48 && event.charCode <= 57"
-                               title="Digite apenas os 14 números do CNPJ"
-                               placeholder="Ex: 00000000000000"
-                               class="ds-input" />
+                        <input type="text" name="CNPJ" :required="role === 'Empresa'" maxlength="14" class="ds-input" placeholder="Apenas números" />
+                      
                     </div>
                 </div>
 
@@ -202,20 +191,18 @@
                 <div class="space-y-4 pt-4 mt-2 border-t" style="border-color: var(--ds-border);">
                     <div>
                         <label class="ds-label">Senha</label>
-                        <input type="password" asp-for="PasswordHash" required placeholder="Mín. 6 (letras e números)" class="ds-input" />
+                        <input type="password" asp-for="PasswordHash" required placeholder="Mín. 6 caracteres" class="ds-input" />
                         <span asp-validation-for="PasswordHash" class="text-red-500 text-xs mt-1 block"></span>
                     </div>
                     <div>
                         <label class="ds-label">Confirmar Senha</label>
-                        <input type="password" asp-for="PasswordConfirmation" required placeholder="Repita a senha idêntica" class="ds-input" />
+                        <input type="password" asp-for="PasswordConfirmation" required placeholder="Repita a senha" class="ds-input" />
                         <span asp-validation-for="PasswordConfirmation" class="text-red-500 text-xs mt-1 block"></span>
                     </div>
                 </div>
 
                 <div class="pt-2">
-                    <button type="submit" class="ds-btn-primary">
-                        Concluir Registo
-                    </button>
+                    <button type="submit" class="ds-btn-primary">Concluir Registo</button>
                 </div>
             </form>
 
@@ -224,7 +211,6 @@
                     Já tem uma conta? <a asp-controller="Account" asp-action="Login" class="font-semibold transition-colors" style="color: var(--ds-primary);">Entrar</a>
                 </p>
             </div>
-
         </div>
     </div>
 </body>

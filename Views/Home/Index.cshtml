@@ -7,111 +7,114 @@
     <meta charset="utf-8">
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
     <title>Agendify - Agendamentos Premium</title>
-    
+
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Manrope:wght@600;700;800&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
-    
+
     <script id="tailwind-config">
         tailwind.config = {
-            darkMode: "class",
-            theme: {
-                extend: {
-                    "colors": {
-                        "on-error-container": "#93000a",
-                        "on-error": "#ffffff",
-                        "surface-container-low": "#eff4ff",
-                        "secondary-fixed": "#ebddff",
-                        "on-primary": "#ffffff",
-                        "surface-tint": "#4059aa",
-                        "inverse-surface": "#213145",
-                        "on-primary-container": "#90a8ff",
-                        "on-secondary-container": "#fffbff",
-                        "primary": "#00236f",
-                        "on-primary-fixed": "#00164e",
-                        "surface-container-high": "#dce9ff",
-                        "inverse-on-surface": "#eaf1ff",
-                        "primary-fixed-dim": "#b6c4ff",
-                        "on-tertiary-container": "#36b6fb",
-                        "background": "#f8f9ff",
-                        "on-secondary": "#ffffff",
-                        "secondary-container": "#8b4ef7",
-                        "on-background": "#0b1c30",
-                        "on-tertiary": "#ffffff",
-                        "tertiary": "#002e44",
-                        "on-primary-fixed-variant": "#264191",
-                        "inverse-primary": "#b6c4ff",
-                        "on-secondary-fixed": "#250059",
-                        "surface-dim": "#cbdbf5",
-                        "on-surface-variant": "#444651",
-                        "tertiary-container": "#004565",
-                        "error-container": "#ffdad6",
-                        "primary-container": "#1e3a8a",
-                        "surface-bright": "#f8f9ff",
-                        "outline-variant": "#c5c5d3",
-                        "secondary-fixed-dim": "#d3bbff",
-                        "primary-fixed": "#dce1ff",
-                        "secondary": "#712edd",
-                        "on-surface": "#0b1c30",
-                        "tertiary-fixed-dim": "#89ceff",
-                        "surface": "#f8f9ff",
-                        "on-tertiary-fixed": "#001e2f",
-                        "tertiary-fixed": "#c9e6ff",
-                        "surface-container-lowest": "#ffffff",
-                        "surface-variant": "#d3e4fe",
-                        "error": "#ba1a1a",
-                        "on-secondary-fixed-variant": "#5b00c5",
-                        "surface-container-highest": "#d3e4fe",
-                        "on-tertiary-fixed-variant": "#004c6e",
-                        "outline": "#757682",
-                        "surface-container": "#e5eeff"
-                    },
-                    "borderRadius": {
-                        "DEFAULT": "0.25rem",
-                        "lg": "0.5rem",
-                        "xl": "0.75rem",
-                        "full": "9999px"
-                    },
-                    "spacing": {
-                        "unit": "8px",
-                        "container-padding-mobile": "1.25rem",
-                        "stack-lg": "2rem",
-                        "gutter": "1.5rem",
-                        "container-padding-desktop": "2.5rem",
-                        "stack-md": "1rem",
-                        "stack-sm": "0.5rem"
-                    },
-                    "fontFamily": {
-                        "body-md": ["Inter"],
-                        "label-md": ["Inter"],
-                        "headline-lg": ["Manrope"],
-                        "display-lg": ["Manrope"],
-                        "body-lg": ["Inter"],
-                        "headline-md": ["Manrope"],
-                        "headline-lg-mobile": ["Manrope"],
-                        "label-sm": ["Inter"]
-                    }
-                }
-            }
+        darkMode: "class",
+        theme: {
+        extend: {
+        "colors": {
+        "on-error-container": "#93000a",
+        "on-error": "#ffffff",
+        "surface-container-low": "#eff4ff",
+        "secondary-fixed": "#ebddff",
+        "on-primary": "#ffffff",
+        "surface-tint": "#4059aa",
+        "inverse-surface": "#213145",
+        "on-primary-container": "#90a8ff",
+        "on-secondary-container": "#fffbff",
+        "primary": "#00236f",
+        "on-primary-fixed": "#00164e",
+        "surface-container-high": "#dce9ff",
+        "inverse-on-surface": "#eaf1ff",
+        "primary-fixed-dim": "#b6c4ff",
+        "on-tertiary-container": "#36b6fb",
+        "background": "#f8f9ff",
+        "on-secondary": "#ffffff",
+        "secondary-container": "#8b4ef7",
+        "on-background": "#0b1c30",
+        "on-tertiary": "#ffffff",
+        "tertiary": "#002e44",
+        "on-primary-fixed-variant": "#264191",
+        "inverse-primary": "#b6c4ff",
+        "on-secondary-fixed": "#250059",
+        "surface-dim": "#cbdbf5",
+        "on-surface-variant": "#444651",
+        "tertiary-container": "#004565",
+        "error-container": "#ffdad6",
+        "primary-container": "#1e3a8a",
+        "surface-bright": "#f8f9ff",
+        "outline-variant": "#c5c5d3",
+        "secondary-fixed-dim": "#d3bbff",
+        "primary-fixed": "#dce1ff",
+        "secondary": "#712edd",
+        "on-surface": "#0b1c30",
+        "tertiary-fixed-dim": "#89ceff",
+        "surface": "#f8f9ff",
+        "on-tertiary-fixed": "#001e2f",
+        "tertiary-fixed": "#c9e6ff",
+        "surface-container-lowest": "#ffffff",
+        "surface-variant": "#d3e4fe",
+        "error": "#ba1a1a",
+        "on-secondary-fixed-variant": "#5b00c5",
+        "surface-container-highest": "#d3e4fe",
+        "on-tertiary-fixed-variant": "#004c6e",
+        "outline": "#757682",
+        "surface-container": "#e5eeff"
+        },
+        "borderRadius": {
+        "DEFAULT": "0.25rem",
+        "lg": "0.5rem",
+        "xl": "0.75rem",
+        "full": "9999px"
+        },
+        "spacing": {
+        "unit": "8px",
+        "container-padding-mobile": "1.25rem",
+        "stack-lg": "2rem",
+        "gutter": "1.5rem",
+        "container-padding-desktop": "2.5rem",
+        "stack-md": "1rem",
+        "stack-sm": "0.5rem"
+        },
+        "fontFamily": {
+        "body-md": ["Inter"],
+        "label-md": ["Inter"],
+        "headline-lg": ["Manrope"],
+        "display-lg": ["Manrope"],
+        "body-lg": ["Inter"],
+        "headline-md": ["Manrope"],
+        "headline-lg-mobile": ["Manrope"],
+        "label-sm": ["Inter"]
+        }
+        }
+        }
         }
     </script>
     <style>
         .material-symbols-outlined {
-            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
         }
+
         .glass-panel {
-            background: rgba(255, 255, 255, 0.7);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            border: 1px solid rgba(197, 197, 211, 0.3);
+        background: rgba(255, 255, 255, 0.7);
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+        border: 1px solid rgba(197, 197, 211, 0.3);
         }
+
         .soft-shadow {
-            box-shadow: 0 10px 30px -10px rgba(30, 58, 138, 0.08);
+        box-shadow: 0 10px 30px -10px rgba(30, 58, 138, 0.08);
         }
+
         .gradient-text {
-            background: linear-gradient(135deg, #00236f 0%, #1e3a8a 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+        background: linear-gradient(135deg, #00236f 0%, #1e3a8a 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
         }
     </style>
 </head>
@@ -124,10 +127,9 @@
                 <a class="font-headline-md text-headline-md font-extrabold text-primary dark:text-primary-fixed-dim tracking-tight flex items-center gap-2" asp-controller="Home" asp-action="Index">
                     <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">event_available</span>Agendify
                 </a>
-                <!-- Removido Pricing e About -->
                 <div class="hidden md:flex gap-6">
-                    <a class="text-primary dark:text-primary-fixed-dim font-bold border-b-2 border-primary dark:border-primary-fixed-dim pb-1 font-label-md text-label-md" href="#">Serviços</a>
-                    <a class="text-on-surface-variant dark:text-on-surface-variant/70 hover:text-primary transition-colors font-label-md text-label-md" href="#">Profissionais</a>
+                    <a class="text-on-surface-variant dark:text-on-surface-variant/70 hover:text-primary transition-colors font-label-md text-label-md" href="#servicos">Serviços</a>
+                    <a class="text-on-surface-variant dark:text-on-surface-variant/70 hover:text-primary transition-colors font-label-md text-label-md" asp-controller="Home" asp-action="Explorar">Profissionais</a>
                 </div>
             </div>
             <div class="flex items-center gap-4">
@@ -144,36 +146,22 @@
             <div class="absolute top-20 -left-32 w-96 h-96 bg-primary/10 rounded-full blur-3xl opacity-60"></div>
             <div class="absolute top-40 -right-20 w-[500px] h-[500px] bg-secondary-container/10 rounded-full blur-3xl opacity-50"></div>
         </div>
-        
+
         <div class="relative z-10 max-w-[1440px] mx-auto px-container-padding-mobile md:px-container-padding-desktop flex flex-col items-center text-center">
             <span class="px-4 py-1.5 rounded-full bg-primary/10 text-primary font-label-sm text-label-sm mb-6 border border-primary/20 flex items-center gap-2">
                 <span class="material-symbols-outlined text-[16px]">new_releases</span>
                 Agendify
             </span>
-            
-            <!-- Título com tamanho aumentado para telas maiores (md:text-[64px]) -->
-            <h1 class="font-display-lg text-5xl md:text-[64px] md:leading-[1.1] font-extrabold mb-8 max-w-4xl text-on-background tracking-tight">
+            <h1 class="font-display-lg text-display-lg mb-6 max-w-4xl text-on-background">
                 Conecte-se com os <br class="hidden md:block">
                 <span class="gradient-text">Melhores Profissionais</span>
             </h1>
-            
             <p class="font-body-lg text-body-lg text-on-surface-variant max-w-2xl mb-12">
                 Descubra, reserve e gerencie seus compromissos com uma experiência fluida e elegante. De clínicas de estética a barbearias premium, seu tempo valorizado.
             </p>
 
-            <!-- Floating Search Bar (Apenas Serviços) -->
-            <div class="w-full max-w-2xl glass-panel rounded-2xl p-2 md:p-3 flex flex-col md:flex-row gap-3 soft-shadow mx-auto relative z-20">
-                <div class="flex-1 flex items-center bg-surface rounded-xl px-4 py-3 border border-outline-variant/30 focus-within:border-primary focus-within:ring-2 focus-within:ring-primary/20 transition-all">
-                    <span class="material-symbols-outlined text-outline mr-3">search</span>
-                    <input class="w-full bg-transparent border-none focus:ring-0 focus:outline-none text-body-md placeholder-outline p-0" placeholder="O que você procura? (ex: Barbearia, Massagem)" type="text">
-                </div>
-                <button class="bg-primary text-on-primary px-10 py-3 rounded-xl font-label-md text-label-md hover:bg-primary-container transition-all shadow-md shadow-primary/20 flex items-center justify-center gap-2 scale-100 active:scale-95 whitespace-nowrap">
-                    Buscar
-                </button>
-            </div>
-
             <!-- Stats -->
-            <div class="mt-16 grid grid-cols-2 md:grid-cols-4 gap-8 md:gap-16 opacity-80">
+            <div class="mt-8 grid grid-cols-2 md:grid-cols-4 gap-8 md:gap-16 opacity-80">
                 <div class="flex flex-col items-center">
                     <span class="font-headline-lg text-headline-lg text-primary">10k+</span>
                     <span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Profissionais</span>
@@ -195,14 +183,14 @@
     </header>
 
     <!-- Popular Services (Bento Grid) -->
-    <section class="py-24 bg-surface-container-lowest">
+    <section id="servicos" class="py-24 bg-surface-container-lowest">
         <div class="max-w-[1440px] mx-auto px-container-padding-mobile md:px-container-padding-desktop">
             <div class="flex flex-col md:flex-row justify-between items-end mb-12">
                 <div>
                     <h2 class="font-headline-lg text-headline-lg text-on-background mb-4">Serviços Populares</h2>
                     <p class="font-body-md text-body-md text-on-surface-variant max-w-xl">Explore as categorias mais procuradas e encontre especialistas prontos para atender você.</p>
                 </div>
-                <a class="text-primary font-label-md text-label-md flex items-center gap-1 hover:underline mt-4 md:mt-0" href="#">Ver todas categorias <span class="material-symbols-outlined text-[18px]">arrow_forward</span></a>
+                <a class="text-primary font-label-md text-label-md flex items-center gap-1 hover:underline mt-4 md:mt-0" asp-controller="Home" asp-action="Explorar">Ver todos os profissionais <span class="material-symbols-outlined text-[18px]">arrow_forward</span></a>
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6 auto-rows-[250px]">
@@ -254,16 +242,16 @@
                 <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">event_available</span>
                 <span style="letter-spacing: -0.6px; background-color: rgba(248, 249, 255, 0.8);">Agendify</span>
             </div>
-            
-            <div class="flex flex-wrap justify-center gap-6">
+
+            <div class="flex gap-6">
                 <a asp-controller="Home" asp-action="Privacy" class="text-on-surface-variant hover:text-primary transition-colors hover:underline font-body-md text-body-md">Privacy Policy</a>
                 <a href="#" class="text-on-surface-variant hover:text-primary transition-colors hover:underline font-body-md text-body-md">Terms of Service</a>
                 <a href="#" class="text-on-surface-variant hover:text-primary transition-colors hover:underline font-body-md text-body-md">Cookie Policy</a>
                 <a href="#" class="text-on-surface-variant hover:text-primary transition-colors hover:underline font-body-md text-body-md">Contact Support</a>
             </div>
-            
-            <div class="text-on-surface-variant font-label-sm text-label-sm mt-4 md:mt-0">
-                &copy; @DateTime.Now.Year Agendify Technologies. All rights reserved.
+
+            <div class="text-on-surface-variant font-label-sm text-label-sm">
+                &copy; @DateTime.Now.Year Schdlr Technologies. All rights reserved.
             </div>
         </div>
     </footer>
@@ -271,14 +259,14 @@
     <script>
         // Efeito de scroll na Navbar
         window.addEventListener('scroll', () => {
-            const nav = document.getElementById('navbar');
-            if (window.scrollY > 20) {
-                nav.classList.add('shadow-md');
-                nav.classList.replace('bg-surface/80', 'bg-surface/95');
-            } else {
-                nav.classList.remove('shadow-md');
-                nav.classList.replace('bg-surface/95', 'bg-surface/80');
-            }
+        const nav = document.getElementById('navbar');
+        if (window.scrollY > 20) {
+        nav.classList.add('shadow-md');
+        nav.classList.replace('bg-surface/80', 'bg-surface/95');
+        } else {
+        nav.classList.remove('shadow-md');
+        nav.classList.replace('bg-surface/95', 'bg-surface/80');
+        }
         });
     </script>
 </body>
