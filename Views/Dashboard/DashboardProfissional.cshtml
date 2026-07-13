@@ -230,51 +230,55 @@
 
         <div class="col-lg-8">
             <h3 class="h5 fw-bold mb-3" style="font-family: 'Manrope', sans-serif;">Próximos Atendimentos</h3>
-            <div class="ds-table-container">
-                <table class="table ds-table mb-0">
-                    <thead>
-                        <tr>
-                            <th>Cliente</th>
-                            <th>Serviço Solicitado</th>
-                            <th>Horário de Início</th>
-                            <th>Estado</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @if (ViewBag.ProximosAtendimentos != null && ((IEnumerable<SistemaAgendamentoWebII.Models.Appointment>)ViewBag.ProximosAtendimentos).Any())
-                        {
-                            foreach (var item in ViewBag.ProximosAtendimentos)
+
+            <!-- Substituímos ds-table-container por prof-card p-0 overflow-hidden -->
+            <div class="prof-card p-0 overflow-hidden h-100">
+                <div class="table-responsive">
+                    <table class="table mb-0 align-middle">
+                        <thead class="bg-light">
+                            <tr>
+                                <th class="px-4 py-3 border-bottom-0 text-muted" style="font-weight: 600; font-size: 0.85rem;">Cliente</th>
+                                <th class="py-3 border-bottom-0 text-muted" style="font-weight: 600; font-size: 0.85rem;">Serviço Solicitado</th>
+                                <th class="py-3 border-bottom-0 text-muted" style="font-weight: 600; font-size: 0.85rem;">Horário de Início</th>
+                                <th class="py-3 border-bottom-0 text-muted" style="font-weight: 600; font-size: 0.85rem;">Estado</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (ViewBag.ProximosAtendimentos != null && ((IEnumerable<SistemaAgendamentoWebII.Models.Appointment>)ViewBag.ProximosAtendimentos).Any())
+                            {
+                                foreach (var item in ViewBag.ProximosAtendimentos)
+                                {
+                                    <tr>
+                                        <td class="px-4 py-3">
+                                            <div class="fw-bold text-dark">@(item.Client?.Name ?? "Cliente Removido")</div>
+                                            <div class="small text-muted">@(item.Client?.Email ?? "-")</div>
+                                        </td>
+                                        <td class="py-3">
+                                            <span class="fw-medium">@(item.Service?.Name ?? "-")</span>
+                                        </td>
+                                        <td class="text-primary fw-semibold py-3">
+                                            @item.StartTime.ToString(@"hh\:mm")
+                                            <span class="text-muted small ms-1">(@item.AppointmentDate.ToString("dd/MM"))</span>
+                                        </td>
+                                        <td class="py-3">
+                                            <span class="badge py-1 px-3 rounded-pill @(item.Status == "Confirmado" ? "bg-success-subtle text-success" : "bg-warning-subtle text-warning")">
+                                                @item.Status
+                                            </span>
+                                        </td>
+                                    </tr>
+                                }
+                            }
+                            else
                             {
                                 <tr>
-                                    <td>
-                                        <div class="fw-bold text-dark">@(item.Client?.Name ?? "Cliente Removido")</div>
-                                        <div class="small text-muted">@(item.Client?.Email ?? "-")</div>
-                                    </td>
-                                    <td>
-                                        <span class="fw-medium">@(item.Service?.Name ?? "-")</span>
-                                    </td>
-                                    <td class="text-primary fw-semibold">
-                                        @item.StartTime.ToString(@"hh\:mm")
-                                        <span class="text-muted small ms-1">(@item.AppointmentDate.ToString("dd/MM"))</span>
-                                    </td>
-                                    <td>
-                                        <span class="badge py-1 px-3 rounded-pill @(item.Status == "Confirmado" ? "bg-success-subtle text-success" : "bg-warning-subtle text-warning")">
-                                            @item.Status
-                                        </span>
+                                    <td colspan="4" class="px-4 py-4 text-center text-muted">
+                                        Nenhum atendimento programado para os próximos dias.
                                     </td>
                                 </tr>
                             }
-                        }
-                        else
-                        {
-                            <tr>
-                                <td colspan="4" class="text-center py-4 text-muted">
-                                    Nenhum atendimento programado para os próximos dias.
-                                </td>
-                            </tr>
-                        }
-                    </tbody>
-                </table>
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
     </div>

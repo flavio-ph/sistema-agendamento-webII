@@ -21,7 +21,7 @@ namespace SistemaAgendamentoWebII.Controllers
         [HttpGet]
         public async Task<IActionResult> Create()
         {
-            // Ajustado para _context.Categoria (nome exato no AppDbContext)
+
             var categories = await _context.Categories.ToListAsync();
 
             if (!categories.Any())
@@ -30,7 +30,7 @@ namespace SistemaAgendamentoWebII.Controllers
                 {
                     Id = Guid.NewGuid(),
                     Name = "Geral"
-                    // Removido o campo Description, pois não existe na Model
+
                 };
                 _context.Categories.Add(defaultCategory);
                 await _context.SaveChangesAsync();
@@ -44,7 +44,7 @@ namespace SistemaAgendamentoWebII.Controllers
                 var prof = await _context.Professionals.FirstOrDefaultAsync(p => p.UserId == Guid.Parse(userIdString));
                 if (prof != null)
                 {
-                    // Busca os serviços e guarda no ViewBag
+
                     ViewBag.MeusServicos = await _context.Services
                         .Where(s => s.ProfessionalId == prof.Id)
                         .OrderBy(s => s.Name)
@@ -60,7 +60,6 @@ namespace SistemaAgendamentoWebII.Controllers
         {
             var userIdString = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
-            // Verificação de segurança para os Warnings de nulo
             if (string.IsNullOrEmpty(userIdString)) return RedirectToAction("Login", "Account");
 
             var prof = await _context.Professionals.FirstOrDefaultAsync(p => p.UserId == Guid.Parse(userIdString));
@@ -78,14 +77,127 @@ namespace SistemaAgendamentoWebII.Controllers
             {
                 ViewBag.Categories = new SelectList(await _context.Categories.ToListAsync(), "Id", "Name", model.CategoryId);
 
-                // Retornando com o caminho exato do arquivo para ignorar o erro de nomenclatura
                 return View("~/Views/Service/Create.cshtml", model);
             }
 
             _context.Services.Add(model);
             await _context.SaveChangesAsync();
 
+            TempData["SuccessMessage"] = "Serviço cadastrado com sucesso!";
             return RedirectToAction("Create");
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Edit(Guid id)
+        {
+            var userIdString = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (string.IsNullOrEmpty(userIdString)) return RedirectToAction("Login", "Account");
+
+            var prof = await _context.Professionals.FirstOrDefaultAsync(p => p.UserId == Guid.Parse(userIdString));
+            if (prof == null) return Forbid();
+
+            var service = await _context.Services.FindAsync(id);
+            if (service == null) return NotFound();
+
+            if (service.ProfessionalId != prof.Id) return Forbid();
+
+            await PrepareViewBagsAsync(service.CategoryId);
+
+
+            ViewBag.IsEditing = true;
+            return View("~/Views/Service/Create.cshtml", service);
+        }
+
+        // POST: Services/Edit/{id}
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Edit(Guid id, Service model)
+        {
+            if (id != model.Id) return BadRequest();
+
+            var userIdString = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (string.IsNullOrEmpty(userIdString)) return RedirectToAction("Login", "Account");
+
+            var prof = await _context.Professionals.FirstOrDefaultAsync(p => p.UserId == Guid.Parse(userIdString));
+            if (prof == null) return Forbid();
+
+            var serviceToUpdate = await _context.Services.FindAsync(id);
+            if (serviceToUpdate == null) return NotFound();
+
+            if (serviceToUpdate.ProfessionalId != prof.Id) return Forbid();
+
+            ModelState.Remove("Professional");
+            ModelState.Remove("Category");
+
+            if (!ModelState.IsValid)
+            {
+                await PrepareViewBagsAsync(model.CategoryId);
+                ViewBag.IsEditing = true;
+                return View("~/Views/Service/Create.cshtml", model);
+            }
+
+            serviceToUpdate.Name = model.Name;
+            serviceToUpdate.CategoryId = model.CategoryId;
+            serviceToUpdate.Price = model.Price;
+            serviceToUpdate.DurationMinutes = model.DurationMinutes;
+            serviceToUpdate.Description = model.Description;
+
+            _context.Services.Update(serviceToUpdate);
+            await _context.SaveChangesAsync();
+
+            TempData["SuccessMessage"] = "Serviço atualizado com sucesso!";
+            return RedirectToAction("Create");
+        }
+
+        // POST: Services/Delete/{id}
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Delete(Guid id)
+        {
+            var userIdString = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (string.IsNullOrEmpty(userIdString)) return RedirectToAction("Login", "Account");
+
+            var prof = await _context.Professionals.FirstOrDefaultAsync(p => p.UserId == Guid.Parse(userIdString));
+            if (prof == null) return Forbid();
+
+            var service = await _context.Services.FindAsync(id);
+            if (service == null) return NotFound();
+
+            if (service.ProfessionalId != prof.Id) return Forbid();
+
+            service.IsActive = false;
+            _context.Services.Update(service);
+            await _context.SaveChangesAsync();
+
+            TempData["SuccessMessage"] = "Serviço removido com sucesso!";
+            return RedirectToAction("Create");
+        }
+
+        private async Task PrepareViewBagsAsync(Guid? selectedCategoryId = null)
+        {
+            var categories = await _context.Categories.ToListAsync();
+            if (!categories.Any())
+            {
+                var defaultCategory = new Category { Id = Guid.NewGuid(), Name = "Geral" };
+                _context.Categories.Add(defaultCategory);
+                await _context.SaveChangesAsync();
+                categories.Add(defaultCategory);
+            }
+
+            ViewBag.Categories = new SelectList(categories, "Id", "Name", selectedCategoryId);
+
+            var userIdString = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (!string.IsNullOrEmpty(userIdString))
+            {
+                var prof = await _context.Professionals.FirstOrDefaultAsync(p => p.UserId == Guid.Parse(userIdString));
+                if (prof != null)
+                {
+                    ViewBag.MeusServicos = await _context.Services
+                        .Where(s => s.ProfessionalId == prof.Id && s.IsActive)
+                        .OrderBy(s => s.Name)
+                        .ToListAsync();
+                }
+            }
         }
     }
 }

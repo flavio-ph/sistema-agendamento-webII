@@ -26,15 +26,30 @@
 
 <div class="container py-5">
 
+        @if (TempData["SuccessMessage"] != null)
+        {
+            <div class="alert d-flex align-items-center gap-3 mb-4 border-0 shadow-sm alert-dismissible fade show" role="alert"
+                 style="background-color: rgba(0, 163, 108, 0.1); color: #007a51; border-radius: 1rem;">
+                <span class="material-symbols-outlined fs-4">task_alt</span>
+                <span class="fw-bold">@TempData["SuccessMessage"]</span>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Fechar"></button>
+            </div>
+        }
+
     <!-- CARD 1: FORMULÁRIO DE CADASTRO -->
     <div class="card shadow-sm border-0 mb-5" style="border-radius: 1.25rem;">
         <div class="card-body p-4 p-md-5">
             <div class="d-flex align-items-center gap-3 mb-4">
-                <span class="material-symbols-outlined fs-2" style="color: var(--ds-primary);">add_circle</span>
-                <h1 class="h3 fw-bold mb-0" style="font-family: 'Manrope', sans-serif; color: var(--ds-primary);">Cadastrar Novo Serviço</h1>
+                <span class="material-symbols-outlined fs-2" style="color: var(--ds-primary);">@(ViewBag.IsEditing == true ? "edit" : "add_circle")</span>
+                <h1 class="h3 fw-bold mb-0" style="font-family: 'Manrope', sans-serif; color: var(--ds-primary);">@(ViewBag.IsEditing == true ? "Editar Serviço" : "Cadastrar Novo Serviço")</h1>
             </div>
+            <form asp-action="@(ViewBag.IsEditing == true ? "Edit" : "Create")" method="post">
+                @if (ViewBag.IsEditing == true)
+                {
+                    <input type="hidden" asp-for="Id" />
+                    <input type="hidden" asp-for="ProfessionalId" />
+                }
 
-            <form asp-action="Create" method="post">
                 <div asp-validation-summary="All" class="text-danger small mb-4 fw-bold p-3 bg-danger bg-opacity-10 rounded border border-danger border-opacity-25" style="display: @(ViewData.ModelState.IsValid ? "none" : "block");"></div>
 
                 <div class="row g-4 mb-4">
@@ -80,7 +95,7 @@
                 <div class="d-flex justify-content-end gap-3 mt-4 pt-3 border-top">
                     <a asp-controller="Dashboard" asp-action="DashboardProfissional" class="btn btn-light fw-bold px-4 py-2 border">Cancelar</a>
                     <button type="submit" class="btn btn-primary-custom fw-bold px-4 py-2 rounded-3">
-                        Salvar Serviço
+                        @(ViewBag.IsEditing == true ? "Salvar Alterações" : "Salvar Serviço")
                     </button>
                 </div>
             </form>
@@ -134,13 +149,16 @@
                                 </td>
 
                                 <td class="text-end pe-4">
-                                    <!-- Substitua pelos seus links reais de Edit/Delete -->
-                                    <a href="#" class="btn btn-sm btn-light text-primary rounded-circle p-2 me-1" title="Editar">
+                                    <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-light text-primary rounded-circle p-2 me-1" title="Editar">
                                         <span class="material-symbols-outlined fs-6 d-block">edit</span>
                                     </a>
-                                    <a href="#" class="btn btn-sm btn-light text-danger rounded-circle p-2" title="Excluir">
-                                        <span class="material-symbols-outlined fs-6 d-block">delete</span>
-                                    </a>
+                                    <form asp-action="Delete" method="post" class="d-inline" onsubmit="return confirm('Tem certeza que deseja remover este serviço? Agendamentos futuros serão mantidos, mas ninguém poderá agendar novamente.');">
+                                        @Html.AntiForgeryToken()
+                                        <input type="hidden" name="id" value="@item.Id" />
+                                        <button type="submit" class="btn btn-sm btn-light text-danger rounded-circle p-2" title="Excluir">
+                                            <span class="material-symbols-outlined fs-6 d-block">delete</span>
+                                        </button>
+                                    </form>
                                 </td>
                             </tr>
                         }
